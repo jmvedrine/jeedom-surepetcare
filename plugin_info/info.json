@@ -5,7 +5,7 @@
 	"licence" : "AGPL",
 	"author" : "JMVedrine",
 	"require" : "3.2",
-	"category" : "wellness",
+	"category" : "devicecommunication",
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,
