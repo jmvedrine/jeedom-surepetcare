@@ -18,6 +18,7 @@
 
 /* * ***************************Includes********************************* */
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
+require_once dirname(__FILE__) . '/../../3rdparty/SurePetCareClient.php';
 
 class surepetcare extends eqLogic {
     /*     * *************************Attributs****************************** */
