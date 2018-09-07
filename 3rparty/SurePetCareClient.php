@@ -9,7 +9,7 @@
 * Author: Jean-Michel Védrine 2018
 */
 
-require_once("SurePetCareApi.php");
+require_once('SurePetCareApi.php');
 
 class SurePetCareClient {
     protected $baseUrl = 'https://app.api.surehub.io';
@@ -21,9 +21,9 @@ class SurePetCareClient {
     public $devices;
     public $pets;
 
-    public function __construct($email, $password, $deviceid) {
+    public function __construct($email, $password) {
         $this->email = $email;
-        $this->password = password;
+        $this->password = $password;
         // Invent something for mandatory fingerprintJs login value. Any 32bit integer will suffice.
         $this->deviceid = (string) rand(1000000000,9999999999);
 
@@ -32,43 +32,59 @@ class SurePetCareClient {
     public function setToken($token) {
         $this->token = $token;
     }
-    
+
+    public function setEmail($email) {
+        $this->email = $email;
+    }
+
+    public function setPassword($password) {
+        $this->password = $password;
+    }
+
+    public function setDeviceid($deviceid) {
+        $this->deviceid = $deviceid;
+    }
+
     public function getToken() {
         return $this->token;
     }
-    
+
     public function login() {
-        $result = SurePetCareApi::request($this->baseUrl."/api/auth/login",
+        $result = SurePetCareApi::request($this->baseUrl.'/api/auth/login',
             array(
-                "email_address" => $this->email,
-                "password" => $this->password,
-                "device_id" => $this->deviceid
+                'email_address' => $this->email,
+                'password' => $this->password,
+                'device_id' => $this->deviceid
             )
         );
-
-        if(isset($result['token'])) {
-            $this->token = $result['token'];
+        if(isset($result['data']['token'])) {
+            $this->token = $result['data']['token'];
         }
 
         return $this->token;
     }
 
-    public function getHouseholds() {
-        $result = array("message" => "no token");
-
+    public function logout() {
         if($this->token !== false) {
-            $result = SurePetCareApi::request($this->baseUrl."/api/household", null, "GET", array("Authorization: Bearer " . $this->token));
+            $result = SurePetCareApi::request($this->baseUrl.'/api/auth/logout', null, 'GET', array('Authorization: Bearer ' . $this->token));
+        }
+    }
+
+    public function getHouseholds($forceupdate = false) {
+
+        if($this->token !== false || $forceupdate) {
+            $result = SurePetCareApi::request($this->baseUrl.'/api/household', null, 'GET', array('Authorization: Bearer ' . $this->token));
             if(isset($result['data'])) {
                 $this->households = $result['data'];
             }
         }
-        
+
         return $this->households;
     }
-    
-    public function getDevices($householdid) {
-        if($this->token !== false) {
-            $result = SurePetCareApi::request($this->baseUrl. "/api/household/$householdid/device", null, "GET", array("Authorization: Bearer " . $this->token));
+
+    public function getDevices($householdid, $forceupdate = false) {
+        if($this->token !== false || $forceupdate) {
+            $result = SurePetCareApi::request($this->baseUrl. "/api/household/$householdid/device", null, 'GET', array('Authorization: Bearer ' . $this->token));
             if(isset($result['data'])) {
                 $this->devices[$householdid] = $result['data'];
             }
@@ -76,29 +92,90 @@ class SurePetCareClient {
 
         return $this->devices[$householdid];
     }
-    
-    public function getAllDevices() {
+
+    public function getAllDevices($forceupdate = false) {
         foreach($this->households as $household) {
-            $this->getDevices($household['id']);
+            $this->getDevices($household['id'], $forceupdate);
         }
         return $this->devices;
     }
-    
-    public function getPets($householdid) {
-        if($this->token !== false) {
-            $result = SurePetCareApi::request($this->baseUrl. "/api/household/$householdid/pet", null, "GET", array("Authorization: Bearer " . $this->token));
-            if(isset($result['data'])) {
-                $this->pets[$householdid] = $result['data'];
+
+    public function getPet($petid, $forceupdate = false) {
+        if($this->token !== false || $forceupdate) {
+            if (isset($this->pets[$petid])) {
+                $householdid = $this->pets[$petid]['household_id'];
+                $result = SurePetCareApi::request($this->baseUrl. "/api/household/$householdid/pet", null, 'GET', array('Authorization: Bearer ' . $this->token));
+                if(isset($result['data'])) {
+                    foreach($result['data'] as $pet){
+                        if ($pet['id'] == $petid) {
+                            $this->pets[$petid] = $pet;
+                        }
+                    }
+                }
             }
         }
 
         return $this->pets[$householdid];
     }
-    
-    public function getAllPets() {
+
+    public function getPets($householdid, $forceupdate = false) {
+        if($this->token !== false || $forceupdate) {
+            $petarray = array();
+            $result = SurePetCareApi::request($this->baseUrl. "/api/household/$householdid/pet", null, 'GET', array('Authorization: Bearer ' . $this->token));
+            if(isset($result['data'])) {
+                foreach($result['data'] as $pet){
+                    $this->pets[$pet['id']] = $pet;
+                    $petarray[] = $pet;
+                }
+            }
+        }
+
+        return $petarray;
+    }
+
+    public function getAllPets($forceupdate = false) {
         foreach($this->households as $household) {
-            $this->getPets($household['id']);
+            $this->getPets($household['id'], $forceupdate);
         }
         return $this->pets;
     }
+
+    public function getCurfewStatus($deviceid, $forceupdate = false) {
+        if($this->token !== false || $forceupdate) {
+            $result = SurePetCareApi::request($this->baseUrl. "/api/device/$deviceid/control", null, 'GET', array('Authorization: Bearer ' . $this->token));
+        }
+        return $result['data'];
+    }
+    
+    /* Locking modes:
+     *  0 = unlocked
+     * 	1 = locked in
+     *  2 = locked out
+     *  3 = locked all
+     *  4 = curfew
+     */
+    public function getLockingMode($deviceid, $forceupdate = false) {
+        if($this->token !== false || $forceupdate) {
+            $result = SurePetCareApi::request($this->baseUrl. "/api/device/$deviceid/control", null, 'GET', array('Authorization: Bearer ' . $this->token));
+        }
+        return $result['data']['locking'];
+    }
+    /* Location:
+     * 	1 = inside
+     *  2 = outside
+     */
+    public function getPetLocation($petid, $forceupdate = false) {
+        if($this->token !== false || $forceupdate) {
+            $result = SurePetCareApi::request($this->baseUrl. "/api/pet/$petid/position", null, 'GET', array('Authorization: Bearer ' . $this->token));
+        }
+        return $result['data']['where'];
+    }
+
+    public function getAllPetsLocation($forceupdate = false) {
+        foreach($this->pets as $pet) {
+            $this->getPetLocation($pet['id'], $forceupdate);
+        }
+    }
+
+
 }
