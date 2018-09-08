@@ -42,8 +42,12 @@ class SurePetCareApi {
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36');
 
         $result = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-
-        return json_decode($result, true);
+        if ($code =='200') {
+            return json_decode($result, true);
+        } else {
+            throw new Exception('Http return code: ' . $code);
+        }
     }
 }

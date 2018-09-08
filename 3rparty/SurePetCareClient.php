@@ -50,18 +50,24 @@ class SurePetCareClient {
     }
 
     public function login() {
-        $result = SurePetCareApi::request($this->baseUrl.'/api/auth/login',
-            array(
-                'email_address' => $this->email,
-                'password' => $this->password,
-                'device_id' => $this->deviceid
-            )
-        );
+        try {
+            $result = SurePetCareApi::request($this->baseUrl.'/api/auth/login',
+                    array(
+                        'email_address' => $this->email,
+                        'password' => $this->password,
+                        'device_id' => $this->deviceid
+                    )
+            );
+        } catch (Exception $e) {
+            echo "Login failed ". $e->getMessage();
+            return false;
+        }
         if(isset($result['data']['token'])) {
             $this->token = $result['data']['token'];
+            return $this->token;
         }
+        return false;
 
-        return $this->token;
     }
 
     public function logout() {
@@ -140,7 +146,7 @@ class SurePetCareClient {
         return $this->pets;
     }
 
-    public function getCurfewStatus($deviceid, $forceupdate = false) {
+    public function getDeviceStatus($deviceid, $forceupdate = false) {
         if($this->token !== false || $forceupdate) {
             $result = SurePetCareApi::request($this->baseUrl. "/api/device/$deviceid/control", null, 'GET', array('Authorization: Bearer ' . $this->token));
         }
