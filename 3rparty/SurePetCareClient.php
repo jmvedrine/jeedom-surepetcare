@@ -1,15 +1,58 @@
 <?php
 
 /*
-* Sure PetCare Api.
-* Used to authorize the client and send requests
-*
-* PHP class based on https://github.com/alextoft/sureflap
-*
-* Author: Jean-Michel Védrine 2018
-*/
+ * Sure PetCare Client.
+ * Used to authorize the client and send requests
+ *
+ * PHP class based on https://github.com/alextoft/sureflap
+ *
+ * Author: Jean-Michel Védrine 2018
+ * Note: in order to not overload the sure Petcare's servers, if you use this class
+ * in your own project, you should implement some caching mechanism and not call
+ * the server too frequently. For the same reason you should cache the auth token and not call
+ * the login function too frequently.
+ */
 
-require_once('SurePetCareApi.php');
+class SurePetCareApi {
+    public static function request($url, $payload = array(), $method = "POST", $headers = array()) {
+        $ch = curl_init($url);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+
+        $requestHeaders = array(
+            'Connection: keep-alive',
+            'Origin: https://surepetcare.io',
+            'Referer: https://surepetcare.io/',
+        );
+
+        if($method == 'POST' || $method == 'PUT') {
+            $json = json_encode($payload);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+            $requestHeaders[] = 'Content-Type: application/json';
+            $requestHeaders[] = 'Content-Length: ' . strlen($json);
+        }
+
+        if(count($headers) > 0) {
+            $requestHeaders = array_merge($requestHeaders, $headers);
+        }
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $requestHeaders);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36');
+
+        $result = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if ($code =='200') {
+            return json_decode($result, true);
+        } else {
+            throw new Exception('Http return code: ' . $code);
+        }
+    }
+}
 
 class SurePetCareClient {
 
