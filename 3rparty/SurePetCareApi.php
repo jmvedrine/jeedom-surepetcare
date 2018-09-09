@@ -24,7 +24,7 @@ class SurePetCareApi {
             'Referer: https://surepetcare.io/',
         );
 
-        if($method == "POST") {
+        if($method == 'POST' || $method == 'PUT') {
             $json = json_encode($payload);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
             $requestHeaders[] = 'Content-Type: application/json';

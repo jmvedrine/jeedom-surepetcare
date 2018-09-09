@@ -12,9 +12,11 @@
 require_once('SurePetCareApi.php');
 
 class SurePetCareClient {
+
     protected $baseUrl = 'https://app.api.surehub.io';
     public $email;
     public $password;
+    public $userid;
     public $deviceid;
     public $token;
     public $households;
@@ -49,6 +51,10 @@ class SurePetCareClient {
         return $this->token;
     }
 
+    public function getUserid() {
+        return $this->userid;
+    }
+
     public function login() {
         try {
             $result = SurePetCareApi::request($this->baseUrl.'/api/auth/login',
@@ -62,8 +68,10 @@ class SurePetCareClient {
             echo "Login failed ". $e->getMessage();
             return false;
         }
+        // var_dump($result);
         if(isset($result['data']['token'])) {
             $this->token = $result['data']['token'];
+            $this->userid = $result['data']['user']['id'];
             return $this->token;
         }
         return false;
@@ -146,13 +154,20 @@ class SurePetCareClient {
         return $this->pets;
     }
 
-    public function getDeviceStatus($deviceid, $forceupdate = false) {
+    public function getDeviceControl($deviceid, $forceupdate = false) {
         if($this->token !== false || $forceupdate) {
             $result = SurePetCareApi::request($this->baseUrl. "/api/device/$deviceid/control", null, 'GET', array('Authorization: Bearer ' . $this->token));
         }
         return $result['data'];
     }
-    
+
+    public function getDeviceStatus($deviceid, $forceupdate = false) {
+        if($this->token !== false || $forceupdate) {
+            $result = SurePetCareApi::request($this->baseUrl. "/api/device/$deviceid/status", null, 'GET', array('Authorization: Bearer ' . $this->token));
+        }
+        return $result['data'];
+    }
+
     /* Locking modes:
      *  0 = unlocked
      * 	1 = locked in
@@ -183,5 +198,33 @@ class SurePetCareClient {
         }
     }
 
+    public function setLockingMode($deviceid, $lockmode) {
+        $payload = array('locking' => "$lockmode");
+        $result = SurePetCareApi::request($this->baseUrl."/api/device/$deviceid/control", $payload, 'PUT', array('Authorization: Bearer ' . $this->token));
+        return $result['data']['locking'];
+    }
 
+    /* Hub led brightness
+     * 	0 = off
+     *  1 = bright
+     *  4 = dim
+     */
+    public function setHubLedBrightness($deviceid, $ledmode) {
+        $payload = array("led_mode" => $ledmode);
+        $result = SurePetCareApi::request($this->baseUrl."/api/device/$deviceid/control", $payload, 'PUT', array('Authorization: Bearer ' . $this->token));
+        return $result['data']['led_mode'];
+    }
+
+    /* Lock and Unlock Times format : HH:MM (eg. 18:00 06:00) */
+    public function setEnableCurfew($deviceid, $locktime, $unlocktime) {
+        $payload = array('curfew' => array('enabled' => true, 'lock_time' => "$locktime", 'unlock_time' => "$unlocktime"));
+        $result = SurePetCareApi::request($this->baseUrl."/api/device/$deviceid/control", $payload, 'PUT', array('Authorization: Bearer ' . $this->token));
+        return $result['data']['curfew']['enabled'];
+    }
+
+    public function setDisableCurfew($deviceid) {
+        $payload = array('curfew' => array('enabled' => false));
+        $result = SurePetCareApi::request($this->baseUrl."/api/device/$deviceid/control", $payload, 'PUT', array('Authorization: Bearer ' . $this->token));
+        return $result['data']['curfew']['enabled'];
+    }
 }
