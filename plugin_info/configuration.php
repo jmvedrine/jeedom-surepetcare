@@ -36,12 +36,6 @@ if (!isConnect()) {
             <input id="surepetcarepassword" type="password" class="configKey form-control" data-l1key="password" style="margin-top:-5px" placeholder="{{Mot de passe du compte}}"/>
         </div>
     </div>
-    <div class="form-group">
-        <label class="col-lg-2 control-label">{{Numéro de device}}</label>
-        <div class="col-lg-2">
-            <input id="surepetcaredeviceid" class="configKey form-control" data-l1key="deviceId" style="margin-top:-5px" placeholder="{{Voir documentation du plugin}}"/>
-        </div>
-    </div>
     </fieldset>
 </form>
 
