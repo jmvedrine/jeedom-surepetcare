@@ -14,7 +14,7 @@
  */
 
 class SurePetCareApi {
-    public static function request($url, $payload = array(), $method = "POST", $headers = array()) {
+    public static function request($url, $payload = array(), $method = 'POST', $headers = array()) {
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -55,16 +55,18 @@ class SurePetCareApi {
 }
 
 class SurePetCareClient {
-
     protected $baseUrl = 'https://app.api.surehub.io';
-    public $email;
-    public $password;
-    public $userid;
-    public $deviceid;
-    public $token;
-    public $households;
-    public $devices;
+    private $email;
+    private $password;
+    private $userid;
+    private $deviceid;
+    private $token;
+    private $households;
+    private $devices;
     public $pets;
+    private $petslocation;
+    private $house_timeline;
+    private $pet_timeline;
 
     public function __construct($email, $password) {
         $this->email = $email;
@@ -172,7 +174,7 @@ class SurePetCareClient {
             }
         }
 
-        return $this->pets[$householdid];
+        return $this->pets[$petid];
     }
 
     public function getPets($householdid, $forceupdate = false) {
@@ -186,7 +188,6 @@ class SurePetCareClient {
                 }
             }
         }
-
         return $petarray;
     }
 
@@ -231,14 +232,47 @@ class SurePetCareClient {
     public function getPetLocation($petid, $forceupdate = false) {
         if($this->token !== false || $forceupdate) {
             $result = SurePetCareApi::request($this->baseUrl. "/api/pet/$petid/position", null, 'GET', array('Authorization: Bearer ' . $this->token));
+            $this->petslocation[$petid] = $result['data']['where'];
         }
-        return $result['data']['where'];
+        return $this->petslocation[$petid];
     }
 
     public function getAllPetsLocation($forceupdate = false) {
         foreach($this->pets as $pet) {
             $this->getPetLocation($pet['id'], $forceupdate);
         }
+        return $this->petslocation;
+    }
+    
+    public function getHouseTimeLine($householdid, $forceupdate = false) {
+        if($this->token !== false || $forceupdate) {
+            $result = SurePetCareApi::request($this->baseUrl. "/api/timeline/household/$householdid", null, 'GET', array('Authorization: Bearer ' . $this->token));
+            $this->house_timeline[$householdid] = $result['data'];
+            // Now we update each pet timeline.
+            foreach($this->pets as $petid => $pet) {
+                if($pet['household_id'] == $householdid) {
+                    $pettimeline = array();
+                    foreach($this->house_timeline[$householdid] as $evt) {
+                        if($evt['movements'][0]['type'] == 0 && $evt['movements'][0]['tag_id'] == $pet['tag_id']) {
+                            $pettimeline[] = $evt;
+                        }
+                    }
+                    $this->pet_timeline[$petid] = $pettimeline;
+                }
+            }
+        }
+        return $this->house_timeline[$householdid];
+    }
+    
+    public function getPetTimeLine($petid, $forceupdate = false) {
+        if($this->token !== false || $forceupdate) {
+            if (isset($this->pets[$petid])) {
+                // We must update the corresponding household timeline.
+                $householdid = $this->pets[$petid]['household_id'];
+                $this->getHouseTimeLine($householdid, $forceupdate);
+            }
+        }
+        return $this->pet_timeline[$petid];
     }
 
     public function setLockingMode($deviceid, $lockmode) {
