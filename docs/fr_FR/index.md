@@ -43,7 +43,7 @@ Commande pour un hub
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
-| **Brillance**                        | action  | numeric    | Fixe le mode d'allumage des leds ("oreilles") du hub : normal atténué ou éteint.                                                                                   |                                                                                         |
+| **Brillance**                        | action  | numeric    | Fixe le mode d'allumage des leds ("oreilles") du hub : vif, atténué ou aucun.                                                                                   |                                                                                         |
 
 Commandes pour une chatière
 

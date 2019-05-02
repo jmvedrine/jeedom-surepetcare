@@ -1,0 +1,29 @@
+{
+		"name": "Chatière",
+		"configuration": {
+			"id": "",
+			"product_id": "6",
+            "parent_device_id": "",
+			"product_name": "Chatière à puce électronique Connect",
+		},
+		"commands": [
+			{
+				"name": "",
+				"type": "info",
+				"isVisible": 0,
+				"isHistorized": 0,
+				"logicalId": "",
+				"configuration" :{
+					"fieldname" : ""
+				},
+				"subtype": "other",
+				"display": {
+					"generic_type": "GENERIC_INFO"
+				},
+				"template":{
+					"dashboard" : "badge",
+					"mobile" : "badge"
+				}
+			},
+		]
+}
