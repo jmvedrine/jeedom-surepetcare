@@ -22,13 +22,13 @@ Il faut entrer :
 
 -   **Adresse mail** : L'adresse mail que vous avez donnée lors de la création du compte sur le site surepetcare.io ou dans l'app IOS ou Android
 
--   **Mot de passe** : Le mot de passe que vous avez choisi lors de la création du compte sur le serveur de Bosch.
+-   **Mot de passe** : Le mot de passe que vous avez choisi lors de la création du compte sur le ssite surepetcare.io.
 
 Et ne pas oublier de cliquer sur **Sauvegarder**.
 
 Création des équipement
 ===
-
+Il ne faut pas créer les équipements manuellement. Cliquez sur "Synchroniser" et le plugin retrouvera sur le site surepetcare.io vos hubs, vos objets connecté (chatières, ...) et vos animaux.
 
 Les commandes disponibles
 ===
@@ -43,7 +43,7 @@ Commande pour un hub
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
-| **Brillance**                        | action  | numeric    | Fixe le mode d'allumage des leds ("oreilles") du hub : vif, atténué ou aucun.                                                                                   |                                                                                         |
+| **Brillance**                        | action  | numeric    | Fixe le mode d'allumage des leds ("oreilles") du hub (0 = aucun, 1 = vif, 4 = atténué).                                                                            |                                                                                         |
 
 Commandes pour une chatière
 
@@ -55,7 +55,7 @@ Commandes pour un animal
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
-| **Localisation**                     | info    | numeric    | Indique si l'animal est à l'extérieur ou à l'intérieur                                                                                                             |
+| **Localisation**                     | info    | numeric    | Indique si l'animal est à l'extérieur ou à l'intérieur (1 = intérieur, 2 = extérieur)                                                                              |
 
 FAQ
 ===
