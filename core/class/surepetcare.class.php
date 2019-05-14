@@ -92,8 +92,8 @@ class surepetcare extends eqLogic {
     }
     $eqLogic->setConfiguration('types', $types);
     $eqLogic->save();
-    if(file_exists(__DIR__.'/../config/types/'.$_device['type'].'.json')){
-      $types = json_decode(file_get_contents(__DIR__.'/../config/types/'.$_device['type'].'.json'),true);
+    if(file_exists(__DIR__.'/../config/types/device'.$_device['type'].'.json')){
+      $types = json_decode(file_get_contents(__DIR__.'/../config/types/device'.$_device['type'].'.json'),true);
       $link_cmds = array();
       foreach ($types['commands'] as $type) {
         $cmd = $eqLogic->getCmd(null,$deviceIdList[1].'.'.$type['logicalId']);
