@@ -1,10 +1,10 @@
 {
-		"name": "Chatière",
+		"name": "Hub",
 		"configuration": {
 			"id": "",
-			"product_id": "6",
-            "parent_device_id": "",
-			"product_name": "Chatière à puce électronique Connect",
+			"product_id": "1",
+			"parent_device_id": "",
+			"product_name": "Hub",
 		},
 		"commands": [
 			{

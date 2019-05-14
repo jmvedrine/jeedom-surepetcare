@@ -8,7 +8,7 @@
 		},
 		"commands": [
 			{
-				"name": "",
+				"name": "Etat",
 				"type": "info",
 				"isVisible": 0,
 				"isHistorized": 0,

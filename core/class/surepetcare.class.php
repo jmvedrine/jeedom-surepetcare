@@ -18,7 +18,6 @@
 
 /* * ***************************Includes********************************* */
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
-require_once dirname(__FILE__) . '/../../3rdparty/SurePetCareClient.php';
 
 class surepetcare extends eqLogic {
     /*     * *************************Attributs****************************** */
@@ -50,6 +49,7 @@ class surepetcare extends eqLogic {
      */
 
   public static function sync(){
+    log::add('surepetcare', 'debug', 'Fonction sync appelee');
   }
 
   public static function findProduct($_device,$_gatewayId) {
@@ -131,12 +131,14 @@ class surepetcare extends eqLogic {
   }
 
   public static function devicesParameters($_device = '') {
+    log::add('surepetcare', 'debug', 'debut de devicesParameters');
     $return = array();
     foreach (ls(dirname(__FILE__) . '/../config/devices', '*') as $dir) {
       $path = dirname(__FILE__) . '/../config/devices/' . $dir;
       if (!is_dir($path)) {
         continue;
       }
+      log::add('surepetcare', 'debug', 'devicesParameters path '.$path);
       $files = ls($path, '*.json', false, array('files', 'quiet'));
       foreach ($files as $file) {
         try {
@@ -158,110 +160,58 @@ class surepetcare extends eqLogic {
   }
     /*     * *********************Méthodes d'instance************************* */
   public function postSave() {
+    log::add('surepetcare', 'debug', 'debut de postSave');
     if ($this->getConfiguration('applyProductId') != $this->getConfiguration('product_id')) {
+      log::add('surepetcare', 'debug', 'postSave envoi vers applyModuleConfiguration');
       $this->applyModuleConfiguration();
     }
   }
-
-  public function getImage() {
-    return 'plugins/surepetcare/core/config/images/' . $this->getConfiguration('iconProduct');
-  }
-
-  public function applyModuleConfiguration() {
+  
+   public function applyModuleConfiguration() {
+    log::add('surepetcare', 'debug', 'debut de applyModuleConfiguration');
+    log::add('surepetcare', 'debug', 'product_id='.$this->getConfiguration('product_id'));
     $this->setConfiguration('applyProductId', $this->getConfiguration('product_id'));
     $this->save();
     if ($this->getConfiguration('product_id') == '') {
+      log::add('surepetcare', 'debug', 'applyModuleConfiguration retour true');
       return true;
     }
-
+    log::add('surepetcare', 'debug', 'applyModuleConfiguration envoi vers devicesParameters');
     $device = self::devicesParameters($this->getConfiguration('product_id'));
     if (!is_array($device)) {
       return true;
     }
+    log::add('surepetcare', 'debug', 'applyModuleConfiguration import');
     $this->import($device);
   }
 
-  public function applyData($_data) {
-    $updatedValue = false;
-    if(!isset($_data['uniqueid'])){
-      return $updatedValue;
+    public function preInsert() {
+        
     }
-    $path_file = __DIR__.'/../config/devices/'.$this->getConfiguration('product_id').'.php';
-    if(file_exists($path_file)){
-      require_once $path_file;
-      $function = 'surepetcare_' . str_replace('.','_',$this->getConfiguration('product_id')).'_data';
-      if (function_exists($function)) {
-        $function($_data);
-      }
-    }
-    $deviceIdList = explode('-', $_data['uniqueid'],2);
-    foreach ($this->getCmd('info') as $cmd) {
-      $logicalId = $cmd->getLogicalId();
-      if ($logicalId == '') {
-        continue;
-      }
-      $epClusterPath = explode('.', $logicalId);
-      if ($epClusterPath[0] != $deviceIdList[1]) {
-        continue;
-      }
-      $path = explode('::', $epClusterPath[1]);
-      $value = $_data;
-      foreach ($path as $key) {
-        if (!isset($value[$key])) {
-          continue (2);
-        }
-        $value = $value[$key];
-      }
-      if (!is_array($value)){
-        $this->checkAndUpdateCmd($cmd,$value);
-        $updatedValue = true;
-      }
-    }
-    if(isset($_data['config'])) {
-      $updatedValue = true;
-      if ( isset($_data['config']['battery'])){
-        $this->batteryStatus($_data['config']['battery']);
-      }
-    }
-    return $updatedValue;
-  }
 
-  public function getProductList($_eqTypes = array(), $_giveOne = false) {
-    if (count($_eqTypes) == 0){
-      $eqTypes = $this->getConfiguration('types',array());
-    } else {
-      $eqTypes = $_eqTypes;
+    public function postInsert() {
+        
     }
-    $currentIcon = $this->getConfiguration('iconProduct','');
-    $productList = array();
-    $files = ls(dirname(__FILE__) . '/../config/images', '*.png', false, array('files', 'quiet'));
-    foreach ($files as $file) {
-      $fileTypesTitle = explode('_',$file);
-      $fileTypes = explode('&',$fileTypesTitle[0]);
-      $numTypes = 0;
-      foreach ($fileTypes as $fileType) {
-        if (in_array($fileType,$eqTypes)){
-          $numTypes += 1;
-        }
-      }
-      if ($numTypes == count($fileTypes)){
-        if ($_giveOne) {
-          return $file;
-        }
-        $productList[substr($fileTypesTitle[1],0,-4)]['file'] = $file;
-        $productList[substr($fileTypesTitle[1],0,-4)]['selected'] = 0;
-        if ($file == $currentIcon) {
-          $productList[substr($fileTypesTitle[1],0,-4)]['selected'] = 1;
-        }
-      }
-    }
-    if ($_giveOne && count($productList) == 0) {
-      return '';
-    }
-    return $productList;
-  }
-    /*     * *********************Méthodes d'instance************************* */
 
+    public function preSave() {
+        
+    }
+
+    public function preUpdate() {
+        
+    }
+
+    public function postUpdate() {
+        
+    }
+
+    public function preRemove() {
+        
+    }
+
+    public function postRemove() {
+        
+    }
 
     /*
      * Non obligatoire mais permet de modifier l'affichage du widget si vous en avez besoin
@@ -301,26 +251,8 @@ class surepetcareCmd extends cmd {
       }
      */
 
-    public function execute($_options = null) {
-      if ($this->getType() != 'action') {
-        return;
-      }
-      $eqLogic = $this->getEqLogic();
-      $logicalId = $this->getLogicalId();
-      $actionDatas = explode('.',$logicalId);
-      $actionerId = $eqLogic->getLogicalId() . '-' . $actionDatas[0];
-      $parameters = array();
-      $datasList = explode(';',$actionDatas[1]);
-      foreach ($datasList as $datas){
-        $keyValue = explode('::',$datas);
-        $type = self::datatype($keyValue[0]);
-        if ($type == 'bool'){
-          $parameters[$keyValue[0]] = ($keyValue[1] == '0') ? false : true;
-        } else {
-          $parameters[$keyValue[0]] = $keyValue[1];
-        }
-      }
-      // TODO envoyer au serveur.
+    public function execute($_options = array()) {
+        
     }
 
     /*     * **********************Getteur Setteur*************************** */
