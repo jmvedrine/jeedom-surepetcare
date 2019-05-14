@@ -47,9 +47,149 @@ class surepetcare extends eqLogic {
 
       }
      */
+  public function request($_household,$_request = '',$_data = null,$_type='POST', $_headers = array()){
+    if(!is_array($_household)){
+      $households = config::byKey('households','surepetcare',array());
+      foreach ($households as $household) {
+        if($_household == $household['id']){
+          $_household = $household;
+          break;
+        }
+      }
+    }
+    if(!is_array($_household)){
+      throw new \Exception(__('Impossible de trouver le foyer',__FILE__));
+    }
+    $url = 'https://app.api.surehub.io/api';
+    if($_request != ''){
+      $url .= '/'.$_household['id'];
+    }
+    $url .= $_request;
+    log::add('surepetcare','debug','url='.$url);
+    log::add('surepetcare','debug','request='.$_request);
+    log::add('surepetcare','debug', 'data='.json_encode($_data));
+    $request_http = new com_http($url);
+    $request_http->setNoSslCheck(true);
+    $requestHeaders = array(
+            'Connection: keep-alive',
+            'Origin: https://surepetcare.io',
+            'Referer: https://surepetcare.io/',
+    );
+    if(count($_headers) > 0) {
+            $requestHeaders = array_merge($requestHeaders, $_headers);
+    }
+    log::add('surepetcare','debug','headers='.$requestHeaders);
+    $request_http->setHeader($requestHeaders);
+    $request_http->setUserAgent('Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36');
+    if($_data !== null){
+      if($_type == 'POST'){
+        $request_http->setPost(json_encode($_data));
+      }elseif($_type == 'PUT'){
+        $request_http->setPut(json_encode($_data));
+      }
+    }
+    $result = $request_http->exec();
+    log::add('surepetcare','debug','result='.$result);
+    $result = is_json($result, $result);
+    if(isset($result[0]) && is_array($result[0]) && isset($result[0]['error']) && is_array($result[0]['error'])){
+      throw new \Exception(__('Erreur lors de la requete : ',__FILE__).$url.'('.$_type.'), data : '.json_encode($_data).' erreur : '.$result[0]['error']['type'].' => '.$result[0]['error']['description']);
+    }
+    if(isset($result[0]['success'])){
+      return $result[0]['success'];
+    }
+    return $result;
+  }
 
+  public static function login() {
+    $url = 'https://app.api.surehub.io/api/auth/login';
+    $mailadress = config::byKey('emailAdress','surepetcare');
+    $password = config::byKey('password','surepetcare');
+    $device_id = rand(1,9);
+    for($i=0; $i<9; $i++) {
+        $device_id .= rand(0,9);
+    }
+
+    log::add('surepetcare','debug', 'device id='.$device_id);
+    $data = array(
+            'email_address' => $mailadress,
+            'password' => $password,
+            'device_id' => $device_id
+    );
+    $json = json_encode($data);
+    log::add('surepetcare','debug', 'login data='.$json);
+    $request_http = new com_http($url);
+    $request_http->setNoSslCheck(true);
+    $request_http->setUserAgent('Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36');
+    $headers = array(
+            'Connection: keep-alive',
+            'Origin: https://surepetcare.io',
+            'Referer: https://surepetcare.io/',
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($json)
+    );
+    $request_http->setHeader($headers);
+    $request_http->setPost(json_encode($data));
+
+    $result = $request_http->exec();
+    log::add('surepetcare','debug','login result='.$result);
+    $result = is_json($result, $result);
+    if(isset($result['data']['token'])) {
+            $token = $result['data']['token'];
+            $userid = $result['data']['user']['id'];
+            return $token;
+    }
+        return false;
+  }
+
+  public static function getHouseholds($token){
+    $url = 'https://app.api.surehub.io/api/household';
+    $request_http = new com_http($url);
+    $request_http->setNoSslCheck(true);
+    $requestHeaders = array(
+            'Connection: keep-alive',
+            'Origin: https://surepetcare.io',
+            'Referer: https://surepetcare.io/',
+            'Authorization: Bearer ' . $token
+        );
+    $request_http->setHeader($requestHeaders);
+    $request_http->setUserAgent('Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36');
+
+    $result = $request_http->exec();
+    log::add('surepetcare','debug','Gethouseholds result : '.$result);
+    $result = is_json($result, $result);
+    $households = $result['data'];
+    if(count($households) == 0){
+      return;
+    }
+    log::add('surepetcare','debug','Found '.count($households). ' households');
+    // config::remove('households', 'surepetcare');
+    $households_config = config::byKey('households','surepetcare',array());
+    log::add('surepetcare','debug','Household_config= '.print_r($households_config, true));
+    foreach ($households as $household) {
+      log::add('surepetcare','debug','Household id= '.$household['id']);
+      log::add('surepetcare','debug','Household name= '.$household['name']);
+      foreach ($households_config as $key=>$household_config) {
+        if($household_config['id'] == $household['id']){
+          $household_config['name'] = $household['name'];
+          $households_config[$key] = $household_config;
+          break(2);
+        }
+      }
+      $households_config[] = array('id' => $household['id'], 'name' => $household['name']);
+    }
+    config::save('households',$households_config,'surepetcare');
+  }
   public static function sync(){
     log::add('surepetcare', 'debug', 'Fonction sync appelee');
+    $token = surepetcare::login();
+    log::add('surepetcare','debug','dans login token='.$token);
+    surepetcare::getHouseholds($token);
+    $households = config::byKey('households','surepetcare',array());
+  /*  foreach ($households as $household) {
+        $result = surepetcare::request($household, '/device', null, 'GET', array('Authorization: Bearer ' . $token));
+        log::add('surepetcare','debug','GetDevices result : '.$result);
+    } */
+        
   }
 
   public static function findProduct($_device,$_gatewayId) {
@@ -166,7 +306,7 @@ class surepetcare extends eqLogic {
       $this->applyModuleConfiguration();
     }
   }
-  
+
    public function applyModuleConfiguration() {
     log::add('surepetcare', 'debug', 'debut de applyModuleConfiguration');
     log::add('surepetcare', 'debug', 'product_id='.$this->getConfiguration('product_id'));
@@ -186,31 +326,31 @@ class surepetcare extends eqLogic {
   }
 
     public function preInsert() {
-        
+
     }
 
     public function postInsert() {
-        
+
     }
 
     public function preSave() {
-        
+
     }
 
     public function preUpdate() {
-        
+
     }
 
     public function postUpdate() {
-        
+
     }
 
     public function preRemove() {
-        
+
     }
 
     public function postRemove() {
-        
+
     }
 
     /*
@@ -252,7 +392,7 @@ class surepetcareCmd extends cmd {
      */
 
     public function execute($_options = array()) {
-        
+
     }
 
     /*     * **********************Getteur Setteur*************************** */
