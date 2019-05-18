@@ -85,7 +85,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<label class="col-sm-4 control-label">{{Nom}}</label>
 									<div class="col-sm-4">
                                         <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="product_id" style="display : none;" />
-                                        <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="species_id" style="display : none;" />
+                                        <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="photo_location" style="display : none;" />
 										<input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none;" />
 										<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'objet}}"/>
 									</div>

@@ -1348,13 +1348,13 @@ class surepetcare extends eqLogic {
                 log::add('surepetcare','debug',json_encode($found_eqLogics));
             }
         }
-        $petarray = array();
-        $result = surepetcare::request('https://app.api.surehub.io/api/household/'. $household['id'].'/pet', null, 'GET', array('Authorization: Bearer ' . $token));
+        $result = surepetcare::request('https://app.api.surehub.io/api/household/'. $household['id'].'/pet?with[]=photo&with[]=tag&with[]=position', null, 'GET', array('Authorization: Bearer ' . $token));
         log::add('surepetcare','debug','getPets result : '.json_encode($result));
         
         if(isset($result['data'])) {
             foreach($result['data'] as $key => $pet){
                 log::add('surepetcare','debug','Pet '.$key. '='.json_encode($pet));
+                log::add('surepetcare','debug','Photo:'.$pet['photo']['location']);
                 if(!isset($pet['id']) || !isset($pet['name'])){
                     log::add('surepetcare','debug','Missing pet id or name');
                     continue;
@@ -1518,6 +1518,9 @@ class surepetcare extends eqLogic {
     if(isset($_pet['weight'])){
       $eqLogic->setConfiguration('weight', $_pet['weight']);
     }
+    if(isset($_pet['photo']['location'])){
+      $eqLogic->setConfiguration('photo_location', $_pet['photo']['location']);
+    }
     if(isset($_pet['comments'])){
       $eqLogic->setConfiguration('comments', $_pet['comments']);
     }
@@ -1580,12 +1583,7 @@ class surepetcare extends eqLogic {
     If ($this->getConfiguration('type') == 'device') {
       return 'plugins/surepetcare/core/config/images/' . $this->getConfiguration('iconProduct');
     } else if ($this->getConfiguration('type') == 'pet') {
-      // TODO change according to pet.
-      if ($this->getConfiguration('species_id') == 1) {
-          return 'plugins/surepetcare/core/config/images/cat-icon-up.png';
-      } else {
-          return 'plugins/surepetcare/core/config/images/dog-icon-up.png';
-      }
+      return $this->getConfiguration('photo_location');
     } else {
       return 'plugins/surepetcare/plugin_info/surepetcare_icon.png';
     }
@@ -1676,7 +1674,21 @@ class surepetcareCmd extends cmd {
      */
 
     public function execute($_options = array()) {
-
+        if ($this->getType() != 'action') {
+            return;
+        }
+        $eqLogic = $this->getEqLogic();
+        $type = $eqLogic->getConfiguration('type', '');
+        $actionerId = $eqLogic->getLogicalId();
+        $logicalId = $this->getLogicalId();
+        $actionDatas = explode('.',$logicalId);
+        if ($type == 'device') {
+            $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/control';
+        }
+        if ($type =='pet') {
+            $url = 'https://app.api.surehub.io/api/pet/' . $actionerId . '/position';
+        }
+        log::add('surepetcare', 'debug', 'execute url='.$url);
     }
 
     /*     * **********************Getteur Setteur*************************** */

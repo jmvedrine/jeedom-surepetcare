@@ -10,13 +10,13 @@
 			{
 				"name": "Etat",
 				"type": "info",
+				"subtype": "other",
 				"isVisible": 0,
 				"isHistorized": 0,
 				"logicalId": "",
 				"configuration" :{
 					"fieldname" : ""
 				},
-				"subtype": "other",
 				"display": {
 					"generic_type": "GENERIC_INFO"
 				},

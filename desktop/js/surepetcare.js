@@ -27,14 +27,9 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=product_id]').on('change', 
   }
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=species_id]').on('change', function () {
-  if($(this).value() != ''){
-      if($(this).value() == 1) {
-        $('#img_device').attr("src", 'plugins/surepetcare/core/config/images/cat-icon-up.png');
-      }
-      if($(this).value() == 2) {
-        $('#img_device').attr("src", 'plugins/surepetcare/core/config/images/dog-icon-up.png');
-      }
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=photo_location]').on('change', function () {
+  if($(this).value() != '' && $(this).value() != null){
+        $('#img_device').attr("src", $(this).value());
   } else {
     $('#img_device').attr("src", 'plugins/surepetcare/plugin_info/surepetcare_icon.png');
   }
