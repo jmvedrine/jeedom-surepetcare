@@ -1,12 +1,10 @@
 <?php
-log::add('surepetcare', 'debug', 'surepetcare desktop php step 1');
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 $plugin = plugin::byId('surepetcare');
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
-log::add('surepetcare', 'debug', 'surepetcare desktop php step 2');
 ?>
 
 <div class="row row-overflow">
@@ -30,12 +28,11 @@ log::add('surepetcare', 'debug', 'surepetcare desktop php step 2');
 			</div>
 		</div>
 
-		<legend><i class="fas fa-table"></i> {{Mes objets Sure PetCare}}</legend>
-		<input class="form-control" placeholder="{{Rechercher}}" id="in_searchEqlogic" />
+		<legend><i class="fas fa-table"></i> {{Mes équipements Sure PetCare}}</legend>
 		<div class="eqLogicThumbnailContainer">
 			<?php
-            log::add('surepetcare', 'debug', 'surepetcare desktop php step 3');
 			foreach ($eqLogics as $eqLogic) {
+                if($eqLogic->getConfiguration('type','') != 'device') continue;
 				$opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
 				echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
 				if ($eqLogic->getConfiguration('iconProduct', '') != '') {
@@ -43,6 +40,21 @@ log::add('surepetcare', 'debug', 'surepetcare desktop php step 2');
 				} else {
 					echo '<img src="' . $plugin->getPathImgIcon() . '"/>';
 				}
+				echo '<br>';
+				echo '<span>' . $eqLogic->getHumanName(true, true) . '</span>';
+				echo '</div>';
+			}
+			?>
+		</div>
+        <legend><i class="fas fa-table"></i> {{Mes animaux}}</legend>
+        <div class="eqLogicThumbnailContainer">
+			<?php
+			foreach ($eqLogics as $eqLogic) {
+                if($eqLogic->getConfiguration('type','') != 'pet') continue;
+				$opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
+				echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
+				echo '<img src="' . $eqLogic->getImage() . '"/>';
+				
 				echo '<br>';
 				echo '<span>' . $eqLogic->getHumanName(true, true) . '</span>';
 				echo '</div>';
@@ -70,11 +82,12 @@ log::add('surepetcare', 'debug', 'surepetcare desktop php step 2');
 						<form class="form-horizontal">
 							<fieldset>
 								<div class="form-group">
-									<label class="col-sm-4 control-label">{{Nom du produit Sure petCare}}</label>
+									<label class="col-sm-4 control-label">{{Nom}}</label>
 									<div class="col-sm-4">
                                         <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="product_id" style="display : none;" />
+                                        <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="species_id" style="display : none;" />
 										<input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none;" />
-										<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom du produit}}"/>
+										<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'objet}}"/>
 									</div>
 								</div>
 								<div class="form-group">
@@ -121,18 +134,12 @@ log::add('surepetcare', 'debug', 'surepetcare desktop php step 2');
 					<div class="col-sm-6">
 						<form class="form-horizontal">
 							<fieldset>
-								<div class="form-group">
-									<label class="col-sm-3 control-label">{{Modèle}}</label>
-									<div class="col-sm-3">
-										<span class="eqLogicAttr" data-l1key="configuration" data-l2key="product_name"></span>
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-sm-3 control-label">{{Numéro de série}}</label>
-									<div class="col-sm-3">
-										<span class="eqLogicAttr" data-l1key="configuration" data-l2key="serial_number"></span>
-									</div>
-								</div>
+								<table id="table_infoseqlogic" class="table table-condensed" style="border-radius: 10px;">
+						<thead>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
 								<div class="form-group">
 									<label class="col-sm-2 control-label"></label>
 									<div class="col-sm-8">

@@ -27,7 +27,49 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=product_id]').on('change', 
   }
 });
 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=species_id]').on('change', function () {
+  if($(this).value() != ''){
+      if($(this).value() == 1) {
+        $('#img_device').attr("src", 'plugins/surepetcare/core/config/images/cat-icon-up.png');
+      }
+      if($(this).value() == 2) {
+        $('#img_device').attr("src", 'plugins/surepetcare/core/config/images/dog-icon-up.png');
+      }
+  } else {
+    $('#img_device').attr("src", 'plugins/surepetcare/plugin_info/surepetcare_icon.png');
+  }
+});
+
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
+
+function printEqLogicHelper(label,name,_eqLogic){
+	var trm = '<tr><td class="col-sm-2"><span class="label control-label" style="font-size : 1em;">'+label+'</span></td><td><span class="label label-default" style="font-size : 1em;"> <span class="eqLogicAttr" data-l1key="configuration" data-l2key="'+name+'"></span></span></td></tr>';
+	
+	$('#table_infoseqlogic tbody').append(trm);
+	$('#table_infoseqlogic tbody tr:last').setValues(_eqLogic, '.eqLogicAttr');
+}
+
+// fonction executée par jeedom lors de l'affichage des details d'un eqlogic
+function printEqLogic(_eqLogic) {
+	if (!isset(_eqLogic)) {
+		var _eqLogic = {configuration: {}};
+	}
+	if (!isset(_eqLogic.configuration)) {
+		_eqLogic.configuration = {};
+	}
+	$('#table_infoseqlogic tbody').empty();
+    printEqLogicHelper("{{Foyer}}","household_name",_eqLogic);
+    if (_eqLogic.configuration.type=="device") {
+        printEqLogicHelper("{{Modèle}}","product_name",_eqLogic);
+        printEqLogicHelper("{{Numéro de série}}","serial_number",_eqLogic);
+    }
+    if (_eqLogic.configuration.type=="pet") {
+        printEqLogicHelper("{{Poids (kg)}}","weight",_eqLogic);
+        printEqLogicHelper("{{Commentaire}}","comments",_eqLogic);
+        printEqLogicHelper("{{Tag id}}","tag_id",_eqLogic);
+        printEqLogicHelper("{{Race}}","breed_name",_eqLogic);
+    }
+}
 
 function addCmdToTable(_cmd) {
   if (!isset(_cmd)) {

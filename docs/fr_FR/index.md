@@ -1,7 +1,7 @@
 Description
 ===
 
-Plugin permettant de les ojets connectés pour animaux de la marque Sure Petcare (anciennement Sureflap).
+Plugin permettant de les objets connectés pour animaux de la marque Sure Petcare (anciennement Sureflap).
 
 Pour le moment les seuls objets connectés sont des chatières
 - La grande chatière connect (Pet Porte Connect en anglais)
@@ -12,11 +12,13 @@ il interroge le serveur surepetcare.io qui lui communique avec le hub et à trav
 A ma connaissance personne n'a pu decoder le protocole utilisé lors des communications chatière <-> hub 
 ou hub <-> serveur surepetcare.io ce qui s'explique car ces communications sont sécurisées.
 
-Avant d'activer le plugin il faut que votre compte sur le serveur de surepetcare.io soit créé avec un mot de passe
+Avant d'activer le plugin il faut que votre compte sur le serveur de surepetcare.io soit créé avec une adresse mail et un mot de passe
 et il faut que l'appli IOS ou Android fonctionne.
 
 Configuration du plugin
 ===
+
+![introduction01](../images/Configuration.png)
 
 Il faut entrer :
 
@@ -28,6 +30,7 @@ Et ne pas oublier de cliquer sur **Sauvegarder**.
 
 Création des équipement
 ===
+![introduction01](../images/Objets.png)
 Il ne faut pas créer les équipements manuellement. Cliquez sur "Synchroniser" et le plugin retrouvera sur le site surepetcare.io vos hubs, vos objets connecté (chatières, ...) et vos animaux.
 
 Les commandes disponibles
