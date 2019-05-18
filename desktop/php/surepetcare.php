@@ -72,6 +72,7 @@ log::add('surepetcare', 'debug', 'surepetcare desktop php step 2');
 								<div class="form-group">
 									<label class="col-sm-4 control-label">{{Nom du produit Sure petCare}}</label>
 									<div class="col-sm-4">
+                                        <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="product_id" style="display : none;" />
 										<input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none;" />
 										<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom du produit}}"/>
 									</div>
@@ -121,28 +122,21 @@ log::add('surepetcare', 'debug', 'surepetcare desktop php step 2');
 						<form class="form-horizontal">
 							<fieldset>
 								<div class="form-group">
-									<label class="col-sm-3 control-label"></label>
-									<div class="col-sm-2">
-										<a id="bt_showDeconzModuleConfiguration" class="btn btn-default"><i class="fas fa-cogs"></i> {{Configuration}}</a>
+									<label class="col-sm-3 control-label">{{Modèle}}</label>
+									<div class="col-sm-3">
+										<span class="eqLogicAttr" data-l1key="configuration" data-l2key="product_name"></span>
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-sm-3 control-label">{{Modèle}}</label>
+									<label class="col-sm-3 control-label">{{Numéro de série}}</label>
 									<div class="col-sm-3">
-										<span class="eqLogicAttr" data-l1key="configuration" data-l2key="modelid"></span>
-									</div>
-								</div>
-								<div class="form-group modelList" style="display:none;">
-									<label class="col-sm-3 control-label">{{Visuel}}</label>
-									<div class="col-sm-4">
-										<select class="eqLogicAttr form-control listModel" data-l1key="configuration" data-l2key="iconProduct">
-										</select>
+										<span class="eqLogicAttr" data-l1key="configuration" data-l2key="serial_number"></span>
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label"></label>
 									<div class="col-sm-8">
-										<img src="core/img/no_image.gif" data-original=".jpg" id="img_device" class="img-responsive" style="max-height : 250px;margin-top: 10px"/>
+										<img src="core/img/no_image.gif" data-original=".jpg" id="img_device" class="img-responsive" style="max-height : 250px;" onerror="this.src='plugins/surepetcare/plugin_info/surepetcare_icon.png'"/>
 									</div>
 								</div>
 							</fieldset>

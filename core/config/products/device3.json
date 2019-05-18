@@ -2,9 +2,9 @@
 		"name": "Chatière",
 		"configuration": {
 			"id": "",
-			"product_id": "6",
-            "parent_device_id": "",
-			"product_name": "Chatière à puce électronique Connect",
+			"product_id": "3",
+			"parent_device_id": "",
+			"product_name": "Grande chatière Connect"
 		},
 		"commands": [
 			{
@@ -24,6 +24,6 @@
 					"dashboard" : "badge",
 					"mobile" : "badge"
 				}
-			},
+			}
 		]
 }
