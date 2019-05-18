@@ -30,8 +30,23 @@ Et ne pas oublier de cliquer sur **Sauvegarder**.
 
 Création des équipement
 ===
+
 ![introduction01](../images/Objets.png)
-Il ne faut pas créer les équipements manuellement. Cliquez sur "Synchroniser" et le plugin retrouvera sur le site surepetcare.io vos hubs, vos objets connecté (chatières, ...) et vos animaux.
+
+Ne cliquez pas sur Ajouter car il ne faut pas créer les équipements manuellement. Cliquez sur "Synchronisation" et le plugin retrouvera sur le site surepetcare.io vos hubs, vos objets connecté (chatières, ...) et vos animaux.
+
+Les Objets
+===
+En cliquant sur un équipement, on accède aux détails de cet équipement :
+
+![introduction01](../images/Equipement.png)
+
+Idem pour un animal mais les informations sont différentes
+
+![introduction01](../images/Animal.png)
+
+On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où apparaîtra le widget de cet équipement ou de cet animal sur le dashboard si bien sûr on coche "Visible"
+
 
 Les commandes disponibles
 ===
