@@ -10,13 +10,13 @@
 			{
 				"name": "Etat",
 				"type": "info",
+                "subtype": "other",
 				"isVisible": 0,
 				"isHistorized": 0,
-				"logicalId": "",
+				"logicalId": "state::on",
 				"configuration" :{
 					"fieldname" : ""
 				},
-				"subtype": "other",
 				"display": {
 					"generic_type": "GENERIC_INFO"
 				},
@@ -24,6 +24,62 @@
 					"dashboard" : "badge",
 					"mobile" : "badge"
 				}
-			}
+			},
+            {
+                "name": "Activer couvre-feu",
+                "type": "action",
+                "subtype": "other",
+                "generic_type": "DONT",
+                "isVisible": 1,
+                "isHistorized": 0,
+                "value" : "Etat couvre-feu",
+                "logicalId": "curfew::1",
+				"template":{
+					"dashboard" : "lock",
+					"mobile" : "lock"
+				}
+            },
+            {
+                "name": "Désactiver couvre-feu",
+                "type": "action",
+                "subtype": "other",
+                "generic_type": "DONT",
+                "isVisible": 1,
+                "isHistorized": 0,
+                "value" : "Etat couvre-feu",
+                "logicalId": "curfew::0",
+				"template":{
+					"dashboard" : "lock",
+					"mobile" : "lock"
+				}
+            },
+			{
+				"name": "Etat couvre-feu",
+				"type": "info",
+				"subtype": "binary",
+				"isVisible": 0,
+				"isHistorized": 0,
+				"logicalId": "curfew::on",
+				"display": {
+					"generic_type": "GENERIC_INFO"
+				},
+				"template":{
+					"dashboard" : "lock",
+					"mobile" : "lock"
+				}
+			},
+            {
+                "name": "Mode verrouillage",
+                "type": "action",
+                "subtype": "select",
+                "configuration" :{
+                    "listValue" : "0|Aucun;1|Entrée;2|Sortie;3|Tout;4|Couvre-feu"
+                },
+                "generic_type": "DONT",
+                "isVisible": 1,
+                "isHistorized": 0,
+                "value" : "Etat verrouillage",
+                "logicalId": "locking::#select#"
+            }
 		]
 }

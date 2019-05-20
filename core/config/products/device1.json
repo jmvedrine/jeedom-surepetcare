@@ -1,29 +1,39 @@
 {
-		"name": "Hub",
-		"configuration": {
-			"id": "",
-			"product_id": "1",
-			"parent_device_id": "",
-			"product_name": "Hub"
-		},
-		"commands": [
-			{
-				"name": "Etat",
-				"type": "info",
-				"subtype": "other",
-				"isVisible": 0,
-				"isHistorized": 0,
-				"logicalId": "",
-				"configuration" :{
-					"fieldname" : ""
-				},
-				"display": {
-					"generic_type": "GENERIC_INFO"
-				},
-				"template":{
-					"dashboard" : "badge",
-					"mobile" : "badge"
-				}
-			}
-		]
+        "name": "Hub",
+        "configuration": {
+            "id": "",
+            "product_id": "1",
+            "parent_device_id": "",
+            "product_name": "Hub"
+        },
+        "commands": [
+            {
+                "name": "Etat led",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 0,
+                "isHistorized": 1,
+                "logicalId": "led_mode::1",
+                "display": {
+                    "generic_type": "GENERIC_INFO"
+                },
+                "template":{
+                    "dashboard" : "badge",
+                    "mobile" : "badge"
+                }
+            },
+            {
+                "name": "Mode led",
+                "type": "action",
+                "subtype": "select",
+                "configuration" :{
+                    "listValue" : "0|Eteint;1|Brillant;4|Atténué"
+                },
+                "generic_type": "DONT",
+                "isVisible": 1,
+                "isHistorized": 0,
+                "value" : "Etat led",
+                "logicalId": "led_mode::#select#"
+            }
+        ]
 }

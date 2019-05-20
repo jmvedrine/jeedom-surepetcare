@@ -19,22 +19,6 @@ $('#bt_syncEqLogic').on('click', function () {
   sync();
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=product_id]').on('change', function () {
-  if($(this).value() != '' && $(this).value() != null){
-    $('#img_device').attr("src", 'plugins/surepetcare/core/config/images/device'+$(this).value()+'.png');
-  } else {
-    $('#img_device').attr("src", 'plugins/surepetcare/plugin_info/surepetcare_icon.png');
-  }
-});
-
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=photo_location]').on('change', function () {
-  if($(this).value() != '' && $(this).value() != null){
-        $('#img_device').attr("src", $(this).value());
-  } else {
-    $('#img_device').attr("src", 'plugins/surepetcare/plugin_info/surepetcare_icon.png');
-  }
-});
-
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
 function printEqLogicHelper(label,name,_eqLogic){
@@ -57,12 +41,23 @@ function printEqLogic(_eqLogic) {
     if (_eqLogic.configuration.type=="device") {
         printEqLogicHelper("{{Modèle}}","product_name",_eqLogic);
         printEqLogicHelper("{{Numéro de série}}","serial_number",_eqLogic);
+        $('#img_device').attr("src", 'plugins/surepetcare/core/config/images/device'+_eqLogic.configuration.product_id+'.png');
+        if (_eqLogic.configuration.product_id!=1) {
+            $('#curfew_lock_time').show();
+            $('#curfew_unlock_time').show();
+        } else {
+            $('#curfew_lock_time').hide();
+            $('#curfew_unlock_time').hide();
+        }
     }
     if (_eqLogic.configuration.type=="pet") {
         printEqLogicHelper("{{Poids (kg)}}","weight",_eqLogic);
         printEqLogicHelper("{{Commentaire}}","comments",_eqLogic);
         printEqLogicHelper("{{Tag id}}","tag_id",_eqLogic);
         printEqLogicHelper("{{Race}}","breed_name",_eqLogic);
+        $('#img_device').attr("src", _eqLogic.configuration.photo_location);
+        $('#curfew_lock_time').hide();
+        $('#curfew_unlock_time').hide();
     }
 }
 

@@ -84,8 +84,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<div class="form-group">
 									<label class="col-sm-4 control-label">{{Nom}}</label>
 									<div class="col-sm-4">
-                                        <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="product_id" style="display : none;" />
-                                        <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="photo_location" style="display : none;" />
 										<input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none;" />
 										<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'objet}}"/>
 									</div>
@@ -128,6 +126,20 @@ $eqLogics = eqLogic::byType($plugin->getId());
 										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
 									</div>
 								</div>
+                                <div class="form-group" id="curfew_lock_time" >
+								    <label class="col-sm-2 control-label">{{Heure de début du couvre-feu (HHMM)}}
+								    </label>
+								    <div class="col-sm-5">
+									    <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lock_time" placeholder="{{Heure de début (HHMM)}}"/>
+								    </div>
+							    </div>
+                                <div class="form-group" id="curfew_unlock_time" >
+								    <label class="col-sm-2 control-label">{{Heure de fin du couvre-feu (HHMM)}}
+								    </label>
+								    <div class="col-sm-5">
+									    <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="unlock_time" placeholder="{{Heure de fin (HHMM)}}"/>
+								    </div>
+							    </div>
 							</fieldset>
 						</form>
 					</div>
@@ -135,11 +147,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						<form class="form-horizontal">
 							<fieldset>
 								<table id="table_infoseqlogic" class="table table-condensed" style="border-radius: 10px;">
-						<thead>
-						</thead>
-						<tbody>
-						</tbody>
-					</table>
+                                    <thead>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
 								<div class="form-group">
 									<label class="col-sm-2 control-label"></label>
 									<div class="col-sm-8">

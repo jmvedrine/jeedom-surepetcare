@@ -28,11 +28,25 @@ class surepetcare extends eqLogic {
 
     /*
      * Fonction exécutée automatiquement toutes les minutes par Jeedom
-      public static function cron() {
-
-      }
      */
+    public static function cron() {
+        foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
+            If ($eqLogic->getConfiguration('type') == 'pet') {
+                $eqLogic->getPetStatus();
+                $eqLogic->refreshWidget();
+            }
+        }
+    }
 
+
+    public static function cron5() {
+        foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
+            If ($eqLogic->getConfiguration('type') == 'device') {
+                $eqLogic->getDeviceStatus();
+                $eqLogic->refreshWidget();
+            }
+        }
+    }
 
     /*
      * Fonction exécutée automatiquement toutes les heures par Jeedom
@@ -64,7 +78,7 @@ class surepetcare extends eqLogic {
         if($method == 'POST' || $method == 'PUT') {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
             $requestHeaders[] = 'Content-Type: application/json';
-            $requestHeaders[] = 'Content-Length: ' . strlen($json);
+            $requestHeaders[] = 'Content-Length: ' . strlen($payload);
         }
 
         if(count($headers) > 0) {
@@ -81,6 +95,7 @@ class surepetcare extends eqLogic {
         if ($code =='200') {
             return json_decode($result, true);
         } else {
+            log::add('surepetcare','debug','request failed result='.$result);
             throw new \Exception(__('Erreur lors de la requete : ',__FILE__).$url.'('.$method.'), data : '.json_encode($payload).' erreur : ' . $code);
         }
     }
@@ -120,13 +135,18 @@ class surepetcare extends eqLogic {
     $result = is_json($result, $result);
     if(isset($result['data']['token'])) {
             $token = $result['data']['token'];
-            $userid = $result['data']['user']['id'];
+            cache::set('surepetcare::token',$token, 0);
             return $token;
     }
-        return false;
+    cache::set('surepetcare::token','', 0);
+    return false;
   }
 
-  public static function getHouseholds($token){
+  public static function getHouseholds(){
+    $token = cache::byKey('surepetcare::token')->getValue();
+    if ($token == '') {
+        $token = surepetcare::login();
+    }
     $url = 'https://app.api.surehub.io/api/household';
     $request_http = new com_http($url);
     $request_http->setNoSslCheck(true);
@@ -168,7 +188,7 @@ class surepetcare extends eqLogic {
     log::add('surepetcare', 'debug', 'Fonction sync appelee');
     $token = surepetcare::login();
     log::add('surepetcare','debug','dans login token='.$token);
-    surepetcare::getHouseholds($token);
+    surepetcare::getHouseholds();
     $households = config::byKey('households','surepetcare',array());
     foreach ($households as $household) {
         // Récupération des devices.
@@ -193,12 +213,11 @@ class surepetcare extends eqLogic {
         if(isset($result['data'])) {
             foreach($result['data'] as $key => $pet){
                 log::add('surepetcare','debug','Pet '.$key. '='.json_encode($pet));
-                log::add('surepetcare','debug','Photo:'.$pet['photo']['location']);
                 if(!isset($pet['id']) || !isset($pet['name'])){
                     log::add('surepetcare','debug','Missing pet id or name');
                     continue;
                 }
-                $result = surepetcare::request('https://app.api.surehub.io/api/household/'. $household['id'].'/pet?with[]=photo&with[]=breed&with[]=conditions&with[]=tag&with[]=food_type&with[]=species', null, 'GET', array('Authorization: Bearer ' . $token));
+                $result = surepetcare::request('https://app.api.surehub.io/api/pet/' . $pet['id'].'?with[]=photo&with[]=breed&with[]=conditions&with[]=tag&with[]=food_type&with[]=species', null, 'GET', array('Authorization: Bearer ' . $token));
                 $petfull = $result['data'];
                 log::add('surepetcare','debug','Petfull '.$key. '='.json_encode($petfull));
                 $found_eqLogics[] = self::findPet($petfull,$household);
@@ -209,43 +228,6 @@ class surepetcare extends eqLogic {
 
   }
 
-  public function applyData($_data) {
-    $updatedValue = false;
-    if(!isset($_data['uniqueid'])){
-      return $updatedValue;
-    }
-
-    $deviceIdList = explode('-', $_data['uniqueid'],2);
-    foreach ($this->getCmd('info') as $cmd) {
-      $logicalId = $cmd->getLogicalId();
-      if ($logicalId == '') {
-        continue;
-      }
-      $epClusterPath = explode('.', $logicalId);
-      if ($epClusterPath[0] != $deviceIdList[1]) {
-        continue;
-      }
-      $path = explode('::', $epClusterPath[1]);
-      $value = $_data;
-      foreach ($path as $key) {
-        if (!isset($value[$key])) {
-          continue (2);
-        }
-        $value = $value[$key];
-      }
-      if (!is_array($value)){
-        $this->checkAndUpdateCmd($cmd,$value);
-        $updatedValue = true;
-      }
-    }
-    if(isset($_data['config'])) {
-      $updatedValue = true;
-      if ( isset($_data['config']['battery'])){
-        $this->batteryStatus($_data['config']['battery']);
-      }
-    }
-    return $updatedValue;
-  }
   public static function findProduct($_device,$_household) {
     $create = false;
     $eqLogic = self::byLogicalId($_device['id'], 'surepetcare');
@@ -412,7 +394,83 @@ class surepetcare extends eqLogic {
     log::add('surepetcare', 'debug', 'devicesParameters return '.json_encode($return));
     return $return;
   }
+
+  public static function formatTime($_time) {
+    if (strlen($_time) == 4) {
+        return substr($_time, 0, 2) . ':' . substr($_time, 2, 2);
+    } elseif (strlen($_time) == 3) {
+        return '0' . substr($_time, 0, 1) . ':' . substr($_time, 1, 2);
+    } else {
+        return '00:00';
+    }
+  }
     /*     * *********************Méthodes d'instance************************* */
+    public function getDeviceStatus() {
+        log::add('surepetcare','debug','getDeviceStatus');
+        $token = cache::byKey('surepetcare::token')->getValue();
+        if ($token == '') {
+            $token = surepetcare::login();
+        }
+        // On récupère les infos sur l'équipement.
+    }
+    
+    public function getPetStatus() {
+        log::add('surepetcare','debug','getPetStatus');
+        $token = cache::byKey('surepetcare::token')->getValue();
+        if ($token == '') {
+            $token = surepetcare::login();
+        }
+        // On récupère la position de l'animal.
+    }
+
+  public function applyData($_data) {
+    log::add('surepetcare','debug','applyData '.json_encode($_data));
+    $updatedValue = false;
+    if(!isset($_data['uniqueid'])){
+      return $updatedValue;
+    }
+    if ($this->getConfiguration('type') == 'device') {
+        $path_file = __DIR__.'/../config/products/device'.$this->getConfiguration('product_id').'.php';
+        if(file_exists($path_file)){
+          require_once $path_file;
+          $function = 'surepetcare_device' . $this->getConfiguration('product_id').'_data';
+          if (function_exists($function)) {
+            $function($_data);
+          }
+        }
+    }
+    $deviceIdList = explode('-', $_data['uniqueid'],2);
+    foreach ($this->getCmd('info') as $cmd) {
+      $logicalId = $cmd->getLogicalId();
+      if ($logicalId == '') {
+        continue;
+      }
+      $epClusterPath = explode('.', $logicalId);
+      if ($epClusterPath[0] != $deviceIdList[1]) {
+        continue;
+      }
+      $path = explode('::', $epClusterPath[1]);
+      $value = $_data;
+      foreach ($path as $key) {
+        if (!isset($value[$key])) {
+          continue (2);
+        }
+        $value = $value[$key];
+      }
+      if (!is_array($value)){
+        $this->checkAndUpdateCmd($cmd,$value);
+        $updatedValue = true;
+      }
+    }
+    if(isset($_data['config'])) {
+      $updatedValue = true;
+      if ( isset($_data['config']['battery'])){
+        $this->batteryStatus($_data['config']['battery']);
+      }
+    }
+    return $updatedValue;
+  }
+
   public function postSave() {
     log::add('surepetcare', 'debug', 'debut de postSave');
     if ($this->getConfiguration('applyProductId') != $this->getConfiguration('product_id')) {
@@ -445,7 +503,7 @@ class surepetcare extends eqLogic {
     if (!is_array($device)) {
       return true;
     }
-    log::add('surepetcare', 'debug', 'applyModuleConfiguration import' . print_r($device));
+    log::add('surepetcare', 'debug', 'applyModuleConfiguration import' . print_r($device, true));
     $this->import($device);
   }
 
@@ -514,16 +572,27 @@ class surepetcareCmd extends cmd {
       return true;
       }
      */
+    public function datatype($_data){
+        $type_array = array('led_mode' => 'num',
+        );
+        if (isset($type_array[$_data])) {
+            return $type_array[$_data];
+        }
+        return 'string';
+    }
 
     public function execute($_options = array()) {
         if ($this->getType() != 'action') {
             return;
         }
+        $token = cache::byKey('surepetcare::token')->getValue();
+        if ($token == '') {
+            $token = surepetcare::login();
+        }
         $eqLogic = $this->getEqLogic();
         $type = $eqLogic->getConfiguration('type', '');
         $actionerId = $eqLogic->getLogicalId();
         $logicalId = $this->getLogicalId();
-        $actionDatas = explode('.',$logicalId);
         if ($type == 'device') {
             $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/control';
         }
@@ -531,6 +600,53 @@ class surepetcareCmd extends cmd {
             $url = 'https://app.api.surehub.io/api/pet/' . $actionerId . '/position';
         }
         log::add('surepetcare', 'debug', 'execute url='.$url);
+        $actionDatas = explode('.',$logicalId);
+        $parameters = array();
+        $datasList = explode(';',$actionDatas[1]);
+        $replace = array();
+        switch ($this->getSubType()) {
+            case 'slider':
+            $replace['#slider#'] = intval($_options['slider']);
+            break;
+            case 'color':
+            $replace['#color#'] = $_options['color'];
+            break;
+            case 'select':
+            $replace['#select#'] = $_options['select'];
+            break;
+            case 'message':
+            $replace['#title#'] = $_options['title'];
+            $replace['#message#'] = $_options['message'];
+            if ($_options['message'] == '' && $_options['title'] == '') {
+              throw new Exception(__('Le message et le sujet ne peuvent pas être vide', __FILE__));
+            }
+            break;
+        }
+        foreach ($datasList as $datas){
+            $keyValue = explode('::',$datas);
+            $type = self::datatype($keyValue[0]);
+            $value = str_replace(array_keys($replace),$replace,explode('::',$datas)[1]);
+            $parameters[$keyValue[0]] = $value;
+            if ($type == 'bool'){
+              $parameters[$keyValue[0]] = ($parameters[$keyValue[0]] == '0') ? false : true;
+            }else if ($type == 'num'){
+              $parameters[$keyValue[0]] = intval($parameters[$keyValue[0]]);
+            }
+            if($keyValue[0] =='curfew'){
+                if ($parameters[$keyValue[0]]) {
+                    $parameters[$keyValue[0]] = array(
+                        'enabled' => true,
+                        'lock_time' => $eqLogic::formatTime($eqLogic->getConfiguration('lock_time', '')),
+                        'unlock_time' => $eqLogic::formatTime($eqLogic->getConfiguration('unlock_time', ''))
+                    );
+                } else {
+                    $parameters[$keyValue[0]] = array('enabled' => false);
+                }
+            }
+        }
+        log::add('surepetcare','debug','Execute commande whith parameters : '.print_r($parameters, true));
+        log::add('surepetcare','debug','Execute commande whith parameters : '.json_encode($parameters));
+        $result = surepetcare::request($url, json_encode($parameters), 'PUT', array('Authorization: Bearer ' . $token));
     }
 
     /*     * **********************Getteur Setteur*************************** */
