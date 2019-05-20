@@ -52,6 +52,7 @@ Idem pour un animal mais les informations sont différentes
 ![introduction01](../images/Animal.png)
 
 On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où apparaîtra le widget de cet équipement ou de cet animal sur le dashboard si bien sûr on coche "Visible"
+Pour une chatière on peut définir les heures de début et de fin du couvre-feu au format HHMM, par exemple 0630 pour 6 heure 30 minutes.
 
 
 Les commandes disponibles
@@ -67,13 +68,16 @@ Commande pour un hub
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
-| **Brillance**                        | action  | numeric    | Fixe le mode d'allumage des leds ("oreilles") du hub (0 = aucun, 1 = vif, 4 = atténué).                                                                            |                                                                                         |
+| **Mode led**                         | action  | liste      | Fixe le mode d'allumage des leds ("oreilles") du hub (Eteint, Brillant, Atténué).                                                                                  |
+| **Etat led**                         | info    | numeric    | Indique le mode d'allumage des leds ("oreilles") du hub (0=Eteint, 1=Brillant, 4=Atténué).                                                                         |
 
 Commandes pour une chatière
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
-| **Verrouillage**                     | action  | numeric    | Fixe le mode de verrouillage de la chatière                                                                                                                        |
+| **Mode verrouillage**                | action  | Liste      | Fixe le mode de verrouillage de la chatière (Rien, Entrée, Sortie, Tout, Couvre-feu)                                                                               |
+| **Activer couvre-feu**               | action  | Défaut     | Active le couvre-feu avec les heures de début et de fin définies dans la configuration de  l'objet                                                                 |
+| **Désactiver couvre-feu**            | action  | Défaut     | Désactive le couvre-feu                                                                                                                                            |
 
 Commandes pour un animal
 
