@@ -185,6 +185,5 @@ $eqLogics = eqLogic::byType($plugin->getId());
 </div>
 </div>
 
-<?php include_file('core', 'surepetcare', 'class.js', 'surepetcare');?>
 <?php include_file('desktop', 'surepetcare', 'js', 'surepetcare');?>
 <?php include_file('core', 'plugin.template', 'js');?>
