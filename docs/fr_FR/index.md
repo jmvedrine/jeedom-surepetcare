@@ -51,7 +51,8 @@ Idem pour un animal mais les informations sont différentes
 
 ![introduction01](../images/Animal.png)
 
-On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où apparaîtra le widget de cet équipement ou de cet animal sur le dashboard si bien sûr on coche "Visible"
+On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où apparaîtra le widget de cet équipement ou de cet animal sur le dashboard si bien sûr on coche "Visible".
+
 Pour une chatière on peut définir les heures de début et de fin du couvre-feu au format HHMM, par exemple 0630 pour 6 heure 30 minutes.
 
 
@@ -87,3 +88,9 @@ Commandes pour un animal
 
 FAQ
 ===
+
+Pourquoi certaines commandes sont-elles très lentes ?
+
+Pour certaines commandes (Par exemple les commandes action du couvre-feu ou du verouillage), le serveur surepetcare.io doit communiquer avec la chatière via Internet et le hub et ensuite attendre que celle-ci lui réponde pour renvoyer une réponse
+indiquant si la modification a bien été prise en compte ou non.
+Cela demande plusieurs secondes. Tenz compte de ce temps de réponse dans vos scénarios qui comportent ces commandes.
