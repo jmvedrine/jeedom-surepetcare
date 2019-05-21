@@ -21,6 +21,34 @@
                 }
             },
             {
+                "name": "Réception équipement",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "unite": "dBm",
+                "logicalId": "signal::device_rssi",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
+                "name": "Réception hub",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "unite": "dBm",
+                "logicalId": "signal::hub_rssi",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
                 "name": "Activer couvre-feu",
                 "type": "action",
                 "subtype": "other",

@@ -29,7 +29,7 @@ class surepetcare extends eqLogic {
     /*
      * Fonction exécutée automatiquement toutes les minutes par Jeedom
      */
-    public static function cron5() {
+    public static function cron() {
         foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
             If ($eqLogic->getConfiguration('type') == 'pet') {
                 $eqLogic->getPetStatus();
@@ -109,7 +109,6 @@ class surepetcare extends eqLogic {
         $device_id .= rand(0,9);
     }
 
-    log::add('surepetcare','debug', 'device id='.$device_id);
     $data = array(
             'email_address' => $mailadress,
             'password' => $password,
@@ -185,9 +184,7 @@ class surepetcare extends eqLogic {
     config::save('households',$households_config,'surepetcare');
   }
   public static function sync(){
-    log::add('surepetcare', 'debug', 'Fonction sync appelee');
     $token = surepetcare::login();
-    log::add('surepetcare','debug','dans login token='.$token);
     surepetcare::getHouseholds();
     $households = config::byKey('households','surepetcare',array());
     foreach ($households as $household) {
@@ -445,21 +442,9 @@ class surepetcare extends eqLogic {
       log::add('surepetcare', 'debug', 'aplyData wrong type');
       return $updatedValue;
     }
-    // On retraite les datas si nécessaire.
-    /* $path_file = __DIR__.'/../config/products/device'.$this->getConfiguration('product_id').'.php';
-    if(file_exists($path_file)){
-      log::add('surepetcare', 'debug', 'applyData fichier de config trouvé');
-      require_once $path_file;
-      $function = 'surepetcare_device' . $this->getConfiguration('product_id').'_data';
-      if (function_exists($function)) {
-        log::add('surepetcare', 'debug', 'applyData on applique la fonction ');
-        $function($_data);
-      }
-    } */
 
     foreach ($this->getCmd('info') as $cmd) {
       $logicalId = $cmd->getLogicalId();
-      log::add('surepetcare', 'debug', 'applyData logicalid '. $logicalId);
       if ($logicalId == '') {
         continue;
       }
@@ -469,21 +454,17 @@ class surepetcare extends eqLogic {
         continue;
       }
       $path = explode('::', $epClusterPath[1]);
-      log::add('surepetcare', 'debug', 'applyData path '. print_r($path, true));
       $value = $_data;
       foreach ($path as $key) {
-        log::add('surepetcare', 'debug', 'applyData key='. $key);
         if (!isset($value[$key])) {
             log::add('surepetcare', 'debug', 'applyData key non trouvée '. $key);
             continue (2);
         }
         $value = $value[$key];
-        // log::add('surepetcare', 'debug', 'applyData new value '. $value. ' for key '. $key);
       }
       if (!is_array($value)){
-       log::add('surepetcare', 'debug', 'applyData new value2 '. $value. ' for key '. $key);
-       log::add('surepetcare', 'debug', 'applyData update cmd ' . $cmd->getName());
-       // $this->checkAndUpdateCmd($cmd,$value);
+        log::add('surepetcare', 'debug', 'applyData update cmd ' . $cmd->getName() . ' value=' . $value);
+        $this->checkAndUpdateCmd($cmd,$value);
         $updatedValue = true;
       } else {
           log::add('surepetcare', 'debug', 'applyData new value is an array '. print_r($value, true) . ' for key '. $key);
