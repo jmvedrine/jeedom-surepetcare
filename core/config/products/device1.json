@@ -8,7 +8,7 @@
         },
         "commands": [
             {
-                "name": "Online",
+                "name": "En ligne",
                 "type": "info",
                 "subtype": "binary",
                 "isVisible": 0,

@@ -69,22 +69,27 @@ Commande pour un hub
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
+| **En ligne**                         | info    | binaire    | Indique si le hub est en ligne.                                                                                                                                    |
 | **Mode led**                         | action  | liste      | Fixe le mode d'allumage des leds ("oreilles") du hub (Eteint, Brillant, Atténué).                                                                                  |
-| **Etat led**                         | info    | numeric    | Indique le mode d'allumage des leds ("oreilles") du hub (0=Eteint, 1=Brillant, 4=Atténué).                                                                         |
+| **Etat led**                         | info    | numerique  | Indique le mode d'allumage des leds ("oreilles") du hub (0=Eteint, 1=Brillant, 4=Atténué).                                                                         |
 
 Commandes pour une chatière
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
-| **Mode verrouillage**                | action  | Liste      | Fixe le mode de verrouillage de la chatière (Rien, Entrée, Sortie, Tout, Couvre-feu)                                                                               |
+| **En ligne**                         | info    | binaire    | Indique si la chatière est en ligne.                                                                                                                               |
+| **Mode verrouillage**                | action  | liste      | Fixe le mode de verrouillage de la chatière (Rien, Entrée, Sortie, Tout, Couvre-feu)                                                                               |
+| **Etat verrouillage**                | info    | numerique  | indique le mode de verrouillage de la chatière (0 = Rien, 1 = Entrée, 2 = Sortie, 3 = Tout, 4 = Couvre-feu)                                                        |
 | **Activer couvre-feu**               | action  | Défaut     | Active le couvre-feu avec les heures de début et de fin définies dans la configuration de  l'objet                                                                 |
 | **Désactiver couvre-feu**            | action  | Défaut     | Désactive le couvre-feu                                                                                                                                            |
+| **Etat couvre-feu**                  | info    | binaire   | indique si le couvre-feu est activé                                                                                                                                 |
 
 Commandes pour un animal
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
-| **Localisation**                     | info    | numeric    | Indique si l'animal est à l'extérieur ou à l'intérieur (1 = intérieur, 2 = extérieur)                                                                              |
+| **Position**                         | info    | numerique  | Indique si l'animal est à l'extérieur ou à l'intérieur (1 = intérieur, 2 = extérieur)                                                                              |
+| **Fixer la position**                | action  | liste      | Fixe la position de l'animal (Intérieur, Extérieur)                                                                                                                |
 
 FAQ
 ===

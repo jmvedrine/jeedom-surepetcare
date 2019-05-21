@@ -8,6 +8,19 @@
 		},
 		"commands": [
             {
+                "name": "En ligne",
+                "type": "info",
+                "subtype": "binary",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "logicalId": "online",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
                 "name": "Activer couvre-feu",
                 "type": "action",
                 "subtype": "other",
