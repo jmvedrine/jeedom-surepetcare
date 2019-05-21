@@ -29,7 +29,7 @@ class surepetcare extends eqLogic {
     /*
      * Fonction exécutée automatiquement toutes les minutes par Jeedom
      */
-    public static function cron() {
+    public static function cron5() {
         foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
             If ($eqLogic->getConfiguration('type') == 'pet') {
                 $eqLogic->getPetStatus();
@@ -39,7 +39,7 @@ class surepetcare extends eqLogic {
     }
 
 
-    public static function cron5() {
+    public static function cron10() {
         foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
             If ($eqLogic->getConfiguration('type') == 'device') {
                 $eqLogic->getDeviceStatus();
@@ -230,7 +230,7 @@ class surepetcare extends eqLogic {
 
   public static function findProduct($_device,$_household) {
     $create = false;
-    $eqLogic = self::byLogicalId($_device['id'], 'surepetcare');
+    $eqLogic = self::byLogicalId('dev.' . $_device['id'], 'surepetcare');
     if(!is_object($eqLogic)){
        log::add('surepetcare','debug','new device '.$_device['id']);
       event::add('jeedom::alert', array(
@@ -244,7 +244,7 @@ class surepetcare extends eqLogic {
     }
     $eqLogic->setEqType_name('surepetcare');
     $eqLogic->setIsEnable(1);
-    $eqLogic->setLogicalId($_device['id']);
+    $eqLogic->setLogicalId('dev.' . $_device['id']);
     $eqLogic->setConfiguration('household_id', $_household['id']);
     $eqLogic->setConfiguration('household_name', $_household['name']);
     $eqLogic->setConfiguration('type', 'device');
@@ -279,19 +279,21 @@ class surepetcare extends eqLogic {
       $link_cmds = array();
       foreach ($products['commands'] as $product) {
          log::add('surepetcare','debug','Commande : '.json_encode($product));
-        $cmd = $eqLogic->getCmd(null,$deviceIdList[1].'.'.$product['logicalId']);
+        $cmd = $eqLogic->getCmd(null,'dev.'.$product['logicalId']);
         if(is_object($cmd)){
           continue;
         }
         $cmd = new surepetcareCmd();
         utils::a2o($cmd,$product);
-        $cmd->setLogicalId($deviceIdList[1].'.'.$product['logicalId']);
+        $cmd->setLogicalId('dev.'.$product['logicalId']);
         $cmd->setEqLogic_id($eqLogic->getId());
         $cmd->save();
         if (isset($product['value'])) {
           $link_cmds[$cmd->getId()] = $product['value'];
         }
       }
+    } else {
+        log::add('surepetcare','debug','Pas de fichier de config pour le produit id ' . $_device['product_id']);
     }
     if (count($link_cmds) > 0) {
       foreach ($eqLogic->getCmd() as $eqLogic_cmd) {
@@ -307,15 +309,12 @@ class surepetcare extends eqLogic {
       }
     }
     $updatedValue = $eqLogic->applyData($_device);
-    if($create){
-      event::add('surepetcare::includeDevice', $eqLogic->getId());
-    }
     return $eqLogic;
   }
 
   public static function findPet($_pet,$_household) {
     $create = false;
-    $eqLogic = self::byLogicalId($_pet['id'], 'surepetcare');
+    $eqLogic = self::byLogicalId('pet.' . $_pet['id'], 'surepetcare');
     if(!is_object($eqLogic)){
        log::add('surepetcare','debug','new pet '.$_pet['id']);
       event::add('jeedom::alert', array(
@@ -329,7 +328,7 @@ class surepetcare extends eqLogic {
     }
     $eqLogic->setEqType_name('surepetcare');
     $eqLogic->setIsEnable(1);
-    $eqLogic->setLogicalId($_pet['id']);
+    $eqLogic->setLogicalId('pet.' . $_pet['id']);
     $eqLogic->setConfiguration('household_id', $_household['id']);
     $eqLogic->setConfiguration('household_name', $_household['name']);
     $eqLogic->setConfiguration('type', 'pet');
@@ -412,6 +411,13 @@ class surepetcare extends eqLogic {
             $token = surepetcare::login();
         }
         // On récupère les infos sur l'équipement.
+        $logicalId = explode('.',$this->getLogicalId());
+        $deviceId = $logicalId[1];
+        $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/status';
+        $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token)); 
+        if (isset($result['data'])) {
+            $this->applyData($result['data']);
+        }
     }
     
     public function getPetStatus() {
@@ -420,62 +426,115 @@ class surepetcare extends eqLogic {
         if ($token == '') {
             $token = surepetcare::login();
         }
-        // On récupère la position de l'animal.
+        $logicalId = explode('.',$this->getLogicalId());
+        $petId = $logicalId[1];
+        $url = 'https://app.api.surehub.io/api/pet/' . $petId . '/position';
+        $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token)); 
+        log::add('surepetcare','debug','getPetStatus result: '. print_r($result, true));
+        if (isset($result['data']['where'])) {
+            $position = $result['data']['where'];
+            log::add('surepetcare','debug',"Pet $petId position : ". $position);
+            $this->checkAndUpdateCmd('position', $position);
+        }
     }
 
   public function applyData($_data) {
-    log::add('surepetcare','debug','applyData '.json_encode($_data));
+    log::add('surepetcare','debug','applyData '.print_r($_data, true));
     $updatedValue = false;
-    if(!isset($_data['uniqueid'])){
+    if($this->getConfiguration('type') != 'device') {
+      log::add('surepetcare', 'debug', 'aplyData wrong type');
       return $updatedValue;
     }
-    if ($this->getConfiguration('type') == 'device') {
-        $path_file = __DIR__.'/../config/products/device'.$this->getConfiguration('product_id').'.php';
-        if(file_exists($path_file)){
-          require_once $path_file;
-          $function = 'surepetcare_device' . $this->getConfiguration('product_id').'_data';
-          if (function_exists($function)) {
-            $function($_data);
-          }
-        }
-    }
-    $deviceIdList = explode('-', $_data['uniqueid'],2);
+    // On retraite les datas si nécessaire.
+    /* $path_file = __DIR__.'/../config/products/device'.$this->getConfiguration('product_id').'.php';
+    if(file_exists($path_file)){
+      log::add('surepetcare', 'debug', 'applyData fichier de config trouvé');
+      require_once $path_file;
+      $function = 'surepetcare_device' . $this->getConfiguration('product_id').'_data';
+      if (function_exists($function)) {
+        log::add('surepetcare', 'debug', 'applyData on applique la fonction ');
+        $function($_data);
+      }
+    } */
+
     foreach ($this->getCmd('info') as $cmd) {
       $logicalId = $cmd->getLogicalId();
+      log::add('surepetcare', 'debug', 'applyData logicalid '. $logicalId);
       if ($logicalId == '') {
         continue;
       }
       $epClusterPath = explode('.', $logicalId);
-      if ($epClusterPath[0] != $deviceIdList[1]) {
+      if ($epClusterPath[0] != 'dev') {
+        log::add('surepetcare', 'debug', 'applyData wrong clusterpath');
         continue;
       }
       $path = explode('::', $epClusterPath[1]);
+      log::add('surepetcare', 'debug', 'applyData path '. print_r($path, true));
       $value = $_data;
       foreach ($path as $key) {
+        log::add('surepetcare', 'debug', 'applyData key='. $key);
         if (!isset($value[$key])) {
-          continue (2);
+            log::add('surepetcare', 'debug', 'applyData key non trouvée '. $key);
+            continue (2);
         }
         $value = $value[$key];
+        // log::add('surepetcare', 'debug', 'applyData new value '. $value. ' for key '. $key);
       }
       if (!is_array($value)){
-        $this->checkAndUpdateCmd($cmd,$value);
+       log::add('surepetcare', 'debug', 'applyData new value2 '. $value. ' for key '. $key);
+       log::add('surepetcare', 'debug', 'applyData update cmd ' . $cmd->getName());
+       // $this->checkAndUpdateCmd($cmd,$value);
         $updatedValue = true;
+      } else {
+          log::add('surepetcare', 'debug', 'applyData new value is an array '. print_r($value, true) . ' for key '. $key);
       }
     }
-    if(isset($_data['config'])) {
-      $updatedValue = true;
-      if ( isset($_data['config']['battery'])){
-        $this->batteryStatus($_data['config']['battery']);
-      }
-    }
+    // TODO batterie.
     return $updatedValue;
   }
 
   public function postSave() {
     log::add('surepetcare', 'debug', 'debut de postSave');
-    if ($this->getConfiguration('applyProductId') != $this->getConfiguration('product_id')) {
-      log::add('surepetcare', 'debug', 'postSave envoi vers applyModuleConfiguration');
-      $this->applyModuleConfiguration();
+    If ($this->getConfiguration('type') == 'device') {
+        if ($this->getConfiguration('applyProductId') != $this->getConfiguration('product_id')) {
+          log::add('surepetcare', 'debug', 'postSave envoi vers applyModuleConfiguration');
+          $this->applyModuleConfiguration();
+        }
+    }
+    If ($this->getConfiguration('type') == 'pet') {
+        if ($this->getIsEnable() == 1) {
+            // Position (info).
+            $position = $this->getCmd(null, 'position');
+            if (!is_object($position)) {
+                $position = new surepetcareCmd();
+                $position->setIsVisible(0);
+                $position->setName(__('Position', __FILE__));
+                $position->setConfiguration('historizeMode', 'none');
+                $position->setIsHistorized(1);
+            }
+            $position->setDisplay('generic_type', 'DONT');
+            $position->setEqLogic_id($this->getId());
+            $position->setType('info');
+            $position->setSubType('numeric');
+            $position->setLogicalId('position');
+            $position->save();
+
+            // Fixer la position (action)
+            $setposition = $this->getCmd(null, 'setposition');
+            if (!is_object($setposition)) {
+                $setposition = new surepetcareCmd();
+                $setposition->setName(__('Fixer la position', __FILE__));
+                $setposition->setIsVisible(1);
+            }
+            $setposition->setDisplay('generic_type', 'DONT');
+            $setposition->setEqLogic_id($this->getId());
+            $setposition->setType('action');
+            $setposition->setSubType('select');
+            $setposition->setConfiguration('listValue','1|Intérieur;0|Extérieur');
+            $setposition->setLogicalId('setposition');
+            $setposition->setValue($position->getId());
+            $setposition->save();
+        }
     }
   }
 
@@ -591,7 +650,8 @@ class surepetcareCmd extends cmd {
         }
         $eqLogic = $this->getEqLogic();
         $type = $eqLogic->getConfiguration('type', '');
-        $actionerId = $eqLogic->getLogicalId();
+        $actionerDatas = explode('.',$eqLogic->getLogicalId());
+        $actionerId = actionerDatas[1];
         $logicalId = $this->getLogicalId();
         if ($type == 'device') {
             $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/control';

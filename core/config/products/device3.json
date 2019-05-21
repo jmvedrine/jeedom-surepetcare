@@ -7,24 +7,6 @@
 			"product_name": "Grande chatière Connect"
 		},
 		"commands": [
-			{
-				"name": "Etat",
-				"type": "info",
-                "subtype": "other",
-				"isVisible": 0,
-				"isHistorized": 0,
-				"logicalId": "state::on",
-				"configuration" :{
-					"fieldname" : ""
-				},
-				"display": {
-					"generic_type": "GENERIC_INFO"
-				},
-				"template":{
-					"dashboard" : "badge",
-					"mobile" : "badge"
-				}
-			},
             {
                 "name": "Activer couvre-feu",
                 "type": "action",

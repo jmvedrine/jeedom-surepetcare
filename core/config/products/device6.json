@@ -7,24 +7,6 @@
 			"product_name": "Chatière à puce électronique Connect"
 		},
 		"commands": [
-			{
-				"name": "Etat",
-				"type": "info",
-                "subtype": "other",
-				"isVisible": 0,
-				"isHistorized": 0,
-				"logicalId": "state::on",
-				"configuration" :{
-					"fieldname" : ""
-				},
-				"display": {
-					"generic_type": "GENERIC_INFO"
-				},
-				"template":{
-					"dashboard" : "badge",
-					"mobile" : "badge"
-				}
-			},
             {
                 "name": "Activer couvre-feu",
                 "type": "action",
@@ -59,10 +41,8 @@
 				"subtype": "binary",
 				"isVisible": 0,
 				"isHistorized": 0,
-				"logicalId": "curfew::on",
-				"display": {
-					"generic_type": "GENERIC_INFO"
-				},
+				"logicalId": "curfew",
+				"generic_type": "GENERIC_INFO",
 				"template":{
 					"dashboard" : "lock",
 					"mobile" : "lock"
@@ -80,6 +60,15 @@
                 "isHistorized": 0,
                 "value" : "Etat verrouillage",
                 "logicalId": "locking::#select#"
-            }
+            },
+            {
+				"name": "Etat verrouillage",
+				"type": "info",
+				"subtype": "numeric",
+				"isVisible": 0,
+				"isHistorized": 0,
+				"logicalId": "locking::mode",
+				"generic_type": "GENERIC_INFO"
+			}
 		]
 }

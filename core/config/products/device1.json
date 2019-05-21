@@ -8,12 +8,27 @@
         },
         "commands": [
             {
+                "name": "Online",
+                "type": "info",
+                "subtype": "binary",
+                "isVisible": 0,
+                "isHistorized": 1,
+                "logicalId": "online",
+                "display": {
+                    "generic_type": "GENERIC_INFO"
+                },
+                "template":{
+                    "dashboard" : "badge",
+                    "mobile" : "badge"
+                }
+            },
+            {
                 "name": "Etat led",
                 "type": "info",
                 "subtype": "numeric",
                 "isVisible": 0,
                 "isHistorized": 1,
-                "logicalId": "led_mode::1",
+                "logicalId": "led_mode",
                 "display": {
                     "generic_type": "GENERIC_INFO"
                 },
