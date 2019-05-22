@@ -57,6 +57,8 @@ Pour une chatière on peut définir les heures de début et de fin du couvre-feu
 
 Attention, une commande "Activer couvre-feu" provoque une erreur si on n'a pas définit les deures de début et de fin dans la configuration de l'équipement.
 
+Il ne faut pas changer le champ "Identifiant" sinon aucune ccommande pour cet objet ne marche plus et lors de la prochaine synchronisation l'objet sera considéré comme nouveau et réimporté aboutissant à un  doublon.
+
 
 Les commandes disponibles
 ===
@@ -64,8 +66,7 @@ Les commandes disponibles
 En cliquant sur l'onglet commande vous accédez aux commandes disponibles.
 
 Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
-
-Changer certains noms de commandes peut provoquer des dysfonctionnements.
+.
 
 Commande pour un hub
 
@@ -80,7 +81,7 @@ Commandes pour une chatière
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
 | **En ligne**                         | info    | binaire    | Indique si la chatière est en ligne.                                                                                                                               |
-| **Mode verrouillage**                | action  | liste      | Fixe le mode de verrouillage de la chatière (Rien, Entrée, Sortie, Tout, Couvre-feu)                                                                               |
+| **Mode verrouillage**                | action  | liste      | Fixe le mode de verrouillage de la chatière (Rien, Entrée, Sortie, Tout)                                                                               |
 | **Etat verrouillage**                | info    | numerique  | indique le mode de verrouillage de la chatière (0 = Rien, 1 = Entrée, 2 = Sortie, 3 = Tout, 4 = Couvre-feu)                                                        |
 | **Activer couvre-feu**               | action  | Défaut     | Active le couvre-feu avec les heures de début et de fin définies dans la configuration de  l'objet                                                                 |
 | **Désactiver couvre-feu**            | action  | Défaut     | Désactive le couvre-feu                                                                                                                                            |
@@ -95,6 +96,8 @@ Commandes pour un animal
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
 | **Position**                         | info    | numerique  | Indique si l'animal est à l'extérieur ou à l'intérieur (1 = intérieur, 2 = extérieur)                                                                              |
 | **Fixer la position**                | action  | liste      | Fixe la position de l'animal (Intérieur, Extérieur)                                                                                                                |
+
+Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
 
 FAQ
 ===

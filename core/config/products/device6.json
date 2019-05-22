@@ -109,7 +109,7 @@
                 "type": "action",
                 "subtype": "select",
                 "configuration" :{
-                    "listValue" : "0|Aucun;1|Entrée;2|Sortie;3|Tout;4|Couvre-feu"
+                    "listValue" : "0|Aucun;1|Entrée;2|Sortie;3|Entrée & Sortie"
                 },
                 "generic_type": "DONT",
                 "isVisible": 1,
