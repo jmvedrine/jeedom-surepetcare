@@ -4,7 +4,8 @@
 			"id": "",
 			"product_id": "6",
             "parent_device_id": "",
-			"product_name": "Chatière à puce électronique Connect"
+			"product_name": "Chatière à puce électronique Connect",
+            "battery_type": "4x1.5V AA"
 		},
 		"commands": [
             {
@@ -49,6 +50,20 @@
                 }
             },
             {
+                "name": "Batterie",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "unite": "V",
+                "logicalId": "battery",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
                 "name": "Activer couvre-feu",
                 "type": "action",
                 "subtype": "other",
@@ -82,7 +97,7 @@
 				"subtype": "binary",
 				"isVisible": 0,
 				"isHistorized": 0,
-				"logicalId": "curfew",
+				"logicalId": "curfew::enabled",
 				"generic_type": "GENERIC_INFO",
 				"template":{
 					"dashboard" : "lock",

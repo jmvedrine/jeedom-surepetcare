@@ -22,9 +22,9 @@ Configuration du plugin
 
 Il faut entrer :
 
--   **Adresse mail** : L'adresse mail que vous avez donnée lors de la création du compte sur le site surepetcare.io ou dans l'app IOS ou Android
+-   **Adresse mail** : L'adresse mail que vous avez donnée lors de la création du compte sur le site surepetcare.io.
 
--   **Mot de passe** : Le mot de passe que vous avez choisi lors de la création du compte sur le ssite surepetcare.io.
+-   **Mot de passe** : Le mot de passe que vous avez choisi lors de la création du compte sur le site surepetcare.io.
 
 Et ne pas oublier de cliquer sur **Sauvegarder**.
 
@@ -55,6 +55,8 @@ On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où appar
 
 Pour une chatière on peut définir les heures de début et de fin du couvre-feu au format HHMM, par exemple 0630 pour 6 heure 30 minutes.
 
+Attention, une commande "Activer couvre-feu" provoque une erreur si on n'a pas définit les deures de début et de fin dans la configuration de l'équipement.
+
 
 Les commandes disponibles
 ===
@@ -82,7 +84,10 @@ Commandes pour une chatière
 | **Etat verrouillage**                | info    | numerique  | indique le mode de verrouillage de la chatière (0 = Rien, 1 = Entrée, 2 = Sortie, 3 = Tout, 4 = Couvre-feu)                                                        |
 | **Activer couvre-feu**               | action  | Défaut     | Active le couvre-feu avec les heures de début et de fin définies dans la configuration de  l'objet                                                                 |
 | **Désactiver couvre-feu**            | action  | Défaut     | Désactive le couvre-feu                                                                                                                                            |
-| **Etat couvre-feu**                  | info    | binaire   | indique si le couvre-feu est activé                                                                                                                                 |
+| **Etat couvre-feu**                  | info    | binaire    | indique si le couvre-feu est activé                                                                                                                                |
+| **Réception équipement**             | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) de la chatière en dBm                                                |
+| **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                        |
+| **Batterie**                         | info    | numérique  | Indique le voltage total des 4 piles (unité : V)                                                                                                                   |
 
 Commandes pour un animal
 

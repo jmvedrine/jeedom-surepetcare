@@ -30,18 +30,15 @@ class surepetcare extends eqLogic {
      * Fonction exécutée automatiquement toutes les minutes par Jeedom
      */
     public static function cron() {
+        log::add('surepetcare', 'debug', 'cron');
         foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
             If ($eqLogic->getConfiguration('type') == 'pet') {
+                log::add('surepetcare', 'debug', 'cron envoi vers getPetStatus');
                 $eqLogic->getPetStatus();
                 $eqLogic->refreshWidget();
             }
-        }
-    }
-
-
-    public static function cron10() {
-        foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
             If ($eqLogic->getConfiguration('type') == 'device') {
+                log::add('surepetcare', 'debug', 'cron envoi vers getDeviceStatus');
                 $eqLogic->getDeviceStatus();
                 $eqLogic->refreshWidget();
             }
@@ -229,7 +226,7 @@ class surepetcare extends eqLogic {
     $create = false;
     $eqLogic = self::byLogicalId('dev.' . $_device['id'], 'surepetcare');
     if(!is_object($eqLogic)){
-       log::add('surepetcare','debug','new device '.$_device['id']);
+       log::add('surepetcare','info','Nouvel équipement : '.$_device['name']);
       event::add('jeedom::alert', array(
         'level' => 'warning',
         'page' => 'surepetcare',
@@ -272,6 +269,9 @@ class surepetcare extends eqLogic {
       $products = json_decode(file_get_contents(__DIR__.'/../config/products/device'.$_device['product_id'].'.json'),true);
       log::add('surepetcare','debug','Products : '.file_get_contents(__DIR__.'/../config/products/device'.$_device['product_id'].'.json'));
       $eqLogic->setConfiguration('product_name', $products['configuration']['product_name']);
+      if (isset($products['configuration']['battery_type'])) {
+        $eqLogic->setConfiguration('battery_type', $products['configuration']['battery_type']);
+      }
       $eqLogic->save();
       $link_cmds = array();
       foreach ($products['commands'] as $product) {
@@ -290,7 +290,7 @@ class surepetcare extends eqLogic {
         }
       }
     } else {
-        log::add('surepetcare','debug','Pas de fichier de config pour le produit id ' . $_device['product_id']);
+        log::add('surepetcare','debug','No config file for product id ' . $_device['product_id']);
     }
     if (count($link_cmds) > 0) {
       foreach ($eqLogic->getCmd() as $eqLogic_cmd) {
@@ -313,7 +313,7 @@ class surepetcare extends eqLogic {
     $create = false;
     $eqLogic = self::byLogicalId('pet.' . $_pet['id'], 'surepetcare');
     if(!is_object($eqLogic)){
-       log::add('surepetcare','debug','new pet '.$_pet['id']);
+       log::add('surepetcare','info','Nouvel animal '.$_pet['name']);
       event::add('jeedom::alert', array(
         'level' => 'warning',
         'page' => 'surepetcare',
@@ -411,8 +411,30 @@ class surepetcare extends eqLogic {
         $logicalId = explode('.',$this->getLogicalId());
         $deviceId = $logicalId[1];
         $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/status';
-        $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token)); 
+        log::add('surepetcare','debug','getDeviceStatus url' . $url);
+        $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
+
         if (isset($result['data'])) {
+            if (isset($result['data']['battery'])) {
+                log::add('surepetcare','debug','batterie : '. $result['data']['battery']);
+                $battery_max = 6.0;
+                $battery_min = 4.2;
+                $battery = round(($result['data']['battery'] - $battery_min) / ($battery_max - $battery_min) * 100, 0);
+                if ($battery < 0) {
+                    $battery = 0;
+                }
+                if ($battery > 100) {
+                    $battery = 100;
+                }
+                log::add('surepetcare','debug','% batterie : '. $battery);
+                $this->batteryStatus($battery);
+            }
+            $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/control';
+            $result2 = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
+            if (isset($result2['data']['curfew'])) {
+                log::add('surepetcare','debug','curfew: '. print_r($result2['data']['curfew'], true));
+                $result['data']['curfew'] = $result2['data']['curfew'];
+            }
             $this->applyData($result['data']);
         }
     }
@@ -427,10 +449,9 @@ class surepetcare extends eqLogic {
         $petId = $logicalId[1];
         $url = 'https://app.api.surehub.io/api/pet/' . $petId . '/position';
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token)); 
-        log::add('surepetcare','debug','getPetStatus result: '. print_r($result, true));
         if (isset($result['data']['where'])) {
             $position = $result['data']['where'];
-            log::add('surepetcare','debug',"Pet $petId position : ". $position);
+            log::add('surepetcare','info',"Mise à jour position animal $petId : ". $position);
             $this->checkAndUpdateCmd('position', $position);
         }
     }
@@ -463,7 +484,7 @@ class surepetcare extends eqLogic {
         $value = $value[$key];
       }
       if (!is_array($value)){
-        log::add('surepetcare', 'debug', 'applyData update cmd ' . $cmd->getName() . ' value=' . $value);
+        log::add('surepetcare', 'info', 'Mise à jour commande ' . $cmd->getName() . ' nouvelle valeur ' . $value);
         $this->checkAndUpdateCmd($cmd,$value);
         $updatedValue = true;
       } else {
@@ -632,7 +653,8 @@ class surepetcareCmd extends cmd {
         $eqLogic = $this->getEqLogic();
         $type = $eqLogic->getConfiguration('type', '');
         $actionerDatas = explode('.',$eqLogic->getLogicalId());
-        $actionerId = actionerDatas[1];
+        log::add('surepetcare', 'debug', 'actionerDatas='.print_r($actionerDatas, true));
+        $actionerId = $actionerDatas[1];
         $logicalId = $this->getLogicalId();
         if ($type == 'device') {
             $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/control';
@@ -674,18 +696,25 @@ class surepetcareCmd extends cmd {
               $parameters[$keyValue[0]] = intval($parameters[$keyValue[0]]);
             }
             if($keyValue[0] =='curfew'){
+
                 if ($parameters[$keyValue[0]]) {
-                    $parameters[$keyValue[0]] = array(
-                        'enabled' => true,
-                        'lock_time' => $eqLogic::formatTime($eqLogic->getConfiguration('lock_time', '')),
-                        'unlock_time' => $eqLogic::formatTime($eqLogic->getConfiguration('unlock_time', ''))
-                    );
+                    $locktime = $eqLogic->getConfiguration('lock_time', '');
+                    $unlocktime = $eqLogic->getConfiguration('unlock_time', '');
+                    if ($locktime != '' && $unlocktime != '') {
+                        $parameters[$keyValue[0]] = array(
+                            'enabled' => true,
+                            'lock_time' => $eqLogic::formatTime($locktime),
+                            'unlock_time' => $eqLogic::formatTime($unlocktime)
+                        );
+                    } else {
+                        log::add('surepetcare','error','Il faut remplir les heures de début et de fin de couvre-feu dans la configutation');
+                        throw new Exception(__('Heures de couvre-feu incorrectes', __FILE__));
+                    }
                 } else {
                     $parameters[$keyValue[0]] = array('enabled' => false);
                 }
             }
         }
-        log::add('surepetcare','debug','Execute commande whith parameters : '.print_r($parameters, true));
         log::add('surepetcare','debug','Execute commande whith parameters : '.json_encode($parameters));
         $result = surepetcare::request($url, json_encode($parameters), 'PUT', array('Authorization: Bearer ' . $token));
     }

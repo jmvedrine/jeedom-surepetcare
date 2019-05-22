@@ -1,12 +1,13 @@
 {
-		"name": "Chatière",
-		"configuration": {
-			"id": "",
-			"product_id": "3",
-			"parent_device_id": "",
-			"product_name": "Grande chatière Connect"
-		},
-		"commands": [
+        "name": "Chatière",
+        "configuration": {
+            "id": "",
+            "product_id": "3",
+            "parent_device_id": "",
+            "product_name": "Grande chatière Connect",
+            "battery_type": "4x1.5V C"
+        },
+        "commands": [
             {
                 "name": "En ligne",
                 "type": "info",
@@ -49,6 +50,20 @@
                 }
             },
             {
+                "name": "Batterie",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "unite": "V",
+                "logicalId": "battery",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
                 "name": "Activer couvre-feu",
                 "type": "action",
                 "subtype": "other",
@@ -57,10 +72,10 @@
                 "isHistorized": 0,
                 "value" : "Etat couvre-feu",
                 "logicalId": "curfew::1",
-				"template":{
-					"dashboard" : "lock",
-					"mobile" : "lock"
-				}
+                "template":{
+                    "dashboard" : "lock",
+                    "mobile" : "lock"
+                }
             },
             {
                 "name": "Désactiver couvre-feu",
@@ -71,24 +86,24 @@
                 "isHistorized": 0,
                 "value" : "Etat couvre-feu",
                 "logicalId": "curfew::0",
-				"template":{
-					"dashboard" : "lock",
-					"mobile" : "lock"
-				}
+                "template":{
+                    "dashboard" : "lock",
+                    "mobile" : "lock"
+                }
             },
-			{
-				"name": "Etat couvre-feu",
-				"type": "info",
-				"subtype": "binary",
-				"isVisible": 0,
-				"isHistorized": 0,
-				"logicalId": "curfew",
-				"generic_type": "GENERIC_INFO",
-				"template":{
-					"dashboard" : "lock",
-					"mobile" : "lock"
-				}
-			},
+            {
+                "name": "Etat couvre-feu",
+                "type": "info",
+                "subtype": "binary",
+                "isVisible": 0,
+                "isHistorized": 0,
+				"logicalId": "curfew::enabled",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "lock",
+                    "mobile" : "lock"
+                }
+            },
             {
                 "name": "Mode verrouillage",
                 "type": "action",
@@ -103,13 +118,13 @@
                 "logicalId": "locking::#select#"
             },
             {
-				"name": "Etat verrouillage",
-				"type": "info",
-				"subtype": "numeric",
-				"isVisible": 0,
-				"isHistorized": 0,
-				"logicalId": "locking::mode",
-				"generic_type": "GENERIC_INFO"
-			}
-		]
+                "name": "Etat verrouillage",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 0,
+                "isHistorized": 0,
+                "logicalId": "locking::mode",
+                "generic_type": "GENERIC_INFO"
+            }
+        ]
 }
