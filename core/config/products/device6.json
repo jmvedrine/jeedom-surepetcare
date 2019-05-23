@@ -70,7 +70,7 @@
                 "generic_type": "DONT",
                 "isVisible": 1,
                 "isHistorized": 0,
-                "value" : "Etat couvre-feu",
+                "value" : "Couvre-feu",
                 "logicalId": "curfew::1",
 				"template":{
 					"dashboard" : "lock",
@@ -84,7 +84,7 @@
                 "generic_type": "DONT",
                 "isVisible": 1,
                 "isHistorized": 0,
-                "value" : "Etat couvre-feu",
+                "value" : "Couvre-feu",
                 "logicalId": "curfew::0",
 				"template":{
 					"dashboard" : "lock",
@@ -92,7 +92,7 @@
 				}
             },
 			{
-				"name": "Etat couvre-feu",
+				"name": "Couvre-feu",
 				"type": "info",
 				"subtype": "binary",
 				"isVisible": 0,
@@ -105,20 +105,20 @@
 				}
 			},
             {
-                "name": "Mode verrouillage",
+                "name": "Autoriser",
                 "type": "action",
                 "subtype": "select",
                 "configuration" :{
-                    "listValue" : "0|Aucun;1|Entrée;2|Sortie;3|Entrée & Sortie"
+                    "listValue" : "0|Tout;1|Entrée;2|Sortie;3|Rien"
                 },
                 "generic_type": "DONT",
                 "isVisible": 1,
                 "isHistorized": 0,
-                "value" : "Etat verrouillage",
+                "value" : "Verrouillage",
                 "logicalId": "locking::#select#"
             },
             {
-				"name": "Etat verrouillage",
+				"name": "Verrouillage",
 				"type": "info",
 				"subtype": "numeric",
 				"isVisible": 0,

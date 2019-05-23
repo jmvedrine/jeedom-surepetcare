@@ -33,13 +33,17 @@ Création des équipement
 
 ![introduction01](../images/Objets.png)
 
-Ne cliquez pas sur Ajouter car il ne faut pas créer les équipements manuellement. Cliquez sur "Synchronisation" et le plugin retrouvera sur le site surepetcare.io vos hubs, vos objets connecté (chatières, ...) et vos animaux.
+Ne cliquez pas sur Ajouter car il ne faut pas créer les équipements manuellement. Cliquez sur "Synchronisation"
+et le plugin retrouvera sur le site surepetcare.io vos hubs, vos objets connecté (chatières, ...) et vos animaux.
 
-Le plugin est prévu pour un ou plusieurs foyers, mais les foyers n'apparaissent pas comme des objets dans le plugin; Par contre pour chaque objet (équipement ou animal) le foyer dont il dépend est indiqué dans les détails.
+Le plugin est prévu pour un ou plusieurs foyers, mais les foyers n'apparaissent pas comme des objets dans le plugin.
+Par contre pour chaque objet (équipement ou animal) le foyer dont il dépend est indiqué dans les détails.
 
 Lorsqu'on clique sur le bouton "Synchronisation" le plugin récupère tous les équipements et tous les animaux pour tous les foyers du compte.
 
-Si on le désire il est ensuite possible de supprimer certains objets, mais cette opération sera à renouveler à chaque synchronisation. Pour cette raison, il est préférable de ne pas cocher "Visible" pour les objets qu'on ne souhaite pas visualiser.
+Si on le désire il est ensuite possible de supprimer certains objets, mais cette opération sera à renouveler à chaque synchronisation
+car l'objet réapparaîtra s'il est dans votre compte sur le serveur de surepetcare.io.
+Pour cette raison, il est préférable de ne pas cocher "Visible" pour les objets qu'on ne souhaite pas visualiser.
 
 Les Objets
 ===
@@ -51,13 +55,19 @@ Idem pour un animal mais les informations sont différentes
 
 ![introduction01](../images/Animal.png)
 
-On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où apparaîtra le widget de cet équipement ou de cet animal sur le dashboard si bien sûr on coche "Visible".
+On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où apparaîtra le widget de cet équipement
+ou de cet animal sur le dashboard si bien sûr on coche "Visible".
+
+On peut changer le nom de l'objet, ce changement sera conservé même en cas de nouvelle synchronisation.
+
+Il ne faut surtout pas changer le champ "Identifiant" sinon aucune ccommande pour cet objet ne marche plus et lors de la prochaine synchronisation
+l'objet sera considéré comme nouveau et réimporté aboutissant à un  doublon (si jamais vous faites cette erreur, supprimez l'objet et faites une nouvelle synchronisation).
 
 Pour une chatière on peut définir les heures de début et de fin du couvre-feu au format HHMM, par exemple 0630 pour 6 heure 30 minutes.
 
 Attention, une commande "Activer couvre-feu" provoque une erreur si on n'a pas définit les deures de début et de fin dans la configuration de l'équipement.
 
-Il ne faut pas changer le champ "Identifiant" sinon aucune ccommande pour cet objet ne marche plus et lors de la prochaine synchronisation l'objet sera considéré comme nouveau et réimporté aboutissant à un  doublon.
+
 
 
 Les commandes disponibles
@@ -81,11 +91,11 @@ Commandes pour une chatière
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
 | **En ligne**                         | info    | binaire    | Indique si la chatière est en ligne.                                                                                                                               |
-| **Mode verrouillage**                | action  | liste      | Fixe le mode de verrouillage de la chatière (Rien, Entrée, Sortie, Tout)                                                                               |
-| **Etat verrouillage**                | info    | numerique  | indique le mode de verrouillage de la chatière (0 = Rien, 1 = Entrée, 2 = Sortie, 3 = Tout, 4 = Couvre-feu)                                                        |
+| **Autoriser**                        | action  | liste      | Fixe le mode de verrouillage de la chatière (Entrée et sortie, Entrée, Sortie, Rien)                                                                               |
+| **Verrouillage**                     | info    | numerique  | indique les pouvements autorisés pour les animaux (0 = Entrée et sortie, 1 = Entrée, 2 = Sortie, 3 = Rien, 4 = Couvre-feu)                                         |
 | **Activer couvre-feu**               | action  | Défaut     | Active le couvre-feu avec les heures de début et de fin définies dans la configuration de  l'objet                                                                 |
 | **Désactiver couvre-feu**            | action  | Défaut     | Désactive le couvre-feu                                                                                                                                            |
-| **Etat couvre-feu**                  | info    | binaire    | indique si le couvre-feu est activé                                                                                                                                |
+| **Couvre-feu**                       | info    | binaire    | indique si le couvre-feu est activé (true) ou pas (false)                                                                                                          |
 | **Réception équipement**             | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) de la chatière en dBm                                                |
 | **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                        |
 | **Batterie**                         | info    | numérique  | Indique le voltage total des 4 piles (unité : V)                                                                                                                   |
@@ -98,6 +108,12 @@ Commandes pour un animal
 | **Fixer la position**                | action  | liste      | Fixe la position de l'animal (Intérieur, Extérieur)                                                                                                                |
 
 Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
+
+Vous pouvez changer le nom de la commande si vous le désirez, ce changement sera conservé même en cas de nouvelle synchronisation. Cela vous permet de modifier l'apparence du titre sur le widget.
+
+Vous pouvez aussi modifer les réglages "Afficher", "Historiser" et cliquer sur l'engrenage pour personnaliser davantage.
+
+Un conseil: laissez non visibles les commandes info associées à des comandes action ("Couvre-feu", "Verrouillage") car sur le widget ce sont les commandes action qui visualisent l'état corrspondant.
 
 FAQ
 ===
