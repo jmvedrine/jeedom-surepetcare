@@ -1,7 +1,7 @@
 Description
 ===
 
-Plugin permettant de les objets connectés pour animaux de la marque Sure Petcare (anciennement Sureflap).
+Plugin permettant de contrôler les objets connectés pour animaux de la marque Sure Petcare (anciennement Sureflap).
 
 Pour le moment les seuls objets connectés sont des chatières
 - La grande chatière connect (Pet Porte Connect en anglais)
@@ -9,7 +9,7 @@ Pour le moment les seuls objets connectés sont des chatières
 
 Note : le plugin ne communique pas directement avec la chatière ou le hub,
 il interroge le serveur surepetcare.io qui lui communique avec le hub et à travers lui avec les objets connectés.
-A ma connaissance personne n'a pu decoder le protocole utilisé lors des communications chatière <-> hub 
+A ma connaissance personne n'a pu décoder le protocole utilisé lors des communications chatière <-> hub 
 ou hub <-> serveur surepetcare.io ce qui s'explique car ces communications sont sécurisées.
 
 Avant d'activer le plugin il faut que votre compte sur le serveur de surepetcare.io soit créé avec une adresse mail et un mot de passe
@@ -28,7 +28,7 @@ Il faut entrer :
 
 Et ne pas oublier de cliquer sur **Sauvegarder**.
 
-Création des équipement
+Création des équipements
 ===
 
 ![introduction01](../images/Objets.png)
@@ -42,7 +42,7 @@ Par contre pour chaque objet (équipement ou animal) le foyer dont il dépend es
 Lorsqu'on clique sur le bouton "Synchronisation" le plugin récupère tous les équipements et tous les animaux pour tous les foyers du compte.
 
 Si on le désire il est ensuite possible de supprimer certains objets, mais cette opération sera à renouveler à chaque synchronisation
-car l'objet réapparaîtra s'il est dans votre compte sur le serveur de surepetcare.io.
+car l'objet réapparaitra s'il est dans votre compte sur le serveur de surepetcare.io.
 Pour cette raison, il est préférable de ne pas cocher "Visible" pour les objets qu'on ne souhaite pas visualiser.
 
 Les Objets
@@ -55,17 +55,17 @@ Idem pour un animal mais les informations sont différentes
 
 ![introduction01](../images/Animal.png)
 
-On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où apparaîtra le widget de cet équipement
+On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où apparaitra le widget de cet équipement
 ou de cet animal sur le dashboard si bien sûr on coche "Visible".
 
 On peut changer le nom de l'objet, ce changement sera conservé même en cas de nouvelle synchronisation.
 
-Il ne faut surtout pas changer le champ "Identifiant" sinon aucune ccommande pour cet objet ne marche plus et lors de la prochaine synchronisation
+Il ne faut surtout pas changer le champ "Identifiant" sinon aucune commande pour cet objet ne marche plus et lors de la prochaine synchronisation
 l'objet sera considéré comme nouveau et réimporté aboutissant à un  doublon (si jamais vous faites cette erreur, supprimez l'objet et faites une nouvelle synchronisation).
 
 Pour une chatière on peut définir les heures de début et de fin du couvre-feu au format HHMM, par exemple 0630 pour 6 heure 30 minutes.
 
-Attention, une commande "Activer couvre-feu" provoque une erreur si on n'a pas définit les deures de début et de fin dans la configuration de l'équipement.
+Attention, une commande "Activer couvre-feu" provoque une erreur si on n'a pas définit les heures de début et de fin dans la configuration de l'équipement.
 
 
 
@@ -92,7 +92,7 @@ Commandes pour une chatière
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
 | **En ligne**                         | info    | binaire    | Indique si la chatière est en ligne.                                                                                                                               |
 | **Autoriser**                        | action  | liste      | Fixe le mode de verrouillage de la chatière (Entrée et sortie, Entrée, Sortie, Rien)                                                                               |
-| **Verrouillage**                     | info    | numerique  | indique les pouvements autorisés pour les animaux (0 = Entrée et sortie, 1 = Entrée, 2 = Sortie, 3 = Rien, 4 = Couvre-feu)                                         |
+| **Verrouillage**                     | info    | numerique  | indique les mouvements autorisés pour les animaux (0 = Entrée et sortie, 1 = Entrée, 2 = Sortie, 3 = Rien, 4 = Couvre-feu)                                         |
 | **Activer couvre-feu**               | action  | Défaut     | Active le couvre-feu avec les heures de début et de fin définies dans la configuration de  l'objet                                                                 |
 | **Désactiver couvre-feu**            | action  | Défaut     | Désactive le couvre-feu                                                                                                                                            |
 | **Couvre-feu**                       | info    | binaire    | indique si le couvre-feu est activé (true) ou pas (false)                                                                                                          |
@@ -111,15 +111,15 @@ Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
 
 Vous pouvez changer le nom de la commande si vous le désirez, ce changement sera conservé même en cas de nouvelle synchronisation. Cela vous permet de modifier l'apparence du titre sur le widget.
 
-Vous pouvez aussi modifer les réglages "Afficher", "Historiser" et cliquer sur l'engrenage pour personnaliser davantage.
+Vous pouvez aussi modifier les réglages "Afficher", "Historiser" et cliquer sur l'engrenage pour personnaliser davantage.
 
-Un conseil: laissez non visibles les commandes info associées à des comandes action ("Couvre-feu", "Verrouillage") car sur le widget ce sont les commandes action qui visualisent l'état corrspondant.
+Un conseil: laissez non visibles les commandes info associées à des commandes action ("Couvre-feu", "Verrouillage") car sur le widget ce sont les commandes action qui visualisent l'état correspondant.
 
 FAQ
 ===
 
 Pourquoi certaines commandes sont-elles très lentes ?
 
-Pour certaines commandes (Par exemple les commandes action du couvre-feu ou du verouillage), le serveur surepetcare.io doit communiquer avec la chatière via Internet et le hub et ensuite attendre que celle-ci lui réponde pour renvoyer une réponse
+Pour certaines commandes (Par exemple les commandes action du couvre-feu ou du verrouillage), le serveur surepetcare.io doit communiquer avec la chatière via Internet et le hub et ensuite attendre que celle-ci lui réponde pour renvoyer une réponse
 indiquant si la modification a bien été prise en compte ou non.
-Cela demande plusieurs secondes. Tenz compte de ce temps de réponse dans vos scénarios qui comportent ces commandes.
+Cela demande plusieurs secondes. Tenez compte de ce temps de réponse dans vos scénarios qui comportent ces commandes.
