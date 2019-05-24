@@ -450,7 +450,7 @@ class surepetcare extends eqLogic {
         log::add('surepetcare','debug', "GetPetStatus $petId : ". print_r($result, true));
         if (isset($result['data']['where'])) {
             $position = $result['data']['where'];
-            log::add('surepetcare','debug', 'Mise à jour commande ' . $cmd->getName() . ' nouvelle valeur ' . $position);
+            log::add('surepetcare','debug', 'Mise à jour position animal ' . $petId . ' nouvelle valeur ' . $position);
             $this->checkAndUpdateCmd('pet.position', $position);
         }
     }
