@@ -504,7 +504,7 @@ class surepetcare extends eqLogic {
     If ($this->getConfiguration('type') == 'pet') {
         if ($this->getIsEnable() == 1) {
             // Position (info).
-            $position = $this->getCmd(null, 'position');
+            $position = $this->getCmd(null, 'pet.position');
             if (!is_object($position)) {
                 $position = new surepetcareCmd();
                 $position->setIsVisible(0);
@@ -520,7 +520,7 @@ class surepetcare extends eqLogic {
             $position->save();
 
             // Fixer la position (action)
-            $setposition = $this->getCmd(null, 'setposition');
+            $setposition = $this->getCmd(null, 'pet.setposition::#select#');
             if (!is_object($setposition)) {
                 $setposition = new surepetcareCmd();
                 $setposition->setName(__('Fixer la position', __FILE__));
