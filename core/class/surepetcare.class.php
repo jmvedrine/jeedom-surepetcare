@@ -89,7 +89,7 @@ class surepetcare extends eqLogic {
         $result = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        if ($code =='200') {
+        if ($code =='200' || $code =='201') {
             return json_decode($result, true);
         } else {
             log::add('surepetcare','debug','request failed result='.$result);
@@ -411,7 +411,6 @@ class surepetcare extends eqLogic {
         $logicalId = explode('.',$this->getLogicalId());
         $deviceId = $logicalId[1];
         $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/status';
-        log::add('surepetcare','debug','getDeviceStatus url' . $url);
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
 
         if (isset($result['data'])) {
@@ -440,7 +439,6 @@ class surepetcare extends eqLogic {
     }
     
     public function getPetStatus() {
-        log::add('surepetcare','debug','getPetStatus');
         $token = cache::byKey('surepetcare::token')->getValue();
         if ($token == '') {
             $token = surepetcare::login();
@@ -448,11 +446,12 @@ class surepetcare extends eqLogic {
         $logicalId = explode('.',$this->getLogicalId());
         $petId = $logicalId[1];
         $url = 'https://app.api.surehub.io/api/pet/' . $petId . '/position';
-        $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token)); 
+        $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
+        log::add('surepetcare','debug', "GetPetStatus $petId : ". print_r($result, true));
         if (isset($result['data']['where'])) {
             $position = $result['data']['where'];
-            log::add('surepetcare','info',"Mise à jour position animal $petId : ". $position);
-            $this->checkAndUpdateCmd('position', $position);
+            log::add('surepetcare','debug', 'Mise à jour commande ' . $cmd->getName() . ' nouvelle valeur ' . $position);
+            $this->checkAndUpdateCmd('pet.position', $position);
         }
     }
 
@@ -478,13 +477,12 @@ class surepetcare extends eqLogic {
       $value = $_data;
       foreach ($path as $key) {
         if (!isset($value[$key])) {
-            log::add('surepetcare', 'debug', 'applyData key non trouvée '. $key);
             continue (2);
         }
         $value = $value[$key];
       }
       if (!is_array($value)){
-        log::add('surepetcare', 'info', 'Mise à jour commande ' . $cmd->getName() . ' nouvelle valeur ' . $value);
+        log::add('surepetcare', 'debug', 'Mise à jour commande ' . $cmd->getName() . ' nouvelle valeur ' . $value);
         $this->checkAndUpdateCmd($cmd,$value);
         $updatedValue = true;
       } else {
@@ -518,7 +516,7 @@ class surepetcare extends eqLogic {
             $position->setEqLogic_id($this->getId());
             $position->setType('info');
             $position->setSubType('numeric');
-            $position->setLogicalId('position');
+            $position->setLogicalId('pet.position');
             $position->save();
 
             // Fixer la position (action)
@@ -532,8 +530,8 @@ class surepetcare extends eqLogic {
             $setposition->setEqLogic_id($this->getId());
             $setposition->setType('action');
             $setposition->setSubType('select');
-            $setposition->setConfiguration('listValue','1|Intérieur;0|Extérieur');
-            $setposition->setLogicalId('setposition');
+            $setposition->setConfiguration('listValue','1|Intérieur;2|Extérieur');
+            $setposition->setLogicalId('pet.setposition::#select#');
             $setposition->setValue($position->getId());
             $setposition->save();
         }
@@ -643,6 +641,7 @@ class surepetcareCmd extends cmd {
     }
 
     public function execute($_options = array()) {
+        $method = 'PUT';
         if ($this->getType() != 'action') {
             return;
         }
@@ -653,7 +652,6 @@ class surepetcareCmd extends cmd {
         $eqLogic = $this->getEqLogic();
         $type = $eqLogic->getConfiguration('type', '');
         $actionerDatas = explode('.',$eqLogic->getLogicalId());
-        log::add('surepetcare', 'debug', 'actionerDatas='.print_r($actionerDatas, true));
         $actionerId = $actionerDatas[1];
         $logicalId = $this->getLogicalId();
         if ($type == 'device') {
@@ -696,7 +694,6 @@ class surepetcareCmd extends cmd {
               $parameters[$keyValue[0]] = intval($parameters[$keyValue[0]]);
             }
             if($keyValue[0] =='curfew'){
-
                 if ($parameters[$keyValue[0]]) {
                     $locktime = $eqLogic->getConfiguration('lock_time', '');
                     $unlocktime = $eqLogic->getConfiguration('unlock_time', '');
@@ -713,10 +710,16 @@ class surepetcareCmd extends cmd {
                 } else {
                     $parameters[$keyValue[0]] = array('enabled' => false);
                 }
+            } else if($keyValue[0] =='setposition'){
+                $method = 'POST';
+                $parameters['where'] = $parameters[$keyValue[0]];
+                $parameters['since'] = date("Y-m-d H:i");
+                unset($parameters['setposition']);
+                log::add('surepetcare','debug','Setposition parameters : '.print_r($parameters, true));
             }
         }
         log::add('surepetcare','debug','Execute commande whith parameters : '.json_encode($parameters));
-        $result = surepetcare::request($url, json_encode($parameters), 'PUT', array('Authorization: Bearer ' . $token));
+        $result = surepetcare::request($url, json_encode($parameters), $method, array('Authorization: Bearer ' . $token));
     }
 
     /*     * **********************Getteur Setteur*************************** */
