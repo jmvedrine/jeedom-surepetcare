@@ -1,7 +1,15 @@
 <div class="eqLogic-widget eqLogic allowResize" style="height: #height#;width: #width#;border:#border#;border-radius:#border-radius#;background-color: #background-color#;color: #color#;#style#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" >
     <center class="widget-name"><a href="#eqLink#" style="font-size : 1.5em;#hideEqLogicName#">#name_display#</a></center>
     <br />
+    <center>
     <img style="display:block;height: 100px;width: 100px;border-radius: 50%;" src = "#photolocation#" />
-    <br />
-    <img src="plugins/surepetcare/core/template/images/#positionicon#.png" width="40px" />
+    <span class="cmd ui-sortable-handle" data-type="action" data-subtype="select" data-cmd_id="#fixposition_id#">
+        <img src="plugins/surepetcare/core/template/images/#positionicon#.png" width="50px"  title="#fixposition_str#" />
+    </span>
+    </center>
+  <script type="text/javascript">
+    $('.cmd[data-cmd_id=#fixposition_id#]').on('click', function () {
+      jeedom.cmd.execute({id: '#fixposition_id#' });
+    });
+  </script>
 </div>

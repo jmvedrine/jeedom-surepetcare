@@ -634,9 +634,9 @@ public function toHtml($_version = 'dashboard') {
             $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
         }
     }
-    foreach ($this->getCmd('action') as $cmd) {
-		$replace['#cmd_' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
-	}
+    $cmdlogic = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
+    $replace['#fixposition_id#'] = $cmdlogic->getId();
+    $replace['#fixposition_str#'] = __('Changer la position', __FILE__);
 	$replace['#photolocation#'] = $this->getConfiguration('photo_location');
     $html = template_replace($replace, getTemplate('core', $version, 'pet', 'surepetcare'));
 	return $this->postToHtml($_version, $html);;
@@ -753,7 +753,16 @@ class surepetcareCmd extends cmd {
                 }
             } else if($keyValue[0] =='setposition'){
                 $method = 'POST';
-                $parameters['where'] = $parameters[$keyValue[0]];
+                if ($parameters[$keyValue[0]] != 1 && $parameters[$keyValue[0]] != 2) {
+                    log::add('surepetcare','debug','Setposition step 1 : '.print_r($parameters, true));
+                    $positionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'pet.position');
+                    $position = $positionCmd->execCmd();
+                    log::add('surepetcare','debug','Setposition position : '.$position);
+                    log::add('surepetcare','debug','Setposition new position : '.(3 -$position));
+                    $parameters['where'] = 3 - $position;
+                } else {
+                    $parameters['where'] = $parameters[$keyValue[0]];
+                }
                 $parameters['since'] = date("Y-m-d H:i");
                 unset($parameters['setposition']);
                 log::add('surepetcare','debug','Setposition parameters : '.print_r($parameters, true));
