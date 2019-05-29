@@ -78,7 +78,7 @@ En cliquant sur l'onglet commande vous accédez aux commandes disponibles.
 Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 .
 
-Commande pour un hub
+## Commande pour un hub
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
@@ -86,7 +86,7 @@ Commande pour un hub
 | **Mode led**                         | action  | liste      | Fixe le mode d'allumage des leds ("oreilles") du hub (Eteint, Brillant, Atténué).                                                                                  |
 | **Etat led**                         | info    | numerique  | Indique le mode d'allumage des leds ("oreilles") du hub (0=Eteint, 1=Brillant, 4=Atténué).                                                                         |
 
-Commandes pour une chatière
+## Commandes pour une chatière
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
@@ -100,7 +100,7 @@ Commandes pour une chatière
 | **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                        |
 | **Batterie**                         | info    | numérique  | Indique le voltage total des 4 piles (unité : V)                                                                                                                   |
 
-Commandes pour un animal
+## Commandes pour un animal
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
@@ -118,7 +118,7 @@ Un conseil: laissez non visibles les commandes info associées à des commandes 
 FAQ
 ===
 
-Pourquoi certaines commandes sont-elles très lentes ?
+### Pourquoi certaines commandes sont-elles très lentes ?
 
 Pour certaines commandes (Par exemple les commandes action du couvre-feu ou du verrouillage), le serveur surepetcare.io doit communiquer avec la chatière via Internet et le hub et ensuite attendre que celle-ci lui réponde pour renvoyer une réponse
 indiquant si la modification a bien été prise en compte ou non.
