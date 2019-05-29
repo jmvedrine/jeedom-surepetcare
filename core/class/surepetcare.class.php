@@ -54,10 +54,15 @@ class surepetcare extends eqLogic {
 
     /*
      * Fonction exécutée automatiquement tous les jours par Jeedom
-      public static function cronDaily() {
-
-      }
      */
+    /*
+    TODO voir s'il est nécessaire ou pas de rafraîchir le token.
+      public static function cronDaily() {
+          // On demande un nouveau token et on le stocke.
+          surepetcare::login();
+      }
+    */
+
     public static function request($url, $payload = null, $method = 'POST', $headers = array()) {
         $ch = curl_init($url);
 
@@ -93,7 +98,7 @@ class surepetcare extends eqLogic {
             return json_decode($result, true);
         } else {
             log::add('surepetcare','debug','request failed result='.$result);
-            throw new \Exception(__('Erreur lors de la requete : ',__FILE__).$url.'('.$method.'), data : '.json_encode($payload).' erreur : ' . $code);
+            throw new \Exception(__('Erreur lors de la requete : ',__FILE__).$url.' ('.$method.'), data : '.json_encode($payload).' erreur : ' . $code);
         }
     }
 
@@ -203,7 +208,7 @@ class surepetcare extends eqLogic {
         }
         $result = surepetcare::request('https://app.api.surehub.io/api/household/'. $household['id'].'/pet', null, 'GET', array('Authorization: Bearer ' . $token));
         log::add('surepetcare','debug','getPets result : '.json_encode($result));
-        
+
         if(isset($result['data'])) {
             foreach($result['data'] as $key => $pet){
                 log::add('surepetcare','debug','Pet '.$key. '='.json_encode($pet));
@@ -437,7 +442,7 @@ class surepetcare extends eqLogic {
             $this->applyData($result['data']);
         }
     }
-    
+
     public function getPetStatus() {
         $token = cache::byKey('surepetcare::token')->getValue();
         if ($token == '') {
@@ -539,7 +544,7 @@ class surepetcare extends eqLogic {
   }
 
   public function getImage() {
-    If ($this->getConfiguration('type') == 'device') {
+    if ($this->getConfiguration('type') == 'device') {
       return 'plugins/surepetcare/core/config/images/' . $this->getConfiguration('iconProduct');
     } else if ($this->getConfiguration('type') == 'pet') {
       return $this->getConfiguration('photo_location');
@@ -596,10 +601,46 @@ class surepetcare extends eqLogic {
 
     /*
      * Non obligatoire mais permet de modifier l'affichage du widget si vous en avez besoin
-      public function toHtml($_version = 'dashboard') {
-
-      }
      */
+public function toHtml($_version = 'dashboard') {
+	if ($this->getConfiguration('type') == 'device') {
+		return parent::toHtml($_version);
+	}
+
+	$replace = $this->preToHtml($_version);
+	if (!is_array($replace)) {
+		return $replace;
+	}
+	$version = jeedom::versionAlias($_version);
+	if ($this->getDisplay('hideOn' . $version) == 1) {
+		return '';
+	}
+    $positionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.position');
+    $position = $positionCmd->execCmd();
+     log::add('surepetcare', 'debug', 'toHtml position='.$position);
+    if ($position == 1) {
+        $replace['#positionicon#'] = 'inside-location';
+    } else if ($position == 2) {
+        $replace['#positionicon#'] = 'outside-location';
+    } else {
+        $replace['#positionicon#'] = 'unknown';
+    }
+     
+    foreach ($this->getCmd('info') as $cmd) {
+        $replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
+        $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+        $replace['#' . $cmd->getLogicalId() . '_collectDate#'] = $cmd->getCollectDate();
+        if ($cmd->getIsHistorized() == 1) {
+            $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
+        }
+    }
+    foreach ($this->getCmd('action') as $cmd) {
+		$replace['#cmd_' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+	}
+	$replace['#photolocation#'] = $this->getConfiguration('photo_location');
+    $html = template_replace($replace, getTemplate('core', $version, 'pet', 'surepetcare'));
+	return $this->postToHtml($_version, $html);;
+}
 
     /*
      * Non obligatoire mais ca permet de déclencher une action après modification de variable de configuration
