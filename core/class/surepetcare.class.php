@@ -94,10 +94,18 @@ class surepetcare extends eqLogic {
         $result = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        if ($code =='200' || $code =='201') {
+        if ($code =='200') {
             return json_decode($result, true);
+        } else if ($code =='201' || $code =='204') {
+            // La requête ou la création a réussi mais rien à retourner.
+            // Le code 204 est retourné lors d'une requête position si
+            // l'animal n'a jamais franchi aucune chatière ou n'est
+            // enregistré dans aucune chatière (cas où seul le distributeur
+            // de nourriture est présent).
+            // Le code 201 est retourné lors d'une requête pour setposition.
+            return '';
         } else {
-            log::add('surepetcare','debug','request failed result='.$result);
+            log::add('surepetcare','debug','Request failed result='.$result);
             throw new \Exception(__('Erreur lors de la requete : ',__FILE__).$url.' ('.$method.'), data : '.json_encode($payload).' erreur : ' . $code);
         }
     }
@@ -117,7 +125,8 @@ class surepetcare extends eqLogic {
             'device_id' => $device_id
     );
     $json = json_encode($data);
-    log::add('surepetcare','debug', 'login data='.$json);
+    log::add('surepetcare','debug', 'login data='.str_replace($password,'****',$json));
+    // log::add('surepetcare','debug', 'login data='.$json);
     $request_http = new com_http($url);
     $request_http->setNoSslCheck(true);
     $request_http->setUserAgent('Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36');
@@ -615,6 +624,9 @@ public function toHtml($_version = 'dashboard') {
 	if ($this->getDisplay('hideOn' . $version) == 1) {
 		return '';
 	}
+    $setpositionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
+    log::add('surepetcare', 'debug', 'toHtml getisvisible='.$setpositionCmd->getIsVisible());
+    $replace['#position_display#'] = (is_object($setpositionCmd) && $setpositionCmd->getIsVisible()) ? "#position_display#" : "none";
     $positionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.position');
     $position = $positionCmd->execCmd();
      log::add('surepetcare', 'debug', 'toHtml position='.$position);
@@ -623,6 +635,7 @@ public function toHtml($_version = 'dashboard') {
     } else if ($position == 2) {
         $replace['#positionicon#'] = 'outside-location';
     } else {
+        //TODO/ dans ce cas ce serait mieux de ne rien afficher.
         $replace['#positionicon#'] = 'unknown';
     }
      
@@ -754,21 +767,24 @@ class surepetcareCmd extends cmd {
             } else if($keyValue[0] =='setposition'){
                 $method = 'POST';
                 if ($parameters[$keyValue[0]] != 1 && $parameters[$keyValue[0]] != 2) {
-                    log::add('surepetcare','debug','Setposition step 1 : '.print_r($parameters, true));
+                    // No value passed to command, Invert position.
                     $positionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'pet.position');
                     $position = $positionCmd->execCmd();
-                    log::add('surepetcare','debug','Setposition position : '.$position);
-                    log::add('surepetcare','debug','Setposition new position : '.(3 -$position));
+                    if ($position != 1 && $position != 2) {
+                        // No current position, impossible to invert it.
+                        return;
+                    }
+                    // Invert position.
                     $parameters['where'] = 3 - $position;
                 } else {
+                    // Just set position to value.
                     $parameters['where'] = $parameters[$keyValue[0]];
                 }
                 $parameters['since'] = date("Y-m-d H:i");
                 unset($parameters['setposition']);
-                log::add('surepetcare','debug','Setposition parameters : '.print_r($parameters, true));
             }
         }
-        log::add('surepetcare','debug','Execute commande whith parameters : '.json_encode($parameters));
+        log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));
         $result = surepetcare::request($url, json_encode($parameters), $method, array('Authorization: Bearer ' . $token));
     }
 
