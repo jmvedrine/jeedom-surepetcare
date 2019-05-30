@@ -141,4 +141,4 @@ Commandes pour chacun de vos animaux.
 ### Lors de la première synchronisation j'ai un message "Le nom de l'équipement ne peut pas être vide : surepetcare Object ..." et certains de mes équipements sont manquants.
 
 Vérifiez à l'aide de l'application pour smartphone ou en vous connectant au site surepetcare.io que vous avez bien donné un nom à tous vos équipements (hub, chatières, distributeurs),
-corigez le problème, puis refaites une synchronisation.
+corrigez le problème, puis refaites une synchronisation.
