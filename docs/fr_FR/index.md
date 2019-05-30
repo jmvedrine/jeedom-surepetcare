@@ -135,5 +135,10 @@ qui rafraîchira le jeton en en demandant un autre et le problème sera résolu 
 
 Pour le moment le distributeur n'est pas encore pris en compte par le plugin. 
 
-Si vousn n'avez pas de chatière, vous pouvez masquer la position des animaux sur le desktop en décochant la case "Afficher" en face de la commande "Fixer la position dans l'onglet
+Si vous n'avez pas de chatière, vous pouvez masquer la position des animaux sur le desktop en décochant la case "Afficher" en face de la commande "Fixer la position" dans l'onglet
 Commandes pour chacun de vos animaux.
+
+### Lors de la première synchronisation j'ai un message "Le nom de l'équipement ne peut pas être vide : surepetcare Object ..." et certains de mes équipements sont manquants.
+
+Vérifiez à l'aide de l'application pour smartphone ou en vous connectant au site surepetcare.io que vous avez bien donné un nom à tous vos équipements (hub, chatières, distributeurs),
+corigez le problème, puis refaites une synchronisation.
