@@ -123,3 +123,10 @@ FAQ
 Pour certaines commandes (Par exemple les commandes action du couvre-feu ou du verrouillage), le serveur surepetcare.io doit communiquer avec la chatière via Internet et le hub et ensuite attendre que celle-ci lui réponde pour renvoyer une réponse
 indiquant si la modification a bien été prise en compte ou non.
 Cela demande plusieurs secondes. Tenez compte de ce temps de réponse dans vos scénarios qui comportent ces commandes.
+
+### Plus aucune de mes commandes ne marche
+
+Lors de la synchronisation le site surepetcare.io envoie un "jeton" qui est une longue suite de caractères et ce jeton est ensuite utilisé pour authentifier toutes les requêtes.
+J'ignore la durée de validité de ce jeton (je ne sais même pas s'il expire au bout d'un certain temps), donc le plugin le stocke et l'utilise ensuite indéfiniment.
+Si plus aucune de vos commandes ne marche, c'est peut-être le signe que votre jeton a expiré. Faites une synchronisation et signalez moi le problème je rajouterai un cron (par exemple tous les jours)
+qui rafraîchira le jeton en en demandant un autre et le problème sera résolu pour tous les utilisateurs.
