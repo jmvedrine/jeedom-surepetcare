@@ -7,23 +7,18 @@
 			"product_name": "Distributeur de nourriture Connect"
 		},
 		"commands": [
-			{
-				"name": "Etat",
-				"type": "info",
-                "subtype": "numeric",
-				"isVisible": 0,
-				"isHistorized": 0,
-				"logicalId": "",
-				"configuration" :{
-					"fieldname" : ""
-				},
-				"display": {
-					"generic_type": "GENERIC_INFO"
-				},
-				"template":{
-					"dashboard" : "badge",
-					"mobile" : "badge"
-				}
-			}
+            {
+                "name": "En ligne",
+                "type": "info",
+                "subtype": "binary",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "logicalId": "online",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            }
 		]
 }
