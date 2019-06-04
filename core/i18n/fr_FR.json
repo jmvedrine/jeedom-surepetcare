@@ -1,8 +1,4 @@
 {
-    "plugins\/surepetcare\/plugin_info\/configuration.php": {
-        "Adresse mail": "Adresse mail",
-        "Mot de passe": "Mot de passe"
-    },
     "plugins\/surepetcare\/desktop\/php\/surepetcare.php": {
         "Gestion": "Gestion",
         "Ajouter": "Ajouter",
@@ -16,33 +12,22 @@
         "Supprimer": "Supprimer",
         "Equipement": "Equipement",
         "Commandes": "Commandes",
-        "Password": "Mot de passe",
-        "Mot de passe": "Mot de passe",
-        "Ajouter un équipement": "Ajouter un équipement",
-        "Rechercher": "Rechercher",
-        "Mes Roombas": "Mes Roombas",
-        "Sauvegarder": "Sauvegarder",
-        "Supprimer": "Supprimer",
-        "Configuration avancée": "Configuration avancée",
-        "Equipement": "Equipement",
-        "Commandes": "Commandes",
         "Nom": "Nom",
+        "Nom de l'objet": "Nom de l'objet",
         "Identifiant": "Identifiant",
         "Objet parent": "Objet parent",
         "Aucun": "Aucun",
         "Catégorie": "Catégorie",
         "Activer": "Activer",
         "Visible": "Visible",
-        "Commentaire": "Commentaire",
-        "Options": "Options",
         "Heure de début du couvre-feu (HHMM)": "Heure de début du couvre-feu (HHMM)",
+        "Heure de début (HHMM)": "Heure de début (HHMM)",
         "Heure de fin du couvre-feu (HHMM)": "Heure de fin du couvre-feu (HHMM)",
-        "Gestion": "Gestion",
-        "Configuration": "Configuration",
-        "Ajouter": "Ajouter",
+        "Heure de fin (HHMM)": "Heure de fin (HHMM)",
         "Type": "Type",
+        "Logical ID": "Logical ID",
         "Paramètres": "Paramètres",
-        "Logical ID": "Logical ID"
+        "Options": "Options"
     },
     "plugins\/surepetcare\/desktop\/js\/surepetcare.js": {
         "Foyer": "Foyer",
@@ -66,15 +51,21 @@
         "Tester": "Tester",
         "Synchronisation en cours": "Synchronisation en cours",
         "Operation realisee avec succes": "Operation realisee avec succes"
-        
+    },
+    "plugins\/surepetcare\/plugin_info\/configuration.php": {
+        "Adresse mail": "Adresse mail",
+        "Mail du compte": "Mail du compte",
+        "Mot de passe": "Mot de passe",
+        "Mot de passe du compte": "Mot de passe du compte"
     },
     "plugins\/surepetcare\/core\/class\/surepetcare.class.php": {
+        "Changer la position": "Changer la position",
         "Nouveau produit detecté": "Nouveau produit detecté",
         "Erreur lors de la requete : ": "Erreur lors de la requete : ",
         "Nouvel animal detecté": "Nouvel animal detecté",
         "Position": "Position",
+        "Produit": "Produit",
         "Fixer la position": "Fixer la position",
-        "Changer la position": "Changer la position",
         "Le message et le sujet ne peuvent pas être vide": "Le message et le sujet ne peuvent pas être vide",
         "Heures de couvre-feu incorrectes": "Heures de couvre-feu incorrectes"
     }
