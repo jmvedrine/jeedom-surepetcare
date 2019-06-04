@@ -1,12 +1,12 @@
-### 22/05/2019
+### 05/22/2019
 
--   Première version  béta
+-   First beta version 
 
-### 24/05/2019
+### 05/24/2019
 
--   Correction d'un bug dans la commande Fixer la position pour les animaux
+-   Bugfix for the Fix position command for pets
 
-### 29/05/2019
+### 05/29/2019
 
--   Widget pour les animaux avec photo
--   Première version stable
+-   Widget for pets with image
+-   First stable version
