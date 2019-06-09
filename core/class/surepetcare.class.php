@@ -780,7 +780,7 @@ class surepetcareCmd extends cmd {
                     // Just set position to value.
                     $parameters['where'] = $parameters[$keyValue[0]];
                 }
-                $parameters['since'] = date("Y-m-d H:i");
+                $parameters['since'] = gmdate("Y-m-d H:i");
                 unset($parameters['setposition']);
             }
         }
