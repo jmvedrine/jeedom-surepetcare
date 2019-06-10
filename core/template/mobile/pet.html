@@ -1,15 +1,25 @@
-<div class="eqLogic-widget eqLogic allowResize" style="height: #height#;width: #width#;border:#border#;border-radius:#border-radius#;background-color: #background-color#;color: #color#;#style#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" >
-    <center class="widget-name"><a href="#eqLink#" style="font-size : 1.5em;#hideEqLogicName#">#name_display#</a></center>
+<div class="eqLogic-widget eqLogic allowResize #eqLogic_class#" style="height: #height#;width: #width#;border:#border#;border-radius:#border-radius#;background-color: #background-color#;color: #color#;#style#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" >
+    <center class="widget-name"><a href="#eqLink#" style="#hideEqLogicName#">#name_display#</a></center>
     <br />
     <center>
     <img style="display:block;height: 100px;width: 100px;border-radius: 50%;" src = "#photolocation#" />
-    <span class="cmd ui-sortable-handle" data-type="action" data-subtype="select" data-cmd_id="#fixposition_id#">
-        <img src="plugins/surepetcare/core/template/images/#positionicon#.png" width="50px"  title="#fixposition_str#" />
+    <span id = "setposition_#pet.position_id#_value" style="display: none;"></span>
+    <span class="cmd cmd-widget" data-type="info" data-subtype="binary" data-cmd_id="#pet.position_id#" data-cmd_uid="#pet.position_uid#" style="display: #pet.position_display#;" >
     </span>
     </center>
   <script type="text/javascript">
-    $('.cmd[data-cmd_id=#fixposition_id#]').on('click', function () {
-      jeedom.cmd.execute({id: '#fixposition_id#' });
+    jeedom.cmd.update['#pet.position_id#'] = function(_options){
+      if (_options.display_value == '1' || _options.display_value == 1) {
+        $('.cmd[data-cmd_id=#pet.position_id#]').empty().append('<img src="plugins/surepetcare/core/template/images/outside-location.png" width="50px" title="#pet.fixposition_str#" >');
+        $('#setposition_#pet.position_id#_value').html("0");
+      } else {           
+        $('.cmd[data-cmd_id=#pet.position_id#]').empty().append('<img src="plugins/surepetcare/core/template/images/inside-location.png" width="50px" title="#pet.fixposition_str#" >');
+        $('#setposition_#pet.position_id#_value').html("1");
+      }
+    }
+    jeedom.cmd.update['#pet.position_id#']({display_value:'#pet.position#'});
+    $('.cmd[data-cmd_id=#pet.position_id#]').on('click', function () {
+      jeedom.cmd.execute({id: '#pet.fixposition_id#', value: {select: $('#setposition_#pet.position_id#_value').html()}});
     });
   </script>
 </div>
