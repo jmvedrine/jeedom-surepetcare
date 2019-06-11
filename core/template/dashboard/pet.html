@@ -10,10 +10,10 @@
   <script type="text/javascript">
     jeedom.cmd.update['#pet.position_id#'] = function(_options){
       if (_options.display_value == '1' || _options.display_value == 1) {
-        $('.cmd[data-cmd_id=#pet.position_id#]').empty().append('<img src="plugins/surepetcare/core/template/images/outside-location.png" width="50px" title="#pet.fixposition_str#" >');
+        $('.cmd[data-cmd_id=#pet.position_id#]').empty().append('<img src="plugins/surepetcare/core/template/images/inside-location.png" width="50px" title="#pet.fixposition_str#" >');
         $('#setposition_#pet.position_id#_value').html("0");
       } else {           
-        $('.cmd[data-cmd_id=#pet.position_id#]').empty().append('<img src="plugins/surepetcare/core/template/images/inside-location.png" width="50px" title="#pet.fixposition_str#" >');
+        $('.cmd[data-cmd_id=#pet.position_id#]').empty().append('<img src="plugins/surepetcare/core/template/images/outside-location.png" width="50px" title="#pet.fixposition_str#" >');
         $('#setposition_#pet.position_id#_value').html("1");
       }
     }

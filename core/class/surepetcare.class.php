@@ -467,7 +467,7 @@ class surepetcare extends eqLogic {
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
         log::add('surepetcare','debug', "GetPetStatus $petId : ". print_r($result, true));
         if (isset($result['data']['where'])) {
-            $position = ($result['data']['where'] == 2);
+            $position = ($result['data']['where'] == 1);
             // Pour le moment since n'est pas utilisé.
             $since = $result['data']['since'];
             log::add('surepetcare','debug', 'GetPetStatus since ' . $since);
@@ -532,7 +532,7 @@ class surepetcare extends eqLogic {
                 $position->setConfiguration('historizeMode', 'none');
                 $position->setIsHistorized(1);
             }
-            $position->setDisplay('generic_type', 'DONT');
+            $position->setDisplay('generic_type', 'PRESENCE');
             $position->setEqLogic_id($this->getId());
             $position->setType('info');
             $position->setSubType('binary');
@@ -550,7 +550,7 @@ class surepetcare extends eqLogic {
             $setposition->setEqLogic_id($this->getId());
             $setposition->setType('action');
             $setposition->setSubType('select');
-            $setposition->setConfiguration('listValue','0|Intérieur;1|Extérieur');
+            $setposition->setConfiguration('listValue','0|Extérieur;1|Intérieur');
             $setposition->setLogicalId('pet.setposition::#select#');
             $setposition->setValue($position->getId());
             $setposition->save();
@@ -774,11 +774,11 @@ class surepetcareCmd extends cmd {
                         return;
                     }
                     // Invert position.
-                    $parameters['where'] = ($position == 1 ? 1 : 2);
+                    $parameters['where'] = ($position == 1 ? 2 : 1);
                     log::add('surepetcare','debug','Where parameter in invert position ' . $parameters['where']);
                 } else {
                     // Just set position to corresponding value.
-                    $parameters['where'] = ($parameters[$keyValue[0]] == 1 ? 2 : 1);
+                    $parameters['where'] = ($parameters[$keyValue[0]] == 1 ? 1 : 2);
                     log::add('surepetcare','debug','Where parameter in set position ' . $parameters['where']);
                 }
                 // $parameters['since'] = date("Y-m-d H:i");
