@@ -104,7 +104,7 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
-| **Position**                         | info    | numerique  | Indique si l'animal est à l'extérieur ou à l'intérieur (1 = intérieur, 2 = extérieur)                                                                              |
+| **Position**                         | info    | binaire    | Indique si l'animal est à l'extérieur ou à l'intérieur (0 = extérieur, 1 = intérieur)                                                                              |
 | **Fixer la position**                | action  | liste      | Fixe la position de l'animal (Intérieur, Extérieur)                                                                                                                |
 
 Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
@@ -142,3 +142,8 @@ Commandes pour chacun de vos animaux.
 
 Vérifiez à l'aide de l'application pour smartphone ou en vous connectant au site surepetcare.io que vous avez bien donné un nom à tous vos équipements (hub, chatières, distributeurs),
 corrigez le problème, puis refaites une synchronisation.
+
+### Pourquoi avoir choisi ces valeurs pour les commandes de position d'un animal ?
+
+Pour qu'elles correspondent à un  détecteur de présence ou un traqueur Bluetooth (style Nut) pour des personnes donc 1 (vrai) signifie que l'animal est à la maison (présent) et 0 qu'il est sorti (non présent).
+J'espère que dans le futur cela permettra d'être compatible avec des assistants vocaux même si pour le moment ce n'est pas le cas.
