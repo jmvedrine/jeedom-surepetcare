@@ -130,3 +130,15 @@ Lors de la synchronisation le site surepetcare.io envoie un "jeton" qui est une 
 J'ignore la durée de validité de ce jeton (je ne sais même pas s'il expire au bout d'un certain temps), donc le plugin le stocke et l'utilise ensuite indéfiniment.
 Si plus aucune de vos commandes ne marche, c'est peut-être le signe que votre jeton a expiré. Faites une synchronisation et signalez moi le problème je rajouterai un cron (par exemple tous les jours)
 qui rafraîchira le jeton en en demandant un autre et le problème sera résolu pour tous les utilisateurs.
+
+### Je n'ai pas de chatière, uniquement le distributeur de nourriture. Le plugin ne marche pas
+
+Pour le moment le distributeur n'est pas encore pris en compte par le plugin. 
+
+Si vous n'avez pas de chatière, vous pouvez masquer la position des animaux sur le desktop en décochant la case "Afficher" en face de la commande "Fixer la position" dans l'onglet
+Commandes pour chacun de vos animaux.
+
+### Lors de la première synchronisation j'ai un message "Le nom de l'équipement ne peut pas être vide : surepetcare Object ..." et certains de mes équipements sont manquants.
+
+Vérifiez à l'aide de l'application pour smartphone ou en vous connectant au site surepetcare.io que vous avez bien donné un nom à tous vos équipements (hub, chatières, distributeurs),
+corrigez le problème, puis refaites une synchronisation.

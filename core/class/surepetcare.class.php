@@ -32,15 +32,10 @@ class surepetcare extends eqLogic {
     public static function cron() {
         log::add('surepetcare', 'debug', 'cron');
         foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
-            If ($eqLogic->getConfiguration('type') == 'pet') {
-                log::add('surepetcare', 'debug', 'cron envoi vers getPetStatus');
+            if ($eqLogic->getConfiguration('type') == 'pet') {
                 $eqLogic->getPetStatus();
-                $eqLogic->refreshWidget();
-            }
-            If ($eqLogic->getConfiguration('type') == 'device') {
-                log::add('surepetcare', 'debug', 'cron envoi vers getDeviceStatus');
+            } else if ($eqLogic->getConfiguration('type') == 'device') {
                 $eqLogic->getDeviceStatus();
-                $eqLogic->refreshWidget();
             }
         }
     }
@@ -58,6 +53,7 @@ class surepetcare extends eqLogic {
     /*
     TODO voir s'il est nécessaire ou pas de rafraîchir le token.
       public static function cronDaily() {
+          // Voir s'il faut d'abord faire un logout.
           // On demande un nouveau token et on le stocke.
           surepetcare::login();
       }
@@ -92,6 +88,7 @@ class surepetcare extends eqLogic {
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36');
 
         $result = curl_exec($ch);
+        log::add('surepetcare','debug','Request result '.$result);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         if ($code =='200') {
@@ -248,10 +245,15 @@ class surepetcare extends eqLogic {
       ));
       $create = true;
       $eqLogic = new surepetcare();
+      if ($_device['name'] != '') {
       $eqLogic->setName($_device['name']);
+      } else {
+          $eqLogic->setName( __('Produit', __FILE__). $_device['id']);
+      }
     }
     $eqLogic->setEqType_name('surepetcare');
     $eqLogic->setIsEnable(1);
+    $eqLogic->setIsVisible(1);
     $eqLogic->setLogicalId('dev.' . $_device['id']);
     $eqLogic->setConfiguration('household_id', $_household['id']);
     $eqLogic->setConfiguration('household_name', $_household['name']);
@@ -339,8 +341,10 @@ class surepetcare extends eqLogic {
     }
     $eqLogic->setEqType_name('surepetcare');
     $eqLogic->setIsEnable(1);
+    $eqLogic->setIsVisible(1);
     $eqLogic->setLogicalId('pet.' . $_pet['id']);
     $eqLogic->setConfiguration('household_id', $_household['id']);
+    $eqLogic->setConfiguration('pet_id', $_pet['id']);
     $eqLogic->setConfiguration('household_name', $_household['name']);
     $eqLogic->setConfiguration('type', 'pet');
     if(isset($_pet['category'])){
@@ -353,7 +357,10 @@ class surepetcare extends eqLogic {
       $eqLogic->setConfiguration('weight', $_pet['weight']);
     }
     if(isset($_pet['photo']['location'])){
-      $eqLogic->setConfiguration('photo_location', $_pet['photo']['location']);
+      $extension = pathinfo($_pet['photo']['location'], PATHINFO_EXTENSION);
+      $photo_location = 'plugins/surepetcare/data/pet'. $_pet['id']. '.' . $extension;
+      $eqLogic->setConfiguration('photo_location', $photo_location);
+      file_put_contents(__DIR__.'/../../data/pet'. $_pet['id']. '.' . $extension, file_get_contents($_pet['photo']['location']));
     }
     if(isset($_pet['comments'])){
       $eqLogic->setConfiguration('comments', $_pet['comments']);
@@ -375,8 +382,8 @@ class surepetcare extends eqLogic {
 
     return $eqLogic;
   }
+
   public static function devicesParameters($_device = '') {
-    log::add('surepetcare', 'debug', 'debut de devicesParameters');
     $return = array();
     foreach (ls(dirname(__FILE__) . '/../config/devices', '*') as $dir) {
       $path = dirname(__FILE__) . '/../config/devices/' . $dir;
@@ -416,7 +423,6 @@ class surepetcare extends eqLogic {
   }
     /*     * *********************Méthodes d'instance************************* */
     public function getDeviceStatus() {
-        log::add('surepetcare','debug','getDeviceStatus');
         $token = cache::byKey('surepetcare::token')->getValue();
         if ($token == '') {
             $token = surepetcare::login();
@@ -429,7 +435,6 @@ class surepetcare extends eqLogic {
 
         if (isset($result['data'])) {
             if (isset($result['data']['battery'])) {
-                log::add('surepetcare','debug','batterie : '. $result['data']['battery']);
                 $battery_max = 6.0;
                 $battery_min = 4.2;
                 $battery = round(($result['data']['battery'] - $battery_min) / ($battery_max - $battery_min) * 100, 0);
@@ -439,7 +444,6 @@ class surepetcare extends eqLogic {
                 if ($battery > 100) {
                     $battery = 100;
                 }
-                log::add('surepetcare','debug','% batterie : '. $battery);
                 $this->batteryStatus($battery);
             }
             $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/control';
@@ -463,7 +467,10 @@ class surepetcare extends eqLogic {
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
         log::add('surepetcare','debug', "GetPetStatus $petId : ". print_r($result, true));
         if (isset($result['data']['where'])) {
-            $position = $result['data']['where'];
+            $position = ($result['data']['where'] == 1);
+            // Pour le moment since n'est pas utilisé.
+            $since = $result['data']['since'];
+            log::add('surepetcare','debug', 'GetPetStatus since ' . $since);
             log::add('surepetcare','debug', 'Mise à jour position animal ' . $petId . ' nouvelle valeur ' . $position);
             $this->checkAndUpdateCmd('pet.position', $position);
         }
@@ -508,11 +515,10 @@ class surepetcare extends eqLogic {
   }
 
   public function postSave() {
-    log::add('surepetcare', 'debug', 'debut de postSave');
     If ($this->getConfiguration('type') == 'device') {
         if ($this->getConfiguration('applyProductId') != $this->getConfiguration('product_id')) {
-          log::add('surepetcare', 'debug', 'postSave envoi vers applyModuleConfiguration');
           $this->applyModuleConfiguration();
+          $this->refreshWidget();
         }
     }
     If ($this->getConfiguration('type') == 'pet') {
@@ -526,10 +532,10 @@ class surepetcare extends eqLogic {
                 $position->setConfiguration('historizeMode', 'none');
                 $position->setIsHistorized(1);
             }
-            $position->setDisplay('generic_type', 'DONT');
+            $position->setDisplay('generic_type', 'PRESENCE');
             $position->setEqLogic_id($this->getId());
             $position->setType('info');
-            $position->setSubType('numeric');
+            $position->setSubType('binary');
             $position->setLogicalId('pet.position');
             $position->save();
 
@@ -544,7 +550,7 @@ class surepetcare extends eqLogic {
             $setposition->setEqLogic_id($this->getId());
             $setposition->setType('action');
             $setposition->setSubType('select');
-            $setposition->setConfiguration('listValue','1|Intérieur;2|Extérieur');
+            $setposition->setConfiguration('listValue','0|Extérieur;1|Intérieur');
             $setposition->setLogicalId('pet.setposition::#select#');
             $setposition->setValue($position->getId());
             $setposition->save();
@@ -625,34 +631,23 @@ public function toHtml($_version = 'dashboard') {
 		return '';
 	}
     $setpositionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
-    log::add('surepetcare', 'debug', 'toHtml getisvisible='.$setpositionCmd->getIsVisible());
-    $replace['#position_display#'] = (is_object($setpositionCmd) && $setpositionCmd->getIsVisible()) ? "#position_display#" : "none";
-    $positionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.position');
-    $position = $positionCmd->execCmd();
-     log::add('surepetcare', 'debug', 'toHtml position='.$position);
-    if ($position == 1) {
-        $replace['#positionicon#'] = 'inside-location';
-    } else if ($position == 2) {
-        $replace['#positionicon#'] = 'outside-location';
-    } else {
-        //TODO/ dans ce cas ce serait mieux de ne rien afficher.
-        $replace['#positionicon#'] = 'unknown';
-    }
+    $replace['#pet.position_display#'] = (is_object($setpositionCmd) && $setpositionCmd->getIsVisible()) ? "#position_display#" : "none";
      
     foreach ($this->getCmd('info') as $cmd) {
         $replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
         $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+        $replace['#' . $cmd->getLogicalId() . '_uid#'] = 'cmd' . $cmd->getId() . eqLogic::UIDDELIMITER . mt_rand() . eqLogic::UIDDELIMITER;
         $replace['#' . $cmd->getLogicalId() . '_collectDate#'] = $cmd->getCollectDate();
         if ($cmd->getIsHistorized() == 1) {
             $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
         }
     }
     $cmdlogic = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
-    $replace['#fixposition_id#'] = $cmdlogic->getId();
-    $replace['#fixposition_str#'] = __('Changer la position', __FILE__);
+    $replace['#pet.fixposition_id#'] = $cmdlogic->getId();
+    $replace['#pet.fixposition_str#'] = __('Changer la position', __FILE__);
 	$replace['#photolocation#'] = $this->getConfiguration('photo_location');
     $html = template_replace($replace, getTemplate('core', $version, 'pet', 'surepetcare'));
-	return $this->postToHtml($_version, $html);;
+	return $this->postToHtml($_version, $html);
 }
 
     /*
@@ -695,7 +690,6 @@ class surepetcareCmd extends cmd {
     }
 
     public function execute($_options = array()) {
-        $method = 'PUT';
         if ($this->getType() != 'action') {
             return;
         }
@@ -703,15 +697,16 @@ class surepetcareCmd extends cmd {
         if ($token == '') {
             $token = surepetcare::login();
         }
+        $method = 'PUT';
         $eqLogic = $this->getEqLogic();
-        $type = $eqLogic->getConfiguration('type', '');
+        $eqType = $eqLogic->getConfiguration('type', '');
         $actionerDatas = explode('.',$eqLogic->getLogicalId());
         $actionerId = $actionerDatas[1];
         $logicalId = $this->getLogicalId();
-        if ($type == 'device') {
+        if ($eqType == 'device') {
             $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/control';
         }
-        if ($type =='pet') {
+        if ($eqType =='pet') {
             $url = 'https://app.api.surehub.io/api/pet/' . $actionerId . '/position';
         }
         log::add('surepetcare', 'debug', 'execute url='.$url);
@@ -737,6 +732,7 @@ class surepetcareCmd extends cmd {
             }
             break;
         }
+        // log::add('surepetcare','debug','Replace ' . print_r($replace, true));
         foreach ($datasList as $datas){
             $keyValue = explode('::',$datas);
             $type = self::datatype($keyValue[0]);
@@ -766,26 +762,39 @@ class surepetcareCmd extends cmd {
                 }
             } else if($keyValue[0] =='setposition'){
                 $method = 'POST';
-                if ($parameters[$keyValue[0]] != 1 && $parameters[$keyValue[0]] != 2) {
+                if ($parameters[$keyValue[0]] != 0 && $parameters[$keyValue[0]] != 1) {
+                    log::add('surepetcare','debug','Invert position');
                     // No value passed to command, Invert position.
                     $positionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'pet.position');
                     $position = $positionCmd->execCmd();
-                    if ($position != 1 && $position != 2) {
+                    log::add('surepetcare','debug','Current position '. $position);
+                    if ($position != 0 && $position != 1) {
+                        log::add('surepetcare','debug','No current position, return');
                         // No current position, impossible to invert it.
                         return;
                     }
                     // Invert position.
-                    $parameters['where'] = 3 - $position;
+                    $parameters['where'] = ($position == 1 ? 2 : 1);
+                    log::add('surepetcare','debug','Where parameter in invert position ' . $parameters['where']);
                 } else {
-                    // Just set position to value.
-                    $parameters['where'] = $parameters[$keyValue[0]];
+                    // Just set position to corresponding value.
+                    $parameters['where'] = ($parameters[$keyValue[0]] == 1 ? 1 : 2);
+                    log::add('surepetcare','debug','Where parameter in set position ' . $parameters['where']);
                 }
+                // $parameters['since'] = date("Y-m-d H:i");
                 $parameters['since'] = gmdate("Y-m-d H:i");
                 unset($parameters['setposition']);
             }
         }
         log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));
         $result = surepetcare::request($url, json_encode($parameters), $method, array('Authorization: Bearer ' . $token));
+        // On rafraichit les infos.
+        if ($eqType =='pet') {
+            $eqLogic->getPetStatus();
+        } else if ($eqType =='device') {
+            $eqLogic->getDeviceStatus();
+        }
+        $eqLogic->refreshWidget();
     }
 
     /*     * **********************Getteur Setteur*************************** */
