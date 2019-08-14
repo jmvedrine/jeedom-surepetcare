@@ -681,7 +681,7 @@ class surepetcareCmd extends cmd {
       }
      */
     public function datatype($_data){
-        $type_array = array('led_mode' => 'num',
+        $type_array = array('led_mode' => 'num', 'profile' => 'num'
         );
         if (isset($type_array[$_data])) {
             return $type_array[$_data];
@@ -784,6 +784,10 @@ class surepetcareCmd extends cmd {
                 // $parameters['since'] = date("Y-m-d H:i");
                 $parameters['since'] = gmdate("Y-m-d H:i");
                 unset($parameters['setposition']);
+            } else if($keyValue[0] =='profile'){
+                $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['slider']);
+                log::add('surepetcare','debug','url='. $url);
+                log::add('surepetcare','debug','keyvalue0' .$parameters[$keyValue[0]]);
             }
         }
         log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));
