@@ -129,7 +129,7 @@
                         {
                 "name": "Autoriser animal",
                 "type": "action",
-                "subtype": "numeric",
+                "subtype": "select",
                 "generic_type": "DONT",
                 "isVisible": 0,
                 "isHistorized": 0,
@@ -138,7 +138,7 @@
             {
                 "name": "Interdire animal",
                 "type": "action",
-                "subtype": "numeric",
+                "subtype": "select",
                 "generic_type": "DONT",
                 "isVisible": 0,
                 "isHistorized": 0,

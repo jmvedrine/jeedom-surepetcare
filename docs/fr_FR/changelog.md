@@ -25,3 +25,8 @@ widget est actualisé.
 
 - Compatibilité php 7.3 et font awesome 5
 - Version minimum de Jeedom requise : 3.3
+
+# 26/08/2019
+
+- Commandes pour autoriser ou interdire de sortie un animal sur une chatière
+- Lien avec le plugin Agenda

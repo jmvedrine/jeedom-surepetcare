@@ -26,6 +26,34 @@ try {
     
     ajax::init();
 
+	if (init('action') == 'getLinkCalendar') {
+		if (!isConnect('admin')) {
+			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		}
+		$surepetcare = surepetcare::byId(init('id'));
+		if (!is_object($surepetcare)) {
+			throw new Exception(__('Sure PetCare non trouvé : ', __FILE__) . init('id'));
+		}
+		try {
+			$plugin = plugin::byId('calendar');
+			if (!is_object($plugin) || $plugin->isActive() != 1) {
+				ajax::success(array());
+			}
+		} catch (Exception $e) {
+			ajax::success(array());
+		}
+		if (!class_exists('calendar_event')) {
+			ajax::success(array());
+		}
+		$return = array();
+		foreach ($surepetcare->getCmd(null) as $surepetcare_cmd) {
+			foreach (calendar_event::searchByCmd($surepetcare_cmd->getId()) as $event) {
+				$return[$event->getId()] = $event;
+			}
+		}
+		ajax::success(utils::o2a($return));
+	}
+
     if (init('action') == 'sync') {
         surepetcare::sync();
         ajax::success();
@@ -34,6 +62,6 @@ try {
     throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
-    ajax::error(displayExeption($e), $e->getCode());
+    ajax::error(displayException($e), $e->getCode());
 }
 

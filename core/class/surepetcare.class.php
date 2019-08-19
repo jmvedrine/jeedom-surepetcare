@@ -229,6 +229,30 @@ class surepetcare extends eqLogic {
                 log::add('surepetcare','debug',json_encode($found_eqLogics));
             }
         }
+        // Construction de la liste de choix des animaux pour les commandes profile.
+        $petstags = array();
+        foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
+            if ($eqLogic->getConfiguration('type') == 'pet') {
+                $name = $eqLogic->getName();
+                $tagId = $eqLogic->getConfiguration('tag_id');
+                $petstags[] = $tagId . '|' . $name;
+            }
+        }
+        $listTags = implode(';', $petstags);
+        foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
+            if ($eqLogic->getConfiguration('type') == 'device') {
+                $profile2 = $eqLogic->getCmd(null, 'dev.profile::2');
+                if (is_object($profile2)) {
+                    $profile2->setConfiguration('listValue', $listTags);
+                    $profile2->save();
+                }
+                $profile3 = $eqLogic->getCmd(null, 'dev.profile::3');
+                if (is_object($profile3)) {
+                    $profile3->setConfiguration('listValue', $listTags);
+                    $profile3->save();
+                }
+            }
+        }
     }
 
   }
@@ -681,8 +705,7 @@ class surepetcareCmd extends cmd {
       }
      */
     public function datatype($_data){
-        $type_array = array('led_mode' => 'num', 'profile' => 'num'
-        );
+        $type_array = array('led_mode' => 'num');
         if (isset($type_array[$_data])) {
             return $type_array[$_data];
         }
@@ -785,7 +808,7 @@ class surepetcareCmd extends cmd {
                 $parameters['since'] = gmdate("Y-m-d H:i");
                 unset($parameters['setposition']);
             } else if($keyValue[0] =='profile'){
-                $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['slider']);
+                $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
                 log::add('surepetcare','debug','url='. $url);
                 log::add('surepetcare','debug','keyvalue0' .$parameters[$keyValue[0]]);
             }
