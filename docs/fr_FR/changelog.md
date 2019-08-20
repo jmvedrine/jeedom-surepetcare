@@ -28,5 +28,6 @@ widget est actualisé.
 
 ### 26/08/2019
 
-- Commandes pour autoriser ou interdire de sortie un animal sur une chatière
+- Commandes action pour autoriser ou interdire de sortie un animal sur une chatière
 - Lien avec le plugin Agenda
+- Nouvelle commande info donnant la date et l'heure de la dernière entrée/sortie d'un animal

@@ -497,6 +497,9 @@ class surepetcare extends eqLogic {
             log::add('surepetcare','debug', 'GetPetStatus since ' . $since);
             log::add('surepetcare','debug', 'Mise à jour position animal ' . $petId . ' nouvelle valeur ' . $position);
             $this->checkAndUpdateCmd('pet.position', $position);
+            $date = new DateTime($since);
+            log::add('surepetcare','debug', 'GetPetStatus since formatted' . $date->format('Y-m-d H:i:s'));
+            $this->checkAndUpdateCmd('pet.since', $date->format('Y-m-d H:i:s'));
         }
     }
 
@@ -578,6 +581,22 @@ class surepetcare extends eqLogic {
             $setposition->setLogicalId('pet.setposition::#select#');
             $setposition->setValue($position->getId());
             $setposition->save();
+            
+            // Date/Heure dernier passage.
+            $since = $this->getCmd(null, 'pet.since');
+            if (!is_object($since)) {
+                $since = new surepetcareCmd();
+                $since->setIsVisible(0);
+                $since->setName(__('Dernier passage', __FILE__));
+                $since->setConfiguration('historizeMode', 'none');
+                $since->setIsHistorized(0);
+            }
+            $since->setDisplay('generic_type', 'DONT');
+            $since->setEqLogic_id($this->getId());
+            $since->setType('info');
+            $since->setSubType('string');
+            $since->setLogicalId('pet.since');
+            $since->save();
         }
     }
   }
@@ -655,9 +674,13 @@ public function toHtml($_version = 'dashboard') {
 		return '';
 	}
     $setpositionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
-    $replace['#pet.position_display#'] = (is_object($setpositionCmd) && $setpositionCmd->getIsVisible()) ? "#position_display#" : "none";
+    $replace['#pet.position_display#'] = (is_object($setpositionCmd) && $setpositionCmd->getIsVisible()) ? "#pet.position_display#" : "none";
      
     foreach ($this->getCmd('info') as $cmd) {
+        $replace['#' . $cmd->getLogicalId() . '_display#'] = (is_object($cmd) && $cmd->getIsVisible()) ? "#pet.since_display#" : "none";
+        $replace['#' . $cmd->getLogicalId() . '_name_display#'] = ($cmd->getDisplay('icon') != '') ? $cmd->getDisplay('icon') : $cmd->getName();
+        $replace['#' . $cmd->getLogicalId() . '_name#'] = $cmd->getName();
+        $replace['#' . $cmd->getLogicalId() . '_hide_name#'] = '';
         $replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
         $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
         $replace['#' . $cmd->getLogicalId() . '_uid#'] = 'cmd' . $cmd->getId() . eqLogic::UIDDELIMITER . mt_rand() . eqLogic::UIDDELIMITER;
@@ -665,6 +688,9 @@ public function toHtml($_version = 'dashboard') {
         if ($cmd->getIsHistorized() == 1) {
             $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
         }
+        if ($cmd->getDisplay('showNameOn' . $_version, 1) == 0) {
+			$replace['#' . $cmd->getLogicalId() . '_hide_name#'] = 'hidden';
+		}
     }
     $cmdlogic = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
     $replace['#pet.fixposition_id#'] = $cmdlogic->getId();

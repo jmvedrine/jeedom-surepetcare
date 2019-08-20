@@ -6,6 +6,11 @@
     <span id = "setposition_#pet.position_id#_value" style="display: none;"></span>
     <span class="cmd cmd-widget" data-type="info" data-subtype="binary" data-cmd_id="#pet.position_id#" data-cmd_uid="#pet.position_uid#" style="display: #pet.position_display#;" >
     </span>
+    <br />
+    <span class="cmd cmd-widget" data-type="info" data-subtype="string" data-cmd_id="#pet.since_id#" data-cmd_uid="#pet.since_uid#" style="display: #pet.since_display#;" >
+        <span class="cmdName #pet.since_hide_name#">#pet.since_name_display# </span>
+        <strong class="state"></strong>
+    </span>
     </center>
   <script type="text/javascript">
     jeedom.cmd.update['#pet.position_id#'] = function(_options){
@@ -21,5 +26,11 @@
     $('.cmd[data-cmd_id=#pet.position_id#]').on('click', function () {
       jeedom.cmd.execute({id: '#pet.fixposition_id#', value: {select: $('#setposition_#pet.position_id#_value').html()}});
     });
+    jeedom.cmd.update['#pet.since_id#'] = function(_options) {
+			var $cmd_id = $('.cmd[data-cmd_id=#pet.since_id#]')
+			$cmd_id.attr('title','Date de collecte : '+_options.collectDate)
+			$cmd_id.find('.state').empty().append(_options.display_value)
+	}
+	jeedom.cmd.update['#pet.since_id#']({display_value:'#pet.since#', collectDate:'#pet.since_collectDate#'})
   </script>
 </div>
