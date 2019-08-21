@@ -492,13 +492,12 @@ class surepetcare extends eqLogic {
         log::add('surepetcare','debug', "GetPetStatus $petId : ". print_r($result, true));
         if (isset($result['data']['where'])) {
             $position = ($result['data']['where'] == 1);
-            // Pour le moment since n'est pas utilisé.
             $since = $result['data']['since'];
-            log::add('surepetcare','debug', 'GetPetStatus since ' . $since);
             log::add('surepetcare','debug', 'Mise à jour position animal ' . $petId . ' nouvelle valeur ' . $position);
             $this->checkAndUpdateCmd('pet.position', $position);
-            $date = new DateTime($since);
-            log::add('surepetcare','debug', 'GetPetStatus since formatted' . $date->format('Y-m-d H:i:s'));
+            $date = new DateTime($since, new DateTimeZone('UTC'));
+            date_timezone_set($date,  new DateTimeZone(config::byKey('timezone')));
+            log::add('surepetcare','debug', 'Mise à jour dernier passage ' . $date->format('Y-m-d H:i:s'));
             $this->checkAndUpdateCmd('pet.since', $date->format('Y-m-d H:i:s'));
         }
     }
