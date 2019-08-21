@@ -28,7 +28,7 @@
     });
     jeedom.cmd.update['#pet.since_id#'] = function(_options) {
 			var $cmd_id = $('.cmd[data-cmd_id=#pet.since_id#]')
-            $cmd_id.attr('title','Valeur du '+_options.valueDate+', collectée le: '+_options.collectDate)
+            $cmd_id.attr('title','Valeur du '+_options.valueDate+', collectÃ©e le: '+_options.collectDate)
 			$cmd_id.find('.state').empty().append(_options.display_value)
             if (_options.alertLevel) {
 				$cmd_id.removeClass('label label-warning label-danger')
