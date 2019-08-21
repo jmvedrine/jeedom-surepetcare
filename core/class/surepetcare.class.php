@@ -661,43 +661,46 @@ class surepetcare extends eqLogic {
      * Non obligatoire mais permet de modifier l'affichage du widget si vous en avez besoin
      */
 public function toHtml($_version = 'dashboard') {
-	if ($this->getConfiguration('type') == 'device') {
-		return parent::toHtml($_version);
-	}
+    if ($this->getConfiguration('type') == 'device') {
+        return parent::toHtml($_version);
+    }
 
-	$replace = $this->preToHtml($_version);
-	if (!is_array($replace)) {
-		return $replace;
-	}
-	$version = jeedom::versionAlias($_version);
-	if ($this->getDisplay('hideOn' . $version) == 1) {
-		return '';
-	}
-    $setpositionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
-    $replace['#pet.position_display#'] = (is_object($setpositionCmd) && $setpositionCmd->getIsVisible()) ? "#pet.position_display#" : "none";
-     
+    $replace = $this->preToHtml($_version);
+    if (!is_array($replace)) {
+        return $replace;
+    }
+    $version = jeedom::versionAlias($_version);
+    if ($this->getDisplay('hideOn' . $version) == 1) {
+        return '';
+    }
+
     foreach ($this->getCmd('info') as $cmd) {
-        $replace['#' . $cmd->getLogicalId() . '_display#'] = (is_object($cmd) && $cmd->getIsVisible()) ? "#pet.since_display#" : "none";
+        $replace['#' . $cmd->getLogicalId() . '_display#'] = (is_object($cmd) && $cmd->getIsVisible()) ? '#' . $cmd->getLogicalId() . '_display#' : "none";
         $replace['#' . $cmd->getLogicalId() . '_name_display#'] = ($cmd->getDisplay('icon') != '') ? $cmd->getDisplay('icon') : $cmd->getName();
         $replace['#' . $cmd->getLogicalId() . '_name#'] = $cmd->getName();
         $replace['#' . $cmd->getLogicalId() . '_hide_name#'] = '';
         $replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
+        $replace['#' . $cmd->getLogicalId() . '_version#'] = $_version;
         $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
         $replace['#' . $cmd->getLogicalId() . '_uid#'] = 'cmd' . $cmd->getId() . eqLogic::UIDDELIMITER . mt_rand() . eqLogic::UIDDELIMITER;
         $replace['#' . $cmd->getLogicalId() . '_collectDate#'] = $cmd->getCollectDate();
+        $replace['#' . $cmd->getLogicalId() . '_valueDate#'] = $cmd->getValueDate();
+        $replace['#' . $cmd->getLogicalId() . '_alertLevel#'] = $cmd->getCache('alertLevel', 'none');
         if ($cmd->getIsHistorized() == 1) {
             $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
         }
         if ($cmd->getDisplay('showNameOn' . $_version, 1) == 0) {
-			$replace['#' . $cmd->getLogicalId() . '_hide_name#'] = 'hidden';
-		}
+            $replace['#' . $cmd->getLogicalId() . '_hide_name#'] = 'hidden';
+        }
     }
+    $setpositionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
+    $replace['#pet.position_display#'] = (is_object($setpositionCmd) && $setpositionCmd->getIsVisible()) ? "#pet.position_display#" : "none";
     $cmdlogic = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
     $replace['#pet.fixposition_id#'] = $cmdlogic->getId();
     $replace['#pet.fixposition_str#'] = __('Changer la position', __FILE__);
-	$replace['#photolocation#'] = $this->getConfiguration('photo_location');
+    $replace['#photolocation#'] = $this->getConfiguration('photo_location');
     $html = template_replace($replace, getTemplate('core', $version, 'pet', 'surepetcare'));
-	return $this->postToHtml($_version, $html);
+    return $this->postToHtml($_version, $html);
 }
 
     /*

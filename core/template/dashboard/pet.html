@@ -28,9 +28,17 @@
     });
     jeedom.cmd.update['#pet.since_id#'] = function(_options) {
 			var $cmd_id = $('.cmd[data-cmd_id=#pet.since_id#]')
-			$cmd_id.attr('title','Date de collecte : '+_options.collectDate)
+            $cmd_id.attr('title','Date de valeur : '+_options.valueDate+'<br/>Date de collecte : '+_options.collectDate)
 			$cmd_id.find('.state').empty().append(_options.display_value)
+            if (_options.alertLevel) {
+				$cmd_id.removeClass('label label-warning label-danger')
+				if (_options.alertLevel == 'warning') {
+					$cmd_id.addClass('label label-warning')
+				} else if(_options.alertLevel == 'danger') {
+					$cmd_id.addClass('label label-danger')
+				}
+			}
 	}
-	jeedom.cmd.update['#pet.since_id#']({display_value:'#pet.since#', collectDate:'#pet.since_collectDate#'})
+	jeedom.cmd.update['#pet.since_id#']({display_value:'#pet.since#', valueDate:'#pet.since_valueDate#', collectDate:'#pet.since_collectDate#', alertLevel:'#pet.since_alertLevel#'})
   </script>
 </div>
