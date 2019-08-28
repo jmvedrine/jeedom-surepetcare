@@ -21,7 +21,7 @@ require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class surepetcare extends eqLogic {
     /*     * *************************Attributs****************************** */
-
+    public static $_widgetPossibility = array('custom' => true);
 
 
     /*     * ***********************Methode static*************************** */
