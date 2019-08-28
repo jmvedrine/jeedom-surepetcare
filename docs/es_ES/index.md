@@ -67,7 +67,8 @@ Pour une chatière on peut définir les heures de début et de fin du couvre-feu
 
 Attention, une commande "Activer couvre-feu" provoque une erreur si on n'a pas définit les heures de début et de fin dans la configuration de l'équipement.
 
-
+L'onglet "Planning" permet de définir des évènements dans le plugin Agenda, s'il est installé, pour effectuer des actions à des jours et des heures déterminées.
+Seules les commandes action sont programmables.
 
 
 Les commandes disponibles
@@ -99,6 +100,11 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 | **Réception équipement**             | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) de la chatière en dBm                                                |
 | **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                        |
 | **Batterie**                         | info    | numérique  | Indique le voltage total des 4 piles (unité : V)                                                                                                                   |
+| **Autoriser animal**                 | action  | liste      | Autorise un animal à sortir par cette chatière. Il faut choisir l'animal dans la liste.                                                                            |
+| **Interdire animal**                 | action  | liste      | Interdit à un animal de sortir par cette chatière. Il faut choisir l'animal dans la liste.                                                                         |
+
+Attention pour les deux commandes **Autoriser animal**et**Interdire animal**, la liste des animaux est construite lors de la Synchronisation avec le serveur.
+Si cette liste ne contient que la valeur **Aucun** ou si un animal n'apparaît pas, il faut effectuer une synchronisation.
 
 ## Commandes pour un animal
 

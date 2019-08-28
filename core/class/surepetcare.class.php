@@ -21,7 +21,7 @@ require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class surepetcare extends eqLogic {
     /*     * *************************Attributs****************************** */
-
+    public static $_widgetPossibility = array('custom' => true);
 
 
     /*     * ***********************Methode static*************************** */
@@ -227,6 +227,30 @@ class surepetcare extends eqLogic {
                 log::add('surepetcare','debug','Petfull '.$key. '='.json_encode($petfull));
                 $found_eqLogics[] = self::findPet($petfull,$household);
                 log::add('surepetcare','debug',json_encode($found_eqLogics));
+            }
+        }
+        // Construction de la liste de choix des animaux pour les commandes profile.
+        $petstags = array();
+        foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
+            if ($eqLogic->getConfiguration('type') == 'pet') {
+                $name = $eqLogic->getName();
+                $tagId = $eqLogic->getConfiguration('tag_id');
+                $petstags[] = $tagId . '|' . $name;
+            }
+        }
+        $listTags = implode(';', $petstags);
+        foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
+            if ($eqLogic->getConfiguration('type') == 'device') {
+                $profile2 = $eqLogic->getCmd(null, 'dev.profile::2');
+                if (is_object($profile2)) {
+                    $profile2->setConfiguration('listValue', $listTags);
+                    $profile2->save();
+                }
+                $profile3 = $eqLogic->getCmd(null, 'dev.profile::3');
+                if (is_object($profile3)) {
+                    $profile3->setConfiguration('listValue', $listTags);
+                    $profile3->save();
+                }
             }
         }
     }
@@ -468,11 +492,13 @@ class surepetcare extends eqLogic {
         log::add('surepetcare','debug', "GetPetStatus $petId : ". print_r($result, true));
         if (isset($result['data']['where'])) {
             $position = ($result['data']['where'] == 1);
-            // Pour le moment since n'est pas utilisé.
             $since = $result['data']['since'];
-            log::add('surepetcare','debug', 'GetPetStatus since ' . $since);
             log::add('surepetcare','debug', 'Mise à jour position animal ' . $petId . ' nouvelle valeur ' . $position);
             $this->checkAndUpdateCmd('pet.position', $position);
+            $date = new DateTime($since, new DateTimeZone('UTC'));
+            date_timezone_set($date,  new DateTimeZone(config::byKey('timezone')));
+            log::add('surepetcare','debug', 'Mise à jour dernier passage ' . $date->format('Y-m-d H:i:s'));
+            $this->checkAndUpdateCmd('pet.since', $date->format('Y-m-d H:i:s'));
         }
     }
 
@@ -554,6 +580,22 @@ class surepetcare extends eqLogic {
             $setposition->setLogicalId('pet.setposition::#select#');
             $setposition->setValue($position->getId());
             $setposition->save();
+            
+            // Date/Heure dernier passage.
+            $since = $this->getCmd(null, 'pet.since');
+            if (!is_object($since)) {
+                $since = new surepetcareCmd();
+                $since->setIsVisible(0);
+                $since->setName(__('Dernier passage', __FILE__));
+                $since->setConfiguration('historizeMode', 'none');
+                $since->setIsHistorized(0);
+            }
+            $since->setDisplay('generic_type', 'DONT');
+            $since->setEqLogic_id($this->getId());
+            $since->setType('info');
+            $since->setSubType('string');
+            $since->setLogicalId('pet.since');
+            $since->save();
         }
     }
   }
@@ -618,36 +660,46 @@ class surepetcare extends eqLogic {
      * Non obligatoire mais permet de modifier l'affichage du widget si vous en avez besoin
      */
 public function toHtml($_version = 'dashboard') {
-	if ($this->getConfiguration('type') == 'device') {
-		return parent::toHtml($_version);
-	}
+    if ($this->getConfiguration('type') == 'device') {
+        return parent::toHtml($_version);
+    }
 
-	$replace = $this->preToHtml($_version);
-	if (!is_array($replace)) {
-		return $replace;
-	}
-	$version = jeedom::versionAlias($_version);
-	if ($this->getDisplay('hideOn' . $version) == 1) {
-		return '';
-	}
-    $setpositionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
-    $replace['#pet.position_display#'] = (is_object($setpositionCmd) && $setpositionCmd->getIsVisible()) ? "#position_display#" : "none";
-     
+    $replace = $this->preToHtml($_version);
+    if (!is_array($replace)) {
+        return $replace;
+    }
+    $version = jeedom::versionAlias($_version);
+    if ($this->getDisplay('hideOn' . $version) == 1) {
+        return '';
+    }
+
     foreach ($this->getCmd('info') as $cmd) {
+        $replace['#' . $cmd->getLogicalId() . '_display#'] = (is_object($cmd) && $cmd->getIsVisible()) ? '#' . $cmd->getLogicalId() . '_display#' : "none";
+        $replace['#' . $cmd->getLogicalId() . '_name_display#'] = ($cmd->getDisplay('icon') != '') ? $cmd->getDisplay('icon') : $cmd->getName();
+        $replace['#' . $cmd->getLogicalId() . '_name#'] = $cmd->getName();
+        $replace['#' . $cmd->getLogicalId() . '_hide_name#'] = '';
         $replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
+        $replace['#' . $cmd->getLogicalId() . '_version#'] = $_version;
         $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
         $replace['#' . $cmd->getLogicalId() . '_uid#'] = 'cmd' . $cmd->getId() . eqLogic::UIDDELIMITER . mt_rand() . eqLogic::UIDDELIMITER;
         $replace['#' . $cmd->getLogicalId() . '_collectDate#'] = $cmd->getCollectDate();
+        $replace['#' . $cmd->getLogicalId() . '_valueDate#'] = $cmd->getValueDate();
+        $replace['#' . $cmd->getLogicalId() . '_alertLevel#'] = $cmd->getCache('alertLevel', 'none');
         if ($cmd->getIsHistorized() == 1) {
             $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
         }
+        if ($cmd->getDisplay('showNameOn' . $_version, 1) == 0) {
+            $replace['#' . $cmd->getLogicalId() . '_hide_name#'] = 'hidden';
+        }
     }
+    $setpositionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
+    $replace['#pet.position_display#'] = (is_object($setpositionCmd) && $setpositionCmd->getIsVisible()) ? "#pet.position_display#" : "none";
     $cmdlogic = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
     $replace['#pet.fixposition_id#'] = $cmdlogic->getId();
     $replace['#pet.fixposition_str#'] = __('Changer la position', __FILE__);
-	$replace['#photolocation#'] = $this->getConfiguration('photo_location');
+    $replace['#photolocation#'] = $this->getConfiguration('photo_location');
     $html = template_replace($replace, getTemplate('core', $version, 'pet', 'surepetcare'));
-	return $this->postToHtml($_version, $html);
+    return $this->postToHtml($_version, $html);
 }
 
     /*
@@ -681,8 +733,7 @@ class surepetcareCmd extends cmd {
       }
      */
     public function datatype($_data){
-        $type_array = array('led_mode' => 'num',
-        );
+        $type_array = array('led_mode' => 'num');
         if (isset($type_array[$_data])) {
             return $type_array[$_data];
         }
@@ -784,6 +835,10 @@ class surepetcareCmd extends cmd {
                 // $parameters['since'] = date("Y-m-d H:i");
                 $parameters['since'] = gmdate("Y-m-d H:i");
                 unset($parameters['setposition']);
+            } else if($keyValue[0] =='profile'){
+                $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
+                log::add('surepetcare','debug','url='. $url);
+                log::add('surepetcare','debug','keyvalue0' .$parameters[$keyValue[0]]);
             }
         }
         log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));

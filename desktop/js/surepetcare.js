@@ -22,7 +22,7 @@ $('#bt_syncEqLogic').on('click', function () {
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
 function printEqLogicHelper(label,name,_eqLogic){
-	var trm = '<tr><td class="col-sm-2"><span class="label control-label" style="font-size : 1em;">'+label+'</span></td><td><span class="label label-default" style="font-size : 1em;"> <span class="eqLogicAttr" data-l1key="configuration" data-l2key="'+name+'"></span></span></td></tr>';
+	var trm = '<tr><td class="col-sm-2"><span style="font-size : 1em;">'+label+'</span></td><td><span class="label label-default" style="font-size : 1em;"> <span class="eqLogicAttr" data-l1key="configuration" data-l2key="'+name+'"></span></span></td></tr>';
 	
 	$('#table_infoseqlogic tbody').append(trm);
 	$('#table_infoseqlogic tbody tr:last').setValues(_eqLogic, '.eqLogicAttr');
@@ -59,8 +59,52 @@ function printEqLogic(_eqLogic) {
         $('#curfew_lock_time').hide();
         $('#curfew_unlock_time').hide();
     }
+    printScheduling(_eqLogic);
 }
 
+function printScheduling(_eqLogic){
+  $.ajax({
+    type: 'POST',
+    url: 'plugins/surepetcare/core/ajax/surepetcare.ajax.php',
+    data: {
+      action: 'getLinkCalendar',
+      id: _eqLogic.id,
+    },
+    dataType: 'json',
+    error: function (request, status, error) {
+      handleAjaxError(request, status, error);
+    },
+    success: function (data) {
+      if (data.state != 'ok') {
+        $('#div_alert').showAlert({message: data.result, level: 'danger'});
+        return;
+      }
+      $('#div_schedule').empty();
+      console.log(data);
+      if(data.result.length == 0){
+        $('#div_schedule').append("<center><span style='color:#767676;font-size:1.2em;font-weight: bold;'>{{Vous n'avez encore aucune programmation. Veuillez cliquer <a href='index.php?v=d&m=calendar&p=calendar'>ici</a> pour programmer votre équipement à l'aide du plugin agenda}}</span></center>");
+      }else{
+        var html = '<legend>{{Liste des programmations du plugin Agenda liées à l\'objet Sure PetCare}}</legend>';
+        for (var i in data.result) {
+          var color = init(data.result[i].cmd_param.color, '#2980b9');
+          if(data.result[i].cmd_param.transparent == 1){
+            color = 'transparent';
+          }
+          html += '<span class="label label-info cursor" style="font-size:1.2em;background-color : ' + color + ';color : ' + init(data.result[i].cmd_param.text_color, 'black') + '">';
+          html += '<a href="index.php?v=d&m=calendar&p=calendar&id='+data.result[i].eqLogic_id+'&event_id='+data.result[i].id+'" style="color : ' + init(data.result[i].cmd_param.text_color, 'black') + '">'
+          if (data.result[i].cmd_param.eventName != '') {
+            html += data.result[i].cmd_param.icon + ' ' + data.result[i].cmd_param.eventName;
+          } else {
+            html += data.result[i].cmd_param.icon + ' ' + data.result[i].cmd_param.name;
+          }
+          html += '</a></span>';
+          html += ' ' + data.result[i].startDate.substr(11,5) + ' à ' + data.result[i].endDate.substr(11,5)+'<br\><br\>';
+        }
+        $('#div_schedule').empty().append(html);
+      }
+    }
+  });
+}
 function addCmdToTable(_cmd) {
   if (!isset(_cmd)) {
     var _cmd = {configuration: {}};
@@ -72,7 +116,7 @@ function addCmdToTable(_cmd) {
   tr += '<td>';
   tr += '<div class="row">';
   tr += '<div class="col-sm-6">';
-  tr += '<a class="cmdAction btn btn-default btn-sm" data-l1key="chooseIcon"><i class="fa fa-flag"></i> Icône</a>';
+  tr += '<a class="cmdAction btn btn-default btn-sm" data-l1key="chooseIcon"><i class="fas fa-flag"></i> Icône</a>';
   tr += '<span class="cmdAttr" data-l1key="display" data-l2key="icon" style="margin-left : 10px;"></span>';
   tr += '</div>';
   tr += '<div class="col-sm-6">';
@@ -111,7 +155,7 @@ function addCmdToTable(_cmd) {
   tr += '<td>';
   if (is_numeric(_cmd.id)) {
     tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
-    tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
+    tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fas fa-rss"></i> {{Tester}}</a>';
   }
   tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
   tr += '</td>';

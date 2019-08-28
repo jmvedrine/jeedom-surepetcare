@@ -72,6 +72,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation"><a href="" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fas fa-arrow-circle-left"></i></a></li>
 			<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
+            <li role="presentation"><a href="#scheduletab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fas fa-calendar"></i> {{Planning}}</a></li>
 			<li role="presentation"><a href="#commandtab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
 		</ul>
   <div class="tab-content" style="height:calc(100% - 50px);overflow:auto;overflow-x: hidden;">
@@ -180,6 +181,17 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					</tbody>
 				</table>
 			</div>
+			<div class="tab-pane" id="scheduletab">
+				<form class="form-horizontal">
+					<fieldset>
+						<br/>
+						<div id="div_schedule"></div>
+					</fieldset>
+				</form>
+				<br/>
+				<div class="alert alert-info">{{Dans cet onglet vous pouvez voir s'il y a un planning dans le plugin agenda agissant sur votre objet Surepetcare.<br>
+					Exemple : planifier une interdiction de sortie d'un animal, etc.}}</div>
+				</div>
 </div>
 
 </div>
