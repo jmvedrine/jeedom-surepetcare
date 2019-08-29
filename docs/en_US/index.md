@@ -112,6 +112,7 @@ Si cette liste ne contient que la valeur **Aucun** ou si un animal n'apparaît p
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
 | **Position**                         | info    | binaire    | Indique si l'animal est à l'extérieur ou à l'intérieur (0 = extérieur, 1 = intérieur)                                                                              |
 | **Fixer la position**                | action  | liste      | Fixe la position de l'animal (Intérieur, Extérieur)                                                                                                                |
+| **Dernier passage**                  | info    | autre      | Indique la date et l'heure du dernier passage de l'animal sous forme d'une chaine                                                                                  |
 
 Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
 
