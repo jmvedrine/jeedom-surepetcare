@@ -4,7 +4,8 @@
 			"id": "",
 			"product_id": "4",
 			"parent_device_id": "",
-			"product_name": "Distributeur de nourriture Connect"
+			"product_name": "Distributeur de nourriture Connect",
+            "battery_type": "4x1.5V C"
 		},
 		"commands": [
             {
@@ -14,6 +15,48 @@
                 "isVisible": 1,
                 "isHistorized": 1,
                 "logicalId": "online",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
+                "name": "Réception équipement",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "unite": "dBm",
+                "logicalId": "signal::device_rssi",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
+                "name": "Réception hub",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "unite": "dBm",
+                "logicalId": "signal::hub_rssi",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
+                "name": "Batterie",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "unite": "V",
+                "logicalId": "battery",
                 "generic_type": "GENERIC_INFO",
                 "template":{
                     "dashboard" : "line",
