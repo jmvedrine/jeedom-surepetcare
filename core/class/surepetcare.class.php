@@ -487,12 +487,15 @@ class surepetcare extends eqLogic {
         }
         $logicalId = explode('.',$this->getLogicalId());
         $petId = $logicalId[1];
-        $url = 'https://app.api.surehub.io/api/pet/' . $petId . '/position';
+        $url = 'https://app.api.surehub.io/api/pet/' . $petId . '?with[]=status';
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-        log::add('surepetcare','debug', "GetPetStatus $petId : ". print_r($result, true));
-        if (isset($result['data']['where'])) {
-            $position = ($result['data']['where'] == 1);
-            $since = $result['data']['since'];
+        log::add('surepetcare','debug', "Résultat getPetStatus $petId : ". print_r($result, true));
+        // $url = 'https://app.api.surehub.io/api/pet/' . $petId . '/position';
+        // $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
+        // log::add('surepetcare','debug', "GetPetStatus $petId : ". print_r($result, true));
+        if (isset($result['data']['status']['activity']['where'])) {
+            $position = ($result['data']['status']['activity']['where'] == 1);
+            $since = $result['data']['status']['activity']['since'];
             log::add('surepetcare','debug', 'Mise à jour position animal ' . $petId . ' nouvelle valeur ' . $position);
             $this->checkAndUpdateCmd('pet.position', $position);
             $date = new DateTime($since, new DateTimeZone('UTC'));
