@@ -496,6 +496,13 @@ class surepetcare extends eqLogic {
         if (isset($result['data']['status']['activity']['where'])) {
             $position = ($result['data']['status']['activity']['where'] == 1);
             $since = $result['data']['status']['activity']['since'];
+            $device_id = $result['data']['status']['activity']['device_id'];
+            $eqLogic = self::byLogicalId('dev.' . $device_id, 'surepetcare');
+            if(is_object($eqLogic)){
+                $this->checkAndUpdateCmd('pet.through', $eqLogic->getName());
+            } else {
+                log::add('surepetcare','debug', 'Device inconnu id ' . $device_id . ' dans getPetStatus');
+            }
             log::add('surepetcare','debug', 'Mise à jour position animal ' . $petId . ' nouvelle valeur ' . $position);
             $this->checkAndUpdateCmd('pet.position', $position);
             $date = new DateTime($since, new DateTimeZone('UTC'));
@@ -599,6 +606,21 @@ class surepetcare extends eqLogic {
             $since->setSubType('string');
             $since->setLogicalId('pet.since');
             $since->save();
+            // Entré/sorti par.
+            $through = $this->getCmd(null, 'pet.through');
+            if (!is_object($through)) {
+                $through = new surepetcareCmd();
+                $through->setIsVisible(0);
+                $through->setName(__('Passé par', __FILE__));
+                $through->setConfiguration('historizeMode', 'none');
+                $through->setIsHistorized(0);
+            }
+            $through->setDisplay('generic_type', 'DONT');
+            $through->setEqLogic_id($this->getId());
+            $through->setType('info');
+            $through->setSubType('string');
+            $through->setLogicalId('pet.through');
+            $through->save();
         }
     }
   }
