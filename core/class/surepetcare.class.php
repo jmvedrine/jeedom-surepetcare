@@ -454,6 +454,14 @@ class surepetcare extends eqLogic {
         // On récupère les infos sur l'équipement.
         $logicalId = explode('.',$this->getLogicalId());
         $deviceId = $logicalId[1];
+        // test pour le feeder.
+        if ($this->getConfiguration('product_id') == '4') {
+            $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '?with[]=status&with[]=control';
+            $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
+            log::add('surepetcare','debug','Test feeder : ' . print_r($result['data'], true));
+        }
+        // fin test pour le feeder
+
         $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/status';
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
 
