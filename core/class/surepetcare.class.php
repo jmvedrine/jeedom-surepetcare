@@ -194,6 +194,10 @@ class surepetcare extends eqLogic {
   public static function sync(){
     $token = surepetcare::login();
     surepetcare::getHouseholds();
+    // Essai
+    $result = surepetcare::request('https://app.api.surehub.io/api/me/start', null, 'GET', array('Authorization: Bearer ' . $token));
+    log::add('surepetcare','debug','Result me/start : '.print_r($result, true));
+    // Fin essai
     $households = config::byKey('households','surepetcare',array());
     foreach ($households as $household) {
         // Récupération des devices.
@@ -461,7 +465,6 @@ class surepetcare extends eqLogic {
             log::add('surepetcare','debug','Test feeder : ' . print_r($result['data'], true));
         }
         // fin test pour le feeder
-
         $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/status';
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
 
