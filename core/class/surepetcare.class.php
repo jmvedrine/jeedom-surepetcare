@@ -463,7 +463,7 @@ class surepetcare extends eqLogic {
             $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '?with[]=status&with[]=control&with[]=weights';
             $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
             log::add('surepetcare','debug','Test feeder 1 : ' . print_r($result['data'], true));
-            $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '?with[]=status&with[]=control&with[]=children';
+            $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '?with[]=status&with[]=control&with[]=weight';
             $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
             log::add('surepetcare','debug','Test feeder 2 : ' . print_r($result['data'], true));
         }
