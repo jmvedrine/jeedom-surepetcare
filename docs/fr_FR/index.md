@@ -87,6 +87,14 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 | **Mode led**                         | action  | liste      | Fixe le mode d'allumage des leds ("oreilles") du hub (Eteint, Brillant, Atténué).                                                                                  |
 | **Etat led**                         | info    | numerique  | Indique le mode d'allumage des leds ("oreilles") du hub (0=Eteint, 1=Brillant, 4=Atténué).                                                                         |
 
+## Commande pour un distributeur de nourriture
+
+| Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
+| :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
+| **En ligne**                         | info    | binaire    | Indique si le hub est en ligne.                                                                                                                                    |
+| **Réception équipement**             | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du distributeur en dBm                                               |
+| **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                        |
+
 ## Commandes pour une chatière
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
@@ -113,6 +121,7 @@ Si cette liste ne contient que la valeur **Aucun** ou si un animal n'apparaît p
 | **Position**                         | info    | binaire    | Indique si l'animal est à l'extérieur ou à l'intérieur (0 = extérieur, 1 = intérieur)                                                                              |
 | **Fixer la position**                | action  | liste      | Fixe la position de l'animal (Intérieur, Extérieur)                                                                                                                |
 | **Dernier passage**                  | info    | autre      | Indique la date et l'heure du dernier passage de l'animal sous forme d'une chaine                                                                                  |
+| **Passé par**                        | info    | autre      | Indique le nom de la chatière par laquelle l'animal a effectué son dernier passage sous forme d'une chaine                                                         |
 
 Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
 
@@ -154,3 +163,28 @@ corrigez le problème, puis refaites une synchronisation.
 
 Pour qu'elles correspondent à un  détecteur de présence ou un traqueur Bluetooth (style Nut) pour des personnes donc 1 (vrai) signifie que l'animal est à la maison (présent) et 0 qu'il est sorti (non présent).
 J'espère que dans le futur cela permettra d'être compatible avec des assistants vocaux même si pour le moment ce n'est pas le cas.
+
+### Comment faire un couvre feu pour un animal uniquement
+
+Imaginons que vous vouliez interdire à Grominet de sortir entre 22h et 6h par la chatière MaChatière
+
+Suivez Plugins -> Objets connectés -> Sure Petcare et cliquez sur l'objet MaChatière.
+
+Clic sur l'onglet Planning. Clic sur le mot ici et clic sur le signe +
+
+Donnez un nom à l'équipement par exemple Couvre feu
+
+Clic sur l'onglet Agenda clic sur Ajouter événement
+
+Donnez un nom à l'événement par exemple sortie Grominet
+
+Clic sur l'onglet Action
+
+Pour l'action de début choisissez votre chatière et la commande Autorisez animal et choisissez Grominet dans le menu déroulant
+
+Pour l'action de fin choisissez votre chatière et la commande Interdire animal et choisissez Grominet dans le menu déroulant
+
+Clic sur l'onglet programmation et choisissez comme heure de début 06:00 et comme heure de fin 22:00 cochez la case Répété et indiquez Répéter tous les 1 jour(s)
+
+N'oubliez pas d'enregistrer. C'est terminé. Entre 22h et 6h Grominet pourra toujours entrer mais ne pourra plus sortir.
+
