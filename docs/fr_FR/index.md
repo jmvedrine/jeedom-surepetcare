@@ -188,3 +188,9 @@ Clic sur l'onglet programmation et choisissez comme heure de début 06:00 et com
 
 N'oubliez pas d'enregistrer. C'est terminé. Entre 22h et 6h Grominet pourra toujours entrer mais ne pourra plus sortir.
 
+### L'heure du dernier passage est décalée de 1 (ou 2) heure(s) pareil quand je met à jour la position d'un animal via le plugin elle est décalée dans l'app smartphone
+
+Le serveur Sure Petcare utilse des date/heures GMT donc l'app smartphone et le plugin doivent les convertir dans votre fuseau horaire. 
+Pour le plugin pour que cette conversion soit correcte il faut que le fuseau horaire soit correct dans la configuration de Jeedom. Vérifiez que c'est bien le cas 
+(En V4 Réglages Système Configuration Général Date et Heure).
+
