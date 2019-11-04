@@ -15,5 +15,5 @@
 		"forum":"https://www.jeedom.com/forum/viewtopic.php?f=141&t=45464"
 	},
 	"language" : ["fr_FR","en_US","de_DE","sp_SP","ru_RU","id_ID","it_IT"],
-	"compatibility" : ["miniplus","smart","rpi","docker","diy","mobile"]
+	"compatibility" : ["miniplus","smart","rpi","docker","diy","mobile","v4"]
 }

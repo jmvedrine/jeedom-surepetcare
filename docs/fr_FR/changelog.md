@@ -33,5 +33,10 @@ widget est actualisé.
 - Nouvelle commande info donnant la date et l'heure de la dernière entrée/sortie d'un animal
 
 ### 15/10/2019
+
 - Nouvelle commande info donnant le nom de la chatière par laquelle a eu lieu la dernière entrée/sortie d'un animal
 - Premières commandes pour un distributeur de nourriture (l'intégration du distributeur dans le plugin n'est pas complète)
+
+### 04/11/2019
+
+- Tag "v4" pour le market
