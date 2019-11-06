@@ -27,6 +27,9 @@
                 "subtype": "numeric",
                 "isVisible": 1,
                 "isHistorized": 1,
+                "configuration": {
+                    "historizeRound" : 1
+                },
                 "unite": "dBm",
                 "logicalId": "signal::device_rssi",
                 "generic_type": "GENERIC_INFO",
@@ -41,6 +44,9 @@
                 "subtype": "numeric",
                 "isVisible": 1,
                 "isHistorized": 1,
+                "configuration": {
+                    "historizeRound" : 1
+                },
                 "unite": "dBm",
                 "logicalId": "signal::hub_rssi",
                 "generic_type": "GENERIC_INFO",
