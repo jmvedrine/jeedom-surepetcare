@@ -30,12 +30,22 @@ class surepetcare extends eqLogic {
      * Fonction exécutée automatiquement toutes les minutes par Jeedom
      */
     public static function cron() {
-        log::add('surepetcare', 'debug', 'cron');
-        foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
-            if ($eqLogic->getConfiguration('type') == 'pet') {
-                $eqLogic->getPetStatus();
-            } else if ($eqLogic->getConfiguration('type') == 'device') {
-                $eqLogic->getDeviceStatus();
+        $autorefresh = config::byKey('autorefresh', 'surepetcare');
+        if ($autorefresh != '') {
+            try {
+                $c = new Cron\CronExpression(checkAndFixCron($autorefresh), new Cron\FieldFactory);
+                if ($c->isDue()) {
+                    log::add('surepetcare', 'debug', 'cron is due');
+                    foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
+                        if ($eqLogic->getConfiguration('type') == 'pet') {
+                            $eqLogic->getPetStatus();
+                        } else if ($eqLogic->getConfiguration('type') == 'device') {
+                            $eqLogic->getDeviceStatus();
+                        }
+                    }
+                }
+            } catch (Exception $exc) {
+                log::add('surepetcare', 'error', __('Expression cron non valide : ', __FILE__) . $autorefresh);
             }
         }
     }
@@ -149,120 +159,92 @@ class surepetcare extends eqLogic {
     return false;
   }
 
-  public static function getHouseholds(){
-    $token = cache::byKey('surepetcare::token')->getValue();
-    if ($token == '') {
-        $token = surepetcare::login();
-    }
-    $url = 'https://app.api.surehub.io/api/household';
-    $request_http = new com_http($url);
-    $request_http->setNoSslCheck(true);
-    $requestHeaders = array(
-            'Connection: keep-alive',
-            'Origin: https://surepetcare.io',
-            'Referer: https://surepetcare.io/',
-            'Authorization: Bearer ' . $token
-        );
-    $request_http->setHeader($requestHeaders);
-    $request_http->setUserAgent('Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36');
-
-    $result = $request_http->exec();
-    log::add('surepetcare','debug','Gethouseholds result : '.$result);
-    $result = is_json($result, $result);
-    $households = $result['data'];
-    if(count($households) == 0){
-      return;
-    }
-    log::add('surepetcare','debug','Found '.count($households). ' households');
-    // config::remove('households', 'surepetcare');
-    $households_config = config::byKey('households','surepetcare',array());
-    log::add('surepetcare','debug','Household_config= '.print_r($households_config, true));
-    foreach ($households as $household) {
-      log::add('surepetcare','debug','Household id= '.$household['id']);
-      log::add('surepetcare','debug','Household name= '.$household['name']);
-      foreach ($households_config as $key=>$household_config) {
-        if($household_config['id'] == $household['id']){
-          $household_config['name'] = $household['name'];
-          $households_config[$key] = $household_config;
-          break(2);
-        }
-      }
-      $households_config[] = array('id' => $household['id'], 'name' => $household['name']);
-    }
-    config::save('households',$households_config,'surepetcare');
-  }
   public static function sync(){
-    $token = surepetcare::login();
-    surepetcare::getHouseholds();
-    // Essai
+        $token = surepetcare::login();
     $result = surepetcare::request('https://app.api.surehub.io/api/me/start', null, 'GET', array('Authorization: Bearer ' . $token));
-    log::add('surepetcare','debug','Result me/start : '.print_r($result, true));
-    // Fin essai
-    $households = config::byKey('households','surepetcare',array());
-    foreach ($households as $household) {
-        // Récupération des devices.
-        $result = surepetcare::request('https://app.api.surehub.io/api/household/'. $household['id'].'/device', null, 'GET', array('Authorization: Bearer ' . $token));
-        log::add('surepetcare','debug','getDevices result : '.json_encode($result));
-
-        if(isset($result['data'])) {
-            $devices = $result['data'];
-            foreach ($devices as $key => $device) {
+    log::add('surepetcare','debug','me/start result : '.json_encode($result));
+    config::remove('households', 'surepetcare');
+    if(isset($result['data']['households'])) {
+        $households = $result['data']['households'];
+        if(count($households) == 0){
+          log::add('surepetcare','error','Aucun foyer trouvé, synchronisation impossible');
+          return;
+        }
+        log::add('surepetcare','debug','Found '.count($households). ' households');
+        $households_config = config::byKey('households','surepetcare',array());
+        log::add('surepetcare','debug','Household_config= '.print_r($households_config, true));
+        foreach ($households as $household) {
+          log::add('surepetcare','debug','Household id= '.$household['id']);
+          log::add('surepetcare','debug','Household name= '.$household['name']);
+          foreach ($households_config as $key=>$household_config) {
+            if($household_config['id'] == $household['id']){
+              $household_config['name'] = $household['name'];
+              $households_config[$key] = $household_config;
+              break(2);
+            }
+          }
+                $households_config[$household['id']] = $household['name'];
+        }
+        config::save('households',$households_config,'surepetcare');
+    } else {
+        log::add('surepetcare','error','Aucun foyer trouvé, synchronisation impossible');
+        return;
+    }
+    if(isset($result['data']['devices'])) {
+        foreach ($result['data']['devices'] as $key => $device) {
                 log::add('surepetcare','debug','Device '.$key. '='.json_encode($device));
                 if(!isset($device['id']) || !isset($device['product_id'])){
                     log::add('surepetcare','debug','Missing device id or product id');
                     continue;
                 }
-                $found_eqLogics[] = self::findProduct($device,$household);
-                log::add('surepetcare','debug',json_encode($found_eqLogics));
-            }
-        }
-        $result = surepetcare::request('https://app.api.surehub.io/api/household/'. $household['id'].'/pet', null, 'GET', array('Authorization: Bearer ' . $token));
-        log::add('surepetcare','debug','getPets result : '.json_encode($result));
-
-        if(isset($result['data'])) {
-            foreach($result['data'] as $key => $pet){
-                log::add('surepetcare','debug','Pet '.$key. '='.json_encode($pet));
-                if(!isset($pet['id']) || !isset($pet['name'])){
-                    log::add('surepetcare','debug','Missing pet id or name');
-                    continue;
-                }
-                $result = surepetcare::request('https://app.api.surehub.io/api/pet/' . $pet['id'].'?with[]=photo&with[]=breed&with[]=conditions&with[]=tag&with[]=food_type&with[]=species', null, 'GET', array('Authorization: Bearer ' . $token));
-                $petfull = $result['data'];
-                log::add('surepetcare','debug','Petfull '.$key. '='.json_encode($petfull));
-                $found_eqLogics[] = self::findPet($petfull,$household);
-                log::add('surepetcare','debug',json_encode($found_eqLogics));
-            }
-        }
-        // Construction de la liste de choix des animaux pour les commandes profile.
-        $petstags = array();
-        foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
-            if ($eqLogic->getConfiguration('type') == 'pet') {
-                $name = $eqLogic->getName();
-                $tagId = $eqLogic->getConfiguration('tag_id');
-                $petstags[] = $tagId . '|' . $name;
-            }
-        }
-        $listTags = implode(';', $petstags);
-        foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
-            if ($eqLogic->getConfiguration('type') == 'device') {
-                $profile2 = $eqLogic->getCmd(null, 'dev.profile::2');
-                if (is_object($profile2)) {
-                    $profile2->setConfiguration('listValue', $listTags);
-                    $profile2->save();
-                }
-                $profile3 = $eqLogic->getCmd(null, 'dev.profile::3');
-                if (is_object($profile3)) {
-                    $profile3->setConfiguration('listValue', $listTags);
-                    $profile3->save();
-                }
-            }
+            $found_eqLogics[] = self::findProduct($device);
+            log::add('surepetcare','debug',json_encode($found_eqLogics));
         }
     }
 
+    if(isset($result['data']['pets'])) {
+        foreach($result['data']['pets'] as $key => $pet){
+            log::add('surepetcare','debug','Pet '.$key. '='.json_encode($pet));
+            if(!isset($pet['id']) || !isset($pet['name'])){
+                log::add('surepetcare','debug','Missing pet id or name');
+                continue;
+            }
+            $result = surepetcare::request('https://app.api.surehub.io/api/pet/' . $pet['id'].'?with[]=photo&with[]=breed&with[]=conditions&with[]=tag&with[]=food_type&with[]=species', null, 'GET', array('Authorization: Bearer ' . $token));
+            $petfull = $result['data'];
+            log::add('surepetcare','debug','Petfull '.$key. '='.json_encode($petfull));
+            $found_eqLogics[] = self::findPet($petfull);
+            log::add('surepetcare','debug',json_encode($found_eqLogics));
+        }
+    }
+    // Construction de la liste de choix des animaux pour les commandes profile.
+    $petstags = array();
+    foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
+        if ($eqLogic->getConfiguration('type') == 'pet') {
+            $name = $eqLogic->getName();
+            $tagId = $eqLogic->getConfiguration('tag_id');
+            $petstags[] = $tagId . '|' . $name;
+        }
+    }
+    $listTags = implode(';', $petstags);
+    foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
+        if ($eqLogic->getConfiguration('type') == 'device') {
+            $profile2 = $eqLogic->getCmd(null, 'dev.profile::2');
+            if (is_object($profile2)) {
+                $profile2->setConfiguration('listValue', $listTags);
+                $profile2->save();
+            }
+            $profile3 = $eqLogic->getCmd(null, 'dev.profile::3');
+            if (is_object($profile3)) {
+                $profile3->setConfiguration('listValue', $listTags);
+                $profile3->save();
+            }
+        }
+    }
   }
 
-  public static function findProduct($_device,$_household) {
+  public static function findProduct($_device) {
     $create = false;
+    $households = config::byKey('households','surepetcare',array());
     $eqLogic = self::byLogicalId('dev.' . $_device['id'], 'surepetcare');
     if(!is_object($eqLogic)){
        log::add('surepetcare','info','Nouvel équipement : '.$_device['name']);
@@ -283,8 +265,9 @@ class surepetcare extends eqLogic {
     $eqLogic->setIsEnable(1);
     $eqLogic->setIsVisible(1);
     $eqLogic->setLogicalId('dev.' . $_device['id']);
-    $eqLogic->setConfiguration('household_id', $_household['id']);
-    $eqLogic->setConfiguration('household_name', $_household['name']);
+    $eqLogic->setConfiguration('device_id', $_device['id']);
+    $eqLogic->setConfiguration('household_id', $_device['household_id']);
+    $eqLogic->setConfiguration('household_name', $households[$_device['household_id']]);
     $eqLogic->setConfiguration('type', 'device');
     if(isset($_device['category'])){
       $eqLogic->setConfiguration('category', $_device['category']);
@@ -298,7 +281,7 @@ class surepetcare extends eqLogic {
     if(isset($_device['serial_number'])){
       $eqLogic->setConfiguration('serial_number', $_device['serial_number']);
     }
-    $eqLogic->setConfiguration('surepetcare_id', $_device['surepetcare_id']);
+    // $eqLogic->setConfiguration('surepetcare_id', $_device['surepetcare_id']);
     $products = $eqLogic->getConfiguration('products',array());
     if (!in_array($_device['product_id'],$products)){
       $products[]=$_device['product_id'];
@@ -353,8 +336,9 @@ class surepetcare extends eqLogic {
     return $eqLogic;
   }
 
-  public static function findPet($_pet,$_household) {
+  public static function findPet($_pet) {
     $create = false;
+    $households = config::byKey('households','surepetcare',array());
     $eqLogic = self::byLogicalId('pet.' . $_pet['id'], 'surepetcare');
     if(!is_object($eqLogic)){
        log::add('surepetcare','info','Nouvel animal '.$_pet['name']);
@@ -371,9 +355,9 @@ class surepetcare extends eqLogic {
     $eqLogic->setIsEnable(1);
     $eqLogic->setIsVisible(1);
     $eqLogic->setLogicalId('pet.' . $_pet['id']);
-    $eqLogic->setConfiguration('household_id', $_household['id']);
+    $eqLogic->setConfiguration('household_id', $_pet['household_id']);
+    $eqLogic->setConfiguration('household_name', $households[$_pet['household_id']]);
     $eqLogic->setConfiguration('pet_id', $_pet['id']);
-    $eqLogic->setConfiguration('household_name', $_household['name']);
     $eqLogic->setConfiguration('type', 'pet');
     if(isset($_pet['category'])){
       $eqLogic->setConfiguration('category', $_pet['category']);
@@ -458,16 +442,6 @@ class surepetcare extends eqLogic {
         // On récupère les infos sur l'équipement.
         $logicalId = explode('.',$this->getLogicalId());
         $deviceId = $logicalId[1];
-        // test pour le feeder.
-        if ($this->getConfiguration('product_id') == '4') {
-            $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '?with[]=status&with[]=control&with[]=weights';
-            $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-            log::add('surepetcare','debug','Test feeder 1 : ' . print_r($result['data'], true));
-            $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '?with[]=status&with[]=control&with[]=weight';
-            $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-            log::add('surepetcare','debug','Test feeder 2 : ' . print_r($result['data'], true));
-        }
-        // fin test pour le feeder
         $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/status';
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
 
@@ -486,9 +460,9 @@ class surepetcare extends eqLogic {
             }
             $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/control';
             $result2 = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-            if (isset($result2['data']['curfew'])) {
+            if (isset($result2['data']['curfew'][0])) {
                 log::add('surepetcare','debug','curfew: '. print_r($result2['data']['curfew'], true));
-                $result['data']['curfew'] = $result2['data']['curfew'];
+                $result['data']['curfew'] = $result2['data']['curfew'][0];
             }
             $this->applyData($result['data']);
         }
@@ -838,17 +812,17 @@ class surepetcareCmd extends cmd {
                     $locktime = $eqLogic->getConfiguration('lock_time', '');
                     $unlocktime = $eqLogic->getConfiguration('unlock_time', '');
                     if ($locktime != '' && $unlocktime != '') {
-                        $parameters[$keyValue[0]] = array(
+                        $parameters[$keyValue[0]] = array(array(
                             'enabled' => true,
                             'lock_time' => $eqLogic::formatTime($locktime),
                             'unlock_time' => $eqLogic::formatTime($unlocktime)
-                        );
+                        ));
                     } else {
                         log::add('surepetcare','error','Il faut remplir les heures de début et de fin de couvre-feu dans la configutation');
                         throw new Exception(__('Heures de couvre-feu incorrectes', __FILE__));
                     }
                 } else {
-                    $parameters[$keyValue[0]] = array('enabled' => false);
+                    $parameters[$keyValue[0]] = array(array('enabled' => false));
                 }
             } else if($keyValue[0] =='setposition'){
                 $method = 'POST';

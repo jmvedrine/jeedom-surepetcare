@@ -19,11 +19,14 @@
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 function surepetcare_install() {
-    
+    config::save('autorefresh', '* * * * *', 'surepetcare');
 }
 
 function surepetcare_update() {
-    
+    $autorefresh = config::byKey('autorefresh','surepetcare');
+    if($autorefresh =='') {
+        config::save('autorefresh', '* * * * *', 'surepetcare');
+    }
 }
 
 
