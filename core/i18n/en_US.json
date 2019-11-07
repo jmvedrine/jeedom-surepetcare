@@ -56,9 +56,17 @@
         "Adresse mail": "Mail address",
         "Mail du compte": "Account mail address",
         "Mot de passe": "Password",
-        "Mot de passe du compte": "Account password"
+        "Mot de passe du compte": "Account password",
+        "Auto-actualisation (cron)": "Auto-actualisation (cron)",
+        "Toutes les minutes": "Toutes les minutes",
+        "Toutes les 5 minutes": "Toutes les 5 minutes",
+        "Toutes les 10 minutes": "Toutes les 10 minutes",
+        "Toutes les 15 minutes": "Toutes les 15 minutes",
+        "Toutes les 30 minutes": "Toutes les 30 minutes",
+        "Toutes les 45 minutes": "Toutes les 45 minutes"
     },
     "plugins\/surepetcare\/core\/class\/surepetcare.class.php": {
+        "Expression cron non valide : ": "Expression cron non valide : ",
         "Changer la position": "Flip location",
         "Nouveau produit detecté": "New device detected",
         "Erreur lors de la requete : ": "Request error :",
