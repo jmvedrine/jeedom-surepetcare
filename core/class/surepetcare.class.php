@@ -36,12 +36,25 @@ class surepetcare extends eqLogic {
                 $c = new Cron\CronExpression(checkAndFixCron($autorefresh), new Cron\FieldFactory);
                 if ($c->isDue()) {
                     log::add('surepetcare', 'debug', 'cron is due');
-                    foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
-                        if ($eqLogic->getConfiguration('type') == 'pet') {
-                            $eqLogic->getPetStatus();
-                        } else if ($eqLogic->getConfiguration('type') == 'device') {
-                            $eqLogic->getDeviceStatus();
-                        }
+                    $token = cache::byKey('surepetcare::token')->getValue();
+                    if ($token == '') {
+                        $token = surepetcare::login();
+                    }
+                    $url = 'https://app.api.surehub.io/api/pet?with[]=status&with[]=position&with[]=tag';
+                    $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
+                    log::add('surepetcare','debug', "Pets Data : ". print_r($result, true));
+                    if (isset($result['data'])) {
+                        surepetcare::updatePetsStatus($result['data']);
+                    } else {
+                        log::add('surepetcare','debug', 'Aucune donnée pour les animaux lors de la mise à jour');
+                    }
+                    $url = 'https://app.api.surehub.io/api/device?with[]=children&with[]=status&with[]=curfew&with[]=control';
+                    $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
+                    log::add('surepetcare','debug', "Devices Data : ". print_r($result, true));
+                    if (isset($result['data'])) {
+                        surepetCare::updateDevicesStatus($result['data']);
+                    } else {
+                        log::add('surepetcare','debug', 'Aucune donnée pour les équipements lors de la mise à jour');
                     }
                 }
             } catch (Exception $exc) {
@@ -433,6 +446,65 @@ class surepetcare extends eqLogic {
         return '00:00';
     }
   }
+  
+    public static function updatePetsStatus($data) {
+        foreach ($data as $key => $pet) {
+            log::add('surepetcare','debug','updatePetsStatus pet : '. print_r($pet, true));
+            $eqLogic = self::byLogicalId('pet.' . $pet['id'], 'surepetcare');
+            if(is_object($eqLogic) && $eqLogic->getIsEnable() == 1){
+                if (isset($pet['status']['activity']['where'])) {
+                    log::add('surepetcare','debug','updatePetsStatus pet activity : '. print_r($pet['status']['activity'], true));
+                    $position = ($pet['status']['activity']['where'] == 1);
+                    $since = $pet['status']['activity']['since'];
+                    $device_id = $pet['status']['activity']['device_id'];
+                    $eqLogic2 = self::byLogicalId('dev.' . $device_id, 'surepetcare');
+                    if(is_object($eqLogic2)){
+                        $eqLogic->checkAndUpdateCmd('pet.through', $eqLogic2->getName());
+                        log::add('surepetcare','debug', 'Mise à jour passé par ' . $pet['id'] . ' nouvelle valeur ' . $eqLogic2->getName());
+                    } else {
+                        log::add('surepetcare','debug', 'Device inconnu id ' . $device_id . ' dans updatePetsStatus');
+                    }
+                    log::add('surepetcare','debug', 'Mise à jour position animal ' . $pet['id'] . ' nouvelle valeur ' . $position);
+                    $eqLogic->checkAndUpdateCmd('pet.position', $position);
+                    $date = new DateTime($since, new DateTimeZone('UTC'));
+                    date_timezone_set($date,  new DateTimeZone(config::byKey('timezone')));
+                    log::add('surepetcare','debug', 'Mise à jour dernier passage ' . $date->format('Y-m-d H:i:s'));
+                    $eqLogic->checkAndUpdateCmd('pet.since', $date->format('Y-m-d H:i:s'));
+                }
+            }
+        }
+    }
+    
+    public static function updateDevicesStatus($data) {
+        foreach ($data as $key => $device) {
+            log::add('surepetcare','debug','updateDevicesStatus device : '. print_r($device, true));
+            $eqLogic = self::byLogicalId('dev.' . $device['id'], 'surepetcare');
+            if(is_object($eqLogic) && $eqLogic->getIsEnable() == 1){
+                log::add('surepetcare','debug','updateDevicesStatus enabled object found');
+                if (isset($device['status']['battery'])) {
+                    log::add('surepetcare','debug','updateDevicesStatus battery : '. $device['status']['battery']);
+                    $battery_max = 6.0;
+                    $battery_min = 4.2;
+                    $battery = round(($device['status']['battery'] - $battery_min) / ($battery_max - $battery_min) * 100, 0);
+                    if ($battery < 0) {
+                        $battery = 0;
+                    }
+                    if ($battery > 100) {
+                        $battery = 100;
+                    }
+                    $eqLogic->batteryStatus($battery);
+                }
+                if (isset($device['control']['curfew'][0])) {
+                    log::add('surepetcare','debug','updateDevicesStatus curfew: '. print_r($device['control']['curfew'], true));
+                    $device['status']['curfew'] = $device['control']['curfew'][0];
+                } else {
+                    // Deactivate curfew .
+                    $device['status']['curfew'] = array('enabled' => false);
+                }
+                $eqLogic->applyData($device['status']);
+            }
+        }
+    }
     /*     * *********************Méthodes d'instance************************* */
     public function getDeviceStatus() {
         $token = cache::byKey('surepetcare::token')->getValue();
@@ -463,6 +535,9 @@ class surepetcare extends eqLogic {
             if (isset($result2['data']['curfew'][0])) {
                 log::add('surepetcare','debug','curfew: '. print_r($result2['data']['curfew'], true));
                 $result['data']['curfew'] = $result2['data']['curfew'][0];
+            } else {
+                // Deactivate curfew .
+                $result['data']['curfew'] = array('enabled' => false);
             }
             $this->applyData($result['data']);
         }
@@ -500,118 +575,117 @@ class surepetcare extends eqLogic {
         }
     }
 
-  public function applyData($_data) {
-    log::add('surepetcare','debug','applyData '.print_r($_data, true));
-    $updatedValue = false;
-    if($this->getConfiguration('type') != 'device') {
-      log::add('surepetcare', 'debug', 'aplyData wrong type');
-      return $updatedValue;
+    public function applyData($_data) {
+        log::add('surepetcare','debug','applyData '.print_r($_data, true));
+        $updatedValue = false;
+        if($this->getConfiguration('type') != 'device') {
+          log::add('surepetcare', 'debug', 'aplyData wrong type');
+          return $updatedValue;
+        }
+
+        foreach ($this->getCmd('info') as $cmd) {
+          $logicalId = $cmd->getLogicalId();
+          if ($logicalId == '') {
+            continue;
+          }
+          $epClusterPath = explode('.', $logicalId);
+          if ($epClusterPath[0] != 'dev') {
+            log::add('surepetcare', 'debug', 'applyData wrong clusterpath');
+            continue;
+          }
+          $path = explode('::', $epClusterPath[1]);
+          $value = $_data;
+          foreach ($path as $key) {
+            if (!isset($value[$key])) {
+                continue (2);
+            }
+            $value = $value[$key];
+          }
+          if (!is_array($value)){
+            log::add('surepetcare', 'debug', 'Mise à jour commande ' . $cmd->getName() . ' nouvelle valeur ' . $value);
+            $this->checkAndUpdateCmd($cmd,$value);
+            $updatedValue = true;
+          } else {
+              log::add('surepetcare', 'debug', 'applyData new value is an array '. print_r($value, true) . ' for key '. $key);
+          }
+        }
+        return $updatedValue;
     }
 
-    foreach ($this->getCmd('info') as $cmd) {
-      $logicalId = $cmd->getLogicalId();
-      if ($logicalId == '') {
-        continue;
-      }
-      $epClusterPath = explode('.', $logicalId);
-      if ($epClusterPath[0] != 'dev') {
-        log::add('surepetcare', 'debug', 'applyData wrong clusterpath');
-        continue;
-      }
-      $path = explode('::', $epClusterPath[1]);
-      $value = $_data;
-      foreach ($path as $key) {
-        if (!isset($value[$key])) {
-            continue (2);
+    public function postSave() {
+        If ($this->getConfiguration('type') == 'device') {
+            if ($this->getConfiguration('applyProductId') != $this->getConfiguration('product_id')) {
+              $this->applyModuleConfiguration();
+              $this->refreshWidget();
+            }
         }
-        $value = $value[$key];
-      }
-      if (!is_array($value)){
-        log::add('surepetcare', 'debug', 'Mise à jour commande ' . $cmd->getName() . ' nouvelle valeur ' . $value);
-        $this->checkAndUpdateCmd($cmd,$value);
-        $updatedValue = true;
-      } else {
-          log::add('surepetcare', 'debug', 'applyData new value is an array '. print_r($value, true) . ' for key '. $key);
-      }
-    }
-    // TODO batterie.
-    return $updatedValue;
-  }
+        If ($this->getConfiguration('type') == 'pet') {
+            if ($this->getIsEnable() == 1) {
+                // Position (info).
+                $position = $this->getCmd(null, 'pet.position');
+                if (!is_object($position)) {
+                    $position = new surepetcareCmd();
+                    $position->setIsVisible(0);
+                    $position->setName(__('Position', __FILE__));
+                    $position->setConfiguration('historizeMode', 'none');
+                    $position->setIsHistorized(1);
+                }
+                $position->setDisplay('generic_type', 'PRESENCE');
+                $position->setEqLogic_id($this->getId());
+                $position->setType('info');
+                $position->setSubType('binary');
+                $position->setLogicalId('pet.position');
+                $position->save();
 
-  public function postSave() {
-    If ($this->getConfiguration('type') == 'device') {
-        if ($this->getConfiguration('applyProductId') != $this->getConfiguration('product_id')) {
-          $this->applyModuleConfiguration();
-          $this->refreshWidget();
+                // Fixer la position (action)
+                $setposition = $this->getCmd(null, 'pet.setposition::#select#');
+                if (!is_object($setposition)) {
+                    $setposition = new surepetcareCmd();
+                    $setposition->setName(__('Fixer la position', __FILE__));
+                    $setposition->setIsVisible(1);
+                }
+                $setposition->setDisplay('generic_type', 'DONT');
+                $setposition->setEqLogic_id($this->getId());
+                $setposition->setType('action');
+                $setposition->setSubType('select');
+                $setposition->setConfiguration('listValue','0|Extérieur;1|Intérieur');
+                $setposition->setLogicalId('pet.setposition::#select#');
+                $setposition->setValue($position->getId());
+                $setposition->save();
+                
+                // Date/Heure dernier passage.
+                $since = $this->getCmd(null, 'pet.since');
+                if (!is_object($since)) {
+                    $since = new surepetcareCmd();
+                    $since->setIsVisible(0);
+                    $since->setName(__('Dernier passage', __FILE__));
+                    $since->setConfiguration('historizeMode', 'none');
+                    $since->setIsHistorized(0);
+                }
+                $since->setDisplay('generic_type', 'DONT');
+                $since->setEqLogic_id($this->getId());
+                $since->setType('info');
+                $since->setSubType('string');
+                $since->setLogicalId('pet.since');
+                $since->save();
+                // Entré/sorti par.
+                $through = $this->getCmd(null, 'pet.through');
+                if (!is_object($through)) {
+                    $through = new surepetcareCmd();
+                    $through->setIsVisible(0);
+                    $through->setName(__('Passé par', __FILE__));
+                    $through->setConfiguration('historizeMode', 'none');
+                    $through->setIsHistorized(0);
+                }
+                $through->setDisplay('generic_type', 'DONT');
+                $through->setEqLogic_id($this->getId());
+                $through->setType('info');
+                $through->setSubType('string');
+                $through->setLogicalId('pet.through');
+                $through->save();
+            }
         }
     }
-    If ($this->getConfiguration('type') == 'pet') {
-        if ($this->getIsEnable() == 1) {
-            // Position (info).
-            $position = $this->getCmd(null, 'pet.position');
-            if (!is_object($position)) {
-                $position = new surepetcareCmd();
-                $position->setIsVisible(0);
-                $position->setName(__('Position', __FILE__));
-                $position->setConfiguration('historizeMode', 'none');
-                $position->setIsHistorized(1);
-            }
-            $position->setDisplay('generic_type', 'PRESENCE');
-            $position->setEqLogic_id($this->getId());
-            $position->setType('info');
-            $position->setSubType('binary');
-            $position->setLogicalId('pet.position');
-            $position->save();
-
-            // Fixer la position (action)
-            $setposition = $this->getCmd(null, 'pet.setposition::#select#');
-            if (!is_object($setposition)) {
-                $setposition = new surepetcareCmd();
-                $setposition->setName(__('Fixer la position', __FILE__));
-                $setposition->setIsVisible(1);
-            }
-            $setposition->setDisplay('generic_type', 'DONT');
-            $setposition->setEqLogic_id($this->getId());
-            $setposition->setType('action');
-            $setposition->setSubType('select');
-            $setposition->setConfiguration('listValue','0|Extérieur;1|Intérieur');
-            $setposition->setLogicalId('pet.setposition::#select#');
-            $setposition->setValue($position->getId());
-            $setposition->save();
-            
-            // Date/Heure dernier passage.
-            $since = $this->getCmd(null, 'pet.since');
-            if (!is_object($since)) {
-                $since = new surepetcareCmd();
-                $since->setIsVisible(0);
-                $since->setName(__('Dernier passage', __FILE__));
-                $since->setConfiguration('historizeMode', 'none');
-                $since->setIsHistorized(0);
-            }
-            $since->setDisplay('generic_type', 'DONT');
-            $since->setEqLogic_id($this->getId());
-            $since->setType('info');
-            $since->setSubType('string');
-            $since->setLogicalId('pet.since');
-            $since->save();
-            // Entré/sorti par.
-            $through = $this->getCmd(null, 'pet.through');
-            if (!is_object($through)) {
-                $through = new surepetcareCmd();
-                $through->setIsVisible(0);
-                $through->setName(__('Passé par', __FILE__));
-                $through->setConfiguration('historizeMode', 'none');
-                $through->setIsHistorized(0);
-            }
-            $through->setDisplay('generic_type', 'DONT');
-            $through->setEqLogic_id($this->getId());
-            $through->setType('info');
-            $through->setSubType('string');
-            $through->setLogicalId('pet.through');
-            $through->save();
-        }
-    }
-  }
 
   public function getImage() {
     if ($this->getConfiguration('type') == 'device') {
