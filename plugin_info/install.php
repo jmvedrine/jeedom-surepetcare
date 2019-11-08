@@ -27,6 +27,20 @@ function surepetcare_update() {
     if($autorefresh =='') {
         config::save('autorefresh', '* * * * *', 'surepetcare');
     }
+    foreach (surepetcare::byType('surepetcare') as $eqLogic) {
+        if ($eqLogic->getConfiguration('type') == 'device' && $eqLogic->getConfiguration('device_id') == 3) {
+            // Suppress pofile commands for the Microchip pet door connect.
+            $cmd = $eqLogic->getCmd(null, 'dev.profile::2');
+            if (is_object($cmd)) {
+                $cmd->remove();
+            }
+            $cmd = $eqLogic->getCmd(null, 'dev.profile::3');
+            if (is_object($cmd)) {
+                $cmd->remove();
+            }
+        }
+		$eqLogic->save();
+	}
 }
 
 
