@@ -97,6 +97,51 @@
 					"mobile" : "lock"
 				}
             },
+            {
+                "name": "Fixer heure de verrouillage",
+                "type": "action",
+                "subtype": "message",
+                "generic_type": "DONT",
+                "display": {
+                    "title_disable": 1,
+                    "message_placeholder" : "HHMM"
+                },
+                "isVisible": 0,
+                "isHistorized": 0,
+                "value" : "Heure de verrouillage",
+                "logicalId": "setlocktime::#message#"
+            },
+            {   "name": "Heure de verrouillage",
+                "type": "info",
+                "subtype": "numeric",
+                "generic_type": "DONT",
+                "isVisible": 0,
+                "isHistorized": 0,
+                "logicalId": "curfew::lock_time"
+            },
+            {
+                "name": "Fixer heure de déverrouillage",
+                "type": "action",
+                "subtype": "message",
+                "generic_type": "DONT",
+                "display": {
+                    "title_disable": 1,
+                    "message_placeholder" : "HHMM"
+                },
+                "isVisible": 0,
+                "isHistorized": 0,
+                "value" : "Heure de déverrouillage",
+                "logicalId": "setunlocktime::#message#"
+            },
+            {
+                "name": "Heure de déverrouillage",
+                "type": "info",
+                "subtype": "numeric",
+                "generic_type": "DONT",
+                "isVisible": 0,
+                "isHistorized": 0,
+                "logicalId": "curfew::unlock_time"
+            },
 			{
 				"name": "Couvre-feu",
 				"type": "info",

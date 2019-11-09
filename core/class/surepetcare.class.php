@@ -463,6 +463,7 @@ class surepetcare extends eqLogic {
                         $eqLogic->checkAndUpdateCmd('pet.through', $eqLogic2->getName());
                         log::add('surepetcare','debug', 'Mise à jour passé par ' . $pet['id'] . ' nouvelle valeur ' . $eqLogic2->getName());
                     } else {
+                        // Ceci peut se produire si on a mis à jour la position par commande.
                         log::add('surepetcare','debug', 'Device inconnu id ' . $device_id . ' dans updatePetsStatus');
                     }
                     log::add('surepetcare','debug', 'Mise à jour position animal ' . $pet['id'] . ' nouvelle valeur ' . $position);
@@ -495,8 +496,8 @@ class surepetcare extends eqLogic {
                     }
                     $eqLogic->batteryStatus($battery);
                 }
-                if (isset($device['control']['curfew'][0])) {
-                    log::add('surepetcare','debug','updateDevicesStatus curfew: '. print_r($device['control']['curfew'], true));
+                if (isset($device['control']['curfew'])) {
+                    log::add('surepetcare','debug','updateDevicesStatus curfew : '. print_r($device['control']['curfew'], true));
                     $device['status']['curfew'] = $device['control']['curfew'][0];
                 } else {
                     // Deactivate curfew .
@@ -533,8 +534,8 @@ class surepetcare extends eqLogic {
             }
             $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/control';
             $result2 = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-            if (isset($result2['data']['curfew'][0])) {
-                log::add('surepetcare','debug','curfew: '. print_r($result2['data']['curfew'], true));
+            if (isset($result2['data']['curfew'])) {
+                log::add('surepetcare','debug','getDeviceStatus curfew : '. print_r($result2['data']['curfew'], true));
                 $result['data']['curfew'] = $result2['data']['curfew'][0];
             } else {
                 // Deactivate curfew .
@@ -598,11 +599,16 @@ class surepetcare extends eqLogic {
           $value = $_data;
           foreach ($path as $key) {
             if (!isset($value[$key])) {
+                log::add('surepetcare', 'debug', 'applyData value key not set ' . $key);
                 continue (2);
             }
             $value = $value[$key];
           }
           if (!is_array($value)){
+            if ($key == 'lock_time' || $key == 'unlock_time') {
+                // Format time to Jeedom numeric.
+                $value = str_replace(':', '', $value);
+            }
             log::add('surepetcare', 'debug', 'Mise à jour commande ' . $cmd->getName() . ' nouvelle valeur ' . $value);
             $this->checkAndUpdateCmd($cmd,$value);
             $updatedValue = true;
