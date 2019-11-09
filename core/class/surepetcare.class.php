@@ -877,7 +877,7 @@ class surepetcareCmd extends cmd {
             }
             break;
         }
-        // log::add('surepetcare','debug','Replace ' . print_r($replace, true));
+        log::add('surepetcare','debug','Replace ' . print_r($replace, true));
         foreach ($datasList as $datas){
             $keyValue = explode('::',$datas);
             $type = self::datatype($keyValue[0]);
@@ -933,6 +933,16 @@ class surepetcareCmd extends cmd {
                 $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
                 log::add('surepetcare','debug','url='. $url);
                 log::add('surepetcare','debug','keyvalue0' .$parameters[$keyValue[0]]);
+            } else if($keyValue[0] =='setlocktime'){
+                log::add('surepetcare','debug','Heure de verrouillage : ' . $parameters[$keyValue[0]]);
+                $eqLogic->setConfiguration('lock_time', $parameters[$keyValue[0]]);
+                $eqLogic->save();
+                return;
+            } else if($keyValue[0] =='setunlocktime'){
+                log::add('surepetcare','debug','Heure de déverrouillage : ' . $parameters[$keyValue[0]]);
+                $eqLogic->setConfiguration('unlock_time', $parameters[$keyValue[0]]);
+                $eqLogic->save();
+                return;
             }
         }
         log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));
