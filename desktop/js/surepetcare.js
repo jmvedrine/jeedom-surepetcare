@@ -41,8 +41,12 @@ function printEqLogic(_eqLogic) {
     if (_eqLogic.configuration.type=="device") {
         printEqLogicHelper("{{Modèle}}","product_name",_eqLogic);
         printEqLogicHelper("{{Numéro de série}}","serial_number",_eqLogic);
+        printEqLogicHelper("{{Adresse MAC}}","mac_address",_eqLogic);
+        printEqLogicHelper("{{Version}}","version",_eqLogic);
+        printEqLogicHelper("{{Créé le}}","created_at",_eqLogic);
+        printEqLogicHelper("{{Mis à jour le}}","updated_at",_eqLogic);
         $('#img_device').attr("src", 'plugins/surepetcare/core/config/images/device'+_eqLogic.configuration.product_id+'.png');
-        if (_eqLogic.configuration.product_id!=1) {
+        if (_eqLogic.configuration.product_id == 3 || _eqLogic.configuration.product_id == 6) {
             $('#curfew_lock_time').show();
             $('#curfew_unlock_time').show();
         } else {
@@ -55,6 +59,10 @@ function printEqLogic(_eqLogic) {
         printEqLogicHelper("{{Commentaire}}","comments",_eqLogic);
         printEqLogicHelper("{{Tag id}}","tag_id",_eqLogic);
         printEqLogicHelper("{{Race}}","breed_name",_eqLogic);
+        printEqLogicHelper("{{Sexe}}","gender",_eqLogic);
+        printEqLogicHelper("{{Version}}","version",_eqLogic);
+        printEqLogicHelper("{{Créé le}}","created_at",_eqLogic);
+        printEqLogicHelper("{{Mis à jour le}}","updated_at",_eqLogic);
         $('#img_device').attr("src", _eqLogic.configuration.photo_location);
         $('#curfew_lock_time').hide();
         $('#curfew_unlock_time').hide();

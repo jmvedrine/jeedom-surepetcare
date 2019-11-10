@@ -295,6 +295,18 @@ class surepetcare extends eqLogic {
     if(isset($_device['serial_number'])){
       $eqLogic->setConfiguration('serial_number', $_device['serial_number']);
     }
+    if(isset($_device['mac_address'])){
+      $eqLogic->setConfiguration('mac_address', $_device['mac_address']);
+    }
+    if(isset($_device['version'])){
+      $eqLogic->setConfiguration('version', $_device['version']);
+    }
+    if(isset($_device['created_at'])){
+      $eqLogic->setConfiguration('created_at', $_device['created_at']);
+    }
+    if(isset($_device['updated_at'])){
+      $eqLogic->setConfiguration('updated_at', $_device['updated_at']);
+    }
     // $eqLogic->setConfiguration('surepetcare_id', $_device['surepetcare_id']);
     $products = $eqLogic->getConfiguration('products',array());
     if (!in_array($_device['product_id'],$products)){
@@ -374,13 +386,26 @@ class surepetcare extends eqLogic {
     $eqLogic->setConfiguration('pet_id', $_pet['id']);
     $eqLogic->setConfiguration('type', 'pet');
     if(isset($_pet['category'])){
-      $eqLogic->setConfiguration('category', $_pet['category']);
+      $eqLogic->setConfiguration('category', __('Dernier passage', __FILE__));
     }
     if(isset($_pet['gender'])){
-      $eqLogic->setConfiguration('gender', $_pet['gender']);
+        if ($_pet['gender'] == 1) {
+            $eqLogic->setConfiguration('gender', __('Mâle', __FILE__));
+        } else if ($_pet['gender'] == 2) {
+            $eqLogic->setConfiguration('gender', __('Femelle', __FILE__));
+        }
     }
     if(isset($_pet['weight'])){
       $eqLogic->setConfiguration('weight', $_pet['weight']);
+    }
+    if(isset($_pet['version'])){
+      $eqLogic->setConfiguration('version', $_pet['version']);
+    }
+    if(isset($_pet['created_at'])){
+      $eqLogic->setConfiguration('created_at', $_pet['created_at']);
+    }
+    if(isset($_pet['updated_at'])){
+      $eqLogic->setConfiguration('updated_at', $_pet['updated_at']);
     }
     if(isset($_pet['photo']['location'])){
       $extension = pathinfo($_pet['photo']['location'], PATHINFO_EXTENSION);
@@ -482,7 +507,6 @@ class surepetcare extends eqLogic {
             log::add('surepetcare','debug','updateDevicesStatus device : '. print_r($device, true));
             $eqLogic = self::byLogicalId('dev.' . $device['id'], 'surepetcare');
             if(is_object($eqLogic) && $eqLogic->getIsEnable() == 1){
-                log::add('surepetcare','debug','updateDevicesStatus enabled object found');
                 if (isset($device['status']['battery'])) {
                     log::add('surepetcare','debug','updateDevicesStatus battery : '. $device['status']['battery']);
                     $battery_max = 6.0;
@@ -516,32 +540,11 @@ class surepetcare extends eqLogic {
         // On récupère les infos sur l'équipement.
         $logicalId = explode('.',$this->getLogicalId());
         $deviceId = $logicalId[1];
-        $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/status';
+        $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '?with[]=status&with[]=control&with[]=curfew&with[]=feeding';
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-
+        log::add('surepetcare','debug',"Résultat getDeviceStatus $deviceid : " . print_r($result['data'], true));
         if (isset($result['data'])) {
-            if (isset($result['data']['battery'])) {
-                $battery_max = 6.0;
-                $battery_min = 4.2;
-                $battery = round(($result['data']['battery'] - $battery_min) / ($battery_max - $battery_min) * 100, 0);
-                if ($battery < 0) {
-                    $battery = 0;
-                }
-                if ($battery > 100) {
-                    $battery = 100;
-                }
-                $this->batteryStatus($battery);
-            }
-            $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '/control';
-            $result2 = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-            if (isset($result2['data']['curfew'])) {
-                log::add('surepetcare','debug','getDeviceStatus curfew : '. print_r($result2['data']['curfew'], true));
-                $result['data']['curfew'] = $result2['data']['curfew'][0];
-            } else {
-                // Deactivate curfew .
-                $result['data']['curfew'] = array('enabled' => false);
-            }
-            $this->applyData($result['data']);
+            surepetCare::updateDevicesStatus(array($result['data']));
         }
     }
 
@@ -550,30 +553,14 @@ class surepetcare extends eqLogic {
         if ($token == '') {
             $token = surepetcare::login();
         }
+        // On récupère les infos sur l'animal.
         $logicalId = explode('.',$this->getLogicalId());
         $petId = $logicalId[1];
         $url = 'https://app.api.surehub.io/api/pet/' . $petId . '?with[]=status';
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-        log::add('surepetcare','debug', "Résultat getPetStatus $petId : ". print_r($result, true));
-        // $url = 'https://app.api.surehub.io/api/pet/' . $petId . '/position';
-        // $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-        // log::add('surepetcare','debug', "GetPetStatus $petId : ". print_r($result, true));
-        if (isset($result['data']['status']['activity']['where'])) {
-            $position = ($result['data']['status']['activity']['where'] == 1);
-            $since = $result['data']['status']['activity']['since'];
-            $device_id = $result['data']['status']['activity']['device_id'];
-            $eqLogic = self::byLogicalId('dev.' . $device_id, 'surepetcare');
-            if(is_object($eqLogic)){
-                $this->checkAndUpdateCmd('pet.through', $eqLogic->getName());
-            } else {
-                log::add('surepetcare','debug', 'Device inconnu id ' . $device_id . ' dans getPetStatus');
-            }
-            log::add('surepetcare','debug', 'Mise à jour position animal ' . $petId . ' nouvelle valeur ' . $position);
-            $this->checkAndUpdateCmd('pet.position', $position);
-            $date = new DateTime($since, new DateTimeZone('UTC'));
-            date_timezone_set($date,  new DateTimeZone(config::byKey('timezone')));
-            log::add('surepetcare','debug', 'Mise à jour dernier passage ' . $date->format('Y-m-d H:i:s'));
-            $this->checkAndUpdateCmd('pet.since', $date->format('Y-m-d H:i:s'));
+        log::add('surepetcare','debug', "Résultat getPetStatus $petId : ". print_r($result['data'], true));
+        if (isset($result['data'])) {
+            surepetCare::updatePetsStatus(array($result['data']));
         }
     }
 
