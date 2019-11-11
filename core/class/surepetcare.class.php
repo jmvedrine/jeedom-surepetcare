@@ -741,7 +741,7 @@ class surepetcare extends eqLogic {
                     $feedingweight0->setUnite('g');
                     $feedingweight0->setName(__('Poids bol 1', __FILE__));
                     $feedingweight0->setConfiguration('historizeMode', 'none');
-                    $feedingweight0->setIsHistorized(0);
+                    $feedingweight0->setIsHistorized(1);
                 }
                 $feedingweight0->setDisplay('generic_type', 'DONT');
                 $feedingweight0->setEqLogic_id($this->getId());
@@ -757,7 +757,7 @@ class surepetcare extends eqLogic {
                     $feedingweight1->setUnite('g');
                     $feedingweight1->setName(__('Poids bol 2', __FILE__));
                     $feedingweight1->setConfiguration('historizeMode', 'none');
-                    $feedingweight1->setIsHistorized(0);
+                    $feedingweight1->setIsHistorized(1);
                 }
                 $feedingweight1->setDisplay('generic_type', 'DONT');
                 $feedingweight1->setEqLogic_id($this->getId());
