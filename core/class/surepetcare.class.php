@@ -489,7 +489,7 @@ class surepetcare extends eqLogic {
                         log::add('surepetcare','debug', 'Mise à jour passé par ' . $pet['id'] . ' nouvelle valeur ' . $eqLogic2->getName());
                     } else {
                         // Ceci peut se produire si on a mis à jour la position par commande.
-                        log::add('surepetcare','debug', 'Device inconnu id ' . $device_id . ' dans updatePetsStatus');
+                        log::add('surepetcare','debug', 'Chatière inconnue id ' . $device_id . ' dans updatePetsStatus');
                     }
                     log::add('surepetcare','debug', 'Mise à jour position animal ' . $pet['id'] . ' nouvelle valeur ' . $position);
                     $eqLogic->checkAndUpdateCmd('pet.position', $position);
@@ -497,6 +497,31 @@ class surepetcare extends eqLogic {
                     date_timezone_set($date,  new DateTimeZone(config::byKey('timezone')));
                     log::add('surepetcare','debug', 'Mise à jour dernier passage ' . $date->format('Y-m-d H:i:s'));
                     $eqLogic->checkAndUpdateCmd('pet.since', $date->format('Y-m-d H:i:s'));
+                }
+                if (isset($pet['status']['feeding'])) {
+                    log::add('surepetcare','debug','updatePetsStatus pet feeding : '. print_r($pet['status']['feeding'], true));
+                    $feedingtime = $pet['status']['feeding']['at'];
+                    $device_id = $pet['status']['feeding']['device_id'];
+                    $eqLogic2 = self::byLogicalId('dev.' . $device_id, 'surepetcare');
+                    if(is_object($eqLogic2)){
+                        $eqLogic->checkAndUpdateCmd('pet.feedingdevice', $eqLogic2->getName());
+                        log::add('surepetcare','debug', 'Mise à jour distributeur dernier repas ' . $pet['id'] . ' nouvelle valeur ' . $eqLogic2->getName());
+                    } else {
+                        log::add('surepetcare','debug', 'Mangeoire inconnue id ' . $device_id . ' dans updatePetsStatus');
+                    }
+                    if (isset($pet['status']['feeding']['change'])) {
+                        if (is_array($pet['status']['feeding']['change'])) {
+                            foreach ($pet['status']['feeding']['change'] as $key => $weight) {
+                                log::add('surepetcare','debug', 'Poids dernier repas index '.$key. ' pour ' . $pet['id'] . ' nouvelle valeur ' . $weight);
+                            }
+                        }
+                    }
+                    $date = new DateTime($feedingtime, new DateTimeZone('UTC'));
+                    date_timezone_set($date,  new DateTimeZone(config::byKey('timezone')));
+                    log::add('surepetcare','debug', 'Mise à jour heure dernier repas ' . $date->format('Y-m-d H:i:s'));
+                    $eqLogic->checkAndUpdateCmd('pet.feedingtime', $date->format('Y-m-d H:i:s'));
+                } else {
+                    log::add('surepetcare','debug', 'Pas d\'info dernier repas ');
                 }
             }
         }
@@ -677,6 +702,36 @@ class surepetcare extends eqLogic {
                 $through->setSubType('string');
                 $through->setLogicalId('pet.through');
                 $through->save();
+                // Heure dernier repas (info).
+                $feedingtime = $this->getCmd(null, 'pet.feedingtime');
+                if (!is_object($feedingtime)) {
+                    $feedingtime = new surepetcareCmd();
+                    $feedingtime->setIsVisible(0);
+                    $feedingtime->setName(__('Dernier repas', __FILE__));
+                    $feedingtime->setConfiguration('historizeMode', 'none');
+                    $feedingtime->setIsHistorized(0);
+                }
+                $feedingtime->setDisplay('generic_type', 'DONT');
+                $feedingtime->setEqLogic_id($this->getId());
+                $feedingtime->setType('info');
+                $feedingtime->setSubType('string');
+                $feedingtime->setLogicalId('pet.feedingtime');
+                $feedingtime->save();
+                // Dernière mangeoire (info).
+                $feedingdevice = $this->getCmd(null, 'pet.feedingdevice');
+                if (!is_object($feedingdevice)) {
+                    $feedingdevice = new surepetcareCmd();
+                    $feedingdevice->setIsVisible(0);
+                    $feedingdevice->setName(__('Mangé dans', __FILE__));
+                    $feedingdevice->setConfiguration('historizeMode', 'none');
+                    $feedingdevice->setIsHistorized(0);
+                }
+                $feedingdevice->setDisplay('generic_type', 'DONT');
+                $feedingdevice->setEqLogic_id($this->getId());
+                $feedingdevice->setType('info');
+                $feedingdevice->setSubType('string');
+                $feedingdevice->setLogicalId('pet.feedingdevice');
+                $feedingdevice->save();
             }
         }
     }

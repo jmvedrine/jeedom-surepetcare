@@ -3,11 +3,12 @@ Description
 
 Plugin permettant de contrôler les objets connectés pour animaux de la marque Sure Petcare (anciennement Sureflap).
 
-Pour le moment les seuls objets connectés sont des chatières
-- La grande chatière connect (Pet Porte Connect en anglais)
+Pour le moment les seuls objets connectés supportés par le plugin sont :
+- La grande chatière connect (Pet Porte Connect ou Microchip Pet Door Connect en anglais)
 - La chatière à puce électronique connect (Microchip Cat Flap Connect en anglais)
+- Le distributeur de nourriture connect (Feeder Connect en anglais)
 
-Note : le plugin ne communique pas directement avec la chatière ou le hub,
+Note : le plugin ne communique pas directement avec la chatière, le distributeur ou le hub,
 il interroge le serveur surepetcare.io qui lui communique avec le hub et à travers lui avec les objets connectés.
 A ma connaissance personne n'a pu décoder le protocole utilisé lors des communications chatière <-> hub 
 ou hub <-> serveur surepetcare.io ce qui s'explique car ces communications sont sécurisées.
@@ -26,6 +27,8 @@ Il faut entrer :
 
 -   **Mot de passe** : Le mot de passe que vous avez choisi lors de la création du compte sur le site surepetcare.io.
 
+- Eventuellement vous pouvez changer l'intervalle d'**Auto-actualisation (cron)** pour interroger le serveur moins souvent.
+
 Et ne pas oublier de cliquer sur **Sauvegarder**.
 
 Création des équipements
@@ -33,8 +36,8 @@ Création des équipements
 
 ![introduction01](../images/Objets.png)
 
-Ne cliquez pas sur Ajouter car il ne faut pas créer les équipements manuellement. Cliquez sur "Synchronisation"
-et le plugin retrouvera sur le site surepetcare.io vos hubs, vos objets connecté (chatières, ...) et vos animaux.
+Cliquez sur "Synchronisation"
+et le plugin retrouvera sur le site surepetcare.io vos hubs, vos objets connecté (hubs, chatières, distributeurs, ...) et vos animaux.
 
 Le plugin est prévu pour un ou plusieurs foyers, mais les foyers n'apparaissent pas comme des objets dans le plugin.
 Par contre pour chaque objet (équipement ou animal) le foyer dont il dépend est indiqué dans les détails.
@@ -43,7 +46,7 @@ Lorsqu'on clique sur le bouton "Synchronisation" le plugin récupère tous les �
 
 Si on le désire il est ensuite possible de supprimer certains objets, mais cette opération sera à renouveler à chaque synchronisation
 car l'objet réapparaitra s'il est dans votre compte sur le serveur de surepetcare.io.
-Pour cette raison, il est préférable de ne pas cocher "Visible" pour les objets qu'on ne souhaite pas visualiser.
+Pour cette raison, il est préférable de ne pas supprimer l'objet mais plutôt de décocher "Visible" pour les objets qu'on ne souhaite pas visualiser.
 
 Les Objets
 ===
@@ -59,6 +62,8 @@ On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où appar
 ou de cet animal sur le dashboard si bien sûr on coche "Visible".
 
 On peut changer le nom de l'objet, ce changement sera conservé même en cas de nouvelle synchronisation.
+
+Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
 
 Il ne faut surtout pas changer le champ "Identifiant" sinon aucune commande pour cet objet ne marche plus et lors de la prochaine synchronisation
 l'objet sera considéré comme nouveau et réimporté aboutissant à un  doublon (si jamais vous faites cette erreur, supprimez l'objet et faites une nouvelle synchronisation).
@@ -91,7 +96,7 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
-| **En ligne**                         | info    | binaire    | Indique si le hub est en ligne.                                                                                                                                    |
+| **En ligne**                         | info    | binaire    | Indique si le distributeur est en ligne.                                                                                                                           |
 | **Réception équipement**             | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du distributeur en dBm                                               |
 | **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                        |
 
