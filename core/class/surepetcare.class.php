@@ -513,6 +513,7 @@ class surepetcare extends eqLogic {
                         if (is_array($pet['status']['feeding']['change'])) {
                             foreach ($pet['status']['feeding']['change'] as $key => $weight) {
                                 log::add('surepetcare','debug', 'Poids dernier repas index '.$key. ' pour ' . $pet['id'] . ' nouvelle valeur ' . $weight);
+                                $eqLogic->checkAndUpdateCmd('pet.feedingweight'.$key, $weight);
                             }
                         }
                     }
@@ -732,6 +733,38 @@ class surepetcare extends eqLogic {
                 $feedingdevice->setSubType('string');
                 $feedingdevice->setLogicalId('pet.feedingdevice');
                 $feedingdevice->save();
+                // Poids repas bol 0
+                $feedingweight0 = $this->getCmd(null, 'pet.feedingweight0');
+                if (!is_object($feedingweight0)) {
+                    $feedingweight0 = new surepetcareCmd();
+                    $feedingweight0->setIsVisible(0);
+                    $feedingweight0->setUnite('g');
+                    $feedingweight0->setName(__('Poids bol 1', __FILE__));
+                    $feedingweight0->setConfiguration('historizeMode', 'none');
+                    $feedingweight0->setIsHistorized(0);
+                }
+                $feedingweight0->setDisplay('generic_type', 'DONT');
+                $feedingweight0->setEqLogic_id($this->getId());
+                $feedingweight0->setType('info');
+                $feedingweight0->setSubType('numeric');
+                $feedingweight0->setLogicalId('pet.feedingweight0');
+                $feedingweight0->save();
+                // Poids repas bol 1
+                $feedingweight1 = $this->getCmd(null, 'pet.feedingweight1');
+                if (!is_object($feedingweight1)) {
+                    $feedingweight1 = new surepetcareCmd();
+                    $feedingweight1->setIsVisible(0);
+                    $feedingweight1->setUnite('g');
+                    $feedingweight1->setName(__('Poids bol 2', __FILE__));
+                    $feedingweight1->setConfiguration('historizeMode', 'none');
+                    $feedingweight1->setIsHistorized(0);
+                }
+                $feedingweight1->setDisplay('generic_type', 'DONT');
+                $feedingweight1->setEqLogic_id($this->getId());
+                $feedingweight1->setType('info');
+                $feedingweight1->setSubType('numeric');
+                $feedingweight1->setLogicalId('pet.feedingweight1');
+                $feedingweight1->save();
             }
         }
     }
@@ -813,6 +846,7 @@ public function toHtml($_version = 'dashboard') {
         $replace['#' . $cmd->getLogicalId() . '_display#'] = (is_object($cmd) && $cmd->getIsVisible()) ? '#' . $cmd->getLogicalId() . '_display#' : "none";
         $replace['#' . $cmd->getLogicalId() . '_name_display#'] = ($cmd->getDisplay('icon') != '') ? $cmd->getDisplay('icon') : $cmd->getName();
         $replace['#' . $cmd->getLogicalId() . '_name#'] = $cmd->getName();
+        $replace['#' . $cmd->getLogicalId() . '_unite#'] = $cmd->getUnite();
         $replace['#' . $cmd->getLogicalId() . '_hide_name#'] = '';
         $replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
         $replace['#' . $cmd->getLogicalId() . '_version#'] = $_version;

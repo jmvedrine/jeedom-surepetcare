@@ -23,6 +23,15 @@
         <span class="cmdName #pet.feedingdevice_hide_name#">#pet.feedingdevice_name_display# </span>
         <strong class="state"></strong>
     </span>
+    <br />
+    <span class="cmd cmd-widget" data-type="info" data-subtype="numeric" data-cmd_id="#pet.feedingweight0_id#" data-cmd_uid="#pet.feedingweight0_uid#" style="display: #pet.feedingweight0_display#;" >
+        <span class="cmdName #pet.feedingweight0_hide_name#">#pet.feedingweight0_name_display# </span>
+        <span class="state"><strong>#state#</strong> <strong>#pet.feedingweight0_unite#</strong></span>
+    </span> | 
+    <span class="cmd cmd-widget" data-type="info" data-subtype="numeric" data-cmd_id="#pet.feedingweight1_id#" data-cmd_uid="#pet.feedingweight1_uid#" style="display: #pet.feedingweight1_display#;" >
+        <span class="cmdName #pet.feedingweight1_hide_name#">#pet.feedingweight1_name_display# </span>
+        <span class="state"><strong>#state#</strong> <strong>#pet.feedingweight1_unite#</strong></span>
+    </span>
     </center>
   <script type="text/javascript">
     jeedom.cmd.update['#pet.position_id#'] = function(_options){
@@ -94,5 +103,33 @@
 			}
 	}
 	jeedom.cmd.update['#pet.feedingdevice_id#']({display_value:'#pet.feedingdevice#', valueDate:'#pet.feedingdevice_valueDate#', collectDate:'#pet.feedingdevice_collectDate#', alertLevel:'#pet.feedingdevice_alertLevel#'})
+    jeedom.cmd.update['#pet.feedingweight0_id#'] = function(_options) {
+			var $cmd_id = $('.cmd[data-cmd_id=#pet.feedingweight0_id#]')
+            $cmd_id.attr('title','Valeur du '+_options.valueDate+', collectée le: '+_options.collectDate)
+            $cmd_id.find('.state strong').first().text(_options.display_value)
+            if (_options.alertLevel) {
+				$cmd_id.removeClass('label label-warning label-danger')
+				if (_options.alertLevel == 'warning') {
+					$cmd_id.addClass('label label-warning')
+				} else if(_options.alertLevel == 'danger') {
+					$cmd_id.addClass('label label-danger')
+				}
+			}
+	}
+	jeedom.cmd.update['#pet.feedingweight0_id#']({display_value:'#pet.feedingweight0#', valueDate:'#pet.feedingweight0_valueDate#', collectDate:'#pet.feedingweight0_collectDate#', alertLevel:'#pet.feedingweight0_alertLevel#'})
+    jeedom.cmd.update['#pet.feedingweight1_id#'] = function(_options) {
+			var $cmd_id = $('.cmd[data-cmd_id=#pet.feedingweight1_id#]')
+            $cmd_id.attr('title','Valeur du '+_options.valueDate+', collectée le: '+_options.collectDate)
+			$cmd_id.find('.state strong').first().text(_options.display_value)
+            if (_options.alertLevel) {
+				$cmd_id.removeClass('label label-warning label-danger')
+				if (_options.alertLevel == 'warning') {
+					$cmd_id.addClass('label label-warning')
+				} else if(_options.alertLevel == 'danger') {
+					$cmd_id.addClass('label label-danger')
+				}
+			}
+	}
+	jeedom.cmd.update['#pet.feedingweight1_id#']({display_value:'#pet.feedingweight1#', valueDate:'#pet.feedingweight1_valueDate#', collectDate:'#pet.feedingweight1_collectDate#', alertLevel:'#pet.feedingweight1_alertLevel#'})
   </script>
 </div>
