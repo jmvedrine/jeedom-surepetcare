@@ -28,15 +28,31 @@ function surepetcare_update() {
         config::save('autorefresh', '* * * * *', 'surepetcare');
     }
     foreach (surepetcare::byType('surepetcare') as $eqLogic) {
-        if ($eqLogic->getConfiguration('type') == 'device' && $eqLogic->getConfiguration('device_id') == 3) {
-            // Suppress pofile commands for the Microchip pet door connect.
-            $cmd = $eqLogic->getCmd(null, 'dev.profile::2');
-            if (is_object($cmd)) {
-                $cmd->remove();
+        if ($eqLogic->getConfiguration('type') == 'device') {
+            if ($eqLogic->getConfiguration('device_id') == 3) {
+                // Suppress pofile commands for the Microchip pet door connect.
+                $cmd = $eqLogic->getCmd(null, 'dev.profile::2');
+                if (is_object($cmd)) {
+                    $cmd->remove();
+                }
+                $cmd = $eqLogic->getCmd(null, 'dev.profile::3');
+                if (is_object($cmd)) {
+                    $cmd->remove();
+                }
             }
-            $cmd = $eqLogic->getCmd(null, 'dev.profile::3');
-            if (is_object($cmd)) {
-                $cmd->remove();
+            foreach ($eqLogic->getCmd('info') as $cmd) {
+                $logicalId = $cmd->getLogicalId();
+                $epClusterPath = explode('.', $logicalId);
+                
+                $path = explode('::', $epClusterPath[1]);
+                if ($path[0] != 'status' && $path[0] != 'control') {
+                    if ($path[0] == 'curfew' {
+                        $newpath = 'control';
+                    } else {
+                        $newpath = 'status';
+                    }
+                    $newlogicalId = $epClusterPath[0] . '.' . $newpath .  '::' . $epClusterPath[1];
+                }
             }
         }
 		$eqLogic->save();
