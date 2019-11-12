@@ -23,6 +23,7 @@ function surepetcare_install() {
 }
 
 function surepetcare_update() {
+    log::add('surepetcare', 'debug', 'Surepetcare update function');
     $autorefresh = config::byKey('autorefresh','surepetcare');
     if($autorefresh =='') {
         config::save('autorefresh', '* * * * *', 'surepetcare');
@@ -42,10 +43,11 @@ function surepetcare_update() {
             }
             foreach ($eqLogic->getCmd('info') as $cmd) {
                 $logicalId = $cmd->getLogicalId();
+                log::add('surepetcare', 'debug', 'On traite la commande  logicalId ' . $logicalId);
                 $epClusterPath = explode('.', $logicalId);
-                
                 $path = explode('::', $epClusterPath[1]);
                 if ($path[0] != 'status' && $path[0] != 'control') {
+                    log::add('surepetcare', 'debug', 'logicalId à mettre à jour');
                     if ($path[0] == 'curfew' {
                         $newpath = 'control';
                     } else {
@@ -53,6 +55,9 @@ function surepetcare_update() {
                     }
                     $newlogicalId = $epClusterPath[0] . '.' . $newpath .  '::' . $epClusterPath[1];
                 }
+                log::add('surepetcare', 'debug', 'Mise à jour logicalId ' . $logicalId . ' nouvelle valeur ' . $newlogicalId);
+                // $cmd->setLogicalId($newlogicalId);
+                // $cmd->save();
             }
         }
 		$eqLogic->save();
