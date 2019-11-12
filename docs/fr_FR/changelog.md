@@ -48,6 +48,7 @@ C'était une erreur de ma part de ne pas l'avoir inclus au départ, mieux vaut l
 - Nouvelles commandes relatives au distributeur de nourriture pour les animaux **Dernier repas**, **Mangé dans**, **Poids bol 1**,
 **Poids bol 2**
 - Maintenant les date/heure pour les entrées/sorties et les repas sont prises sur le serveur surepetcare.io pluôt que l'horloge de Jeedom
+cela est important si vous choisissez un intervalle de mise à jour long pour que ces événements soient correctement datés.
 - La documentation a été mise à jour et les images refaites pour tenir compte de l'évolution du plugin
 - Plus d'infos ont été ajoutées aux objets : version, date de création, date de mise à jour, sexe pour les animaux et addresse MAC pour les équipements.
 - Diminution du nombre de requêtes au serveur lors de la synchronisation et lors du cron
