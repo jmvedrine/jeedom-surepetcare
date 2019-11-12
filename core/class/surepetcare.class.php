@@ -548,12 +548,12 @@ class surepetcare extends eqLogic {
                 }
                 if (isset($device['control']['curfew'])) {
                     log::add('surepetcare','debug','updateDevicesStatus curfew : '. print_r($device['control']['curfew'], true));
-                    $device['status']['curfew'] = $device['control']['curfew'][0];
+                    $device['control']['curfew'] = $device['control']['curfew'][0];
                 } else {
                     // Deactivate curfew .
-                    $device['status']['curfew'] = array('enabled' => false);
+                    $device['control']['curfew'] = array('enabled' => false);
                 }
-                $eqLogic->applyData($device['status']);
+                $eqLogic->applyData($device);
             }
         }
     }

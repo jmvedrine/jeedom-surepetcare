@@ -14,7 +14,7 @@
                 "subtype": "binary",
                 "isVisible": 1,
                 "isHistorized": 1,
-                "logicalId": "online",
+                "logicalId": "satus::online",
                 "generic_type": "GENERIC_INFO",
                 "template":{
                     "dashboard" : "line",
@@ -31,7 +31,7 @@
                     "historizeRound" : 1
                 },
                 "unite": "dBm",
-                "logicalId": "signal::device_rssi",
+                "logicalId": "status::signal::device_rssi",
                 "generic_type": "GENERIC_INFO",
                 "template":{
                     "dashboard" : "line",
@@ -48,7 +48,7 @@
                     "historizeRound" : 1
                 },
                 "unite": "dBm",
-                "logicalId": "signal::hub_rssi",
+                "logicalId": "status::signal::hub_rssi",
                 "generic_type": "GENERIC_INFO",
                 "template":{
                     "dashboard" : "line",
@@ -62,7 +62,7 @@
                 "isVisible": 1,
                 "isHistorized": 1,
                 "unite": "V",
-                "logicalId": "battery",
+                "logicalId": "status::battery",
                 "generic_type": "GENERIC_INFO",
                 "template":{
                     "dashboard" : "line",
@@ -117,7 +117,7 @@
                 "generic_type": "DONT",
                 "isVisible": 0,
                 "isHistorized": 0,
-                "logicalId": "curfew::lock_time"
+                "logicalId": "control::curfew::lock_time"
             },
             {
                 "name": "Fixer heure de déverrouillage",
@@ -140,7 +140,7 @@
                 "generic_type": "DONT",
                 "isVisible": 0,
                 "isHistorized": 0,
-                "logicalId": "curfew::unlock_time"
+                "logicalId": "control::curfew::unlock_time"
             },
             {
 				"name": "Couvre-feu",
@@ -148,7 +148,7 @@
                 "subtype": "binary",
                 "isVisible": 0,
                 "isHistorized": 0,
-				"logicalId": "curfew::enabled",
+				"logicalId": "control::curfew::enabled",
                 "generic_type": "GENERIC_INFO",
                 "template":{
                     "dashboard" : "lock",
@@ -174,7 +174,7 @@
                 "subtype": "numeric",
                 "isVisible": 0,
                 "isHistorized": 0,
-                "logicalId": "locking::mode",
+                "logicalId": "status::locking::mode",
                 "generic_type": "GENERIC_INFO"
             }
 		]

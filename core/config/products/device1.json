@@ -13,7 +13,7 @@
                 "subtype": "binary",
                 "isVisible": 0,
                 "isHistorized": 1,
-                "logicalId": "online",
+                "logicalId": "status::online",
                 "display": {
                     "generic_type": "GENERIC_INFO"
                 },
@@ -28,7 +28,7 @@
                 "subtype": "numeric",
                 "isVisible": 0,
                 "isHistorized": 1,
-                "logicalId": "led_mode",
+                "logicalId": "status::led_mode",
                 "display": {
                     "generic_type": "GENERIC_INFO"
                 },
