@@ -48,7 +48,7 @@ function surepetcare_update() {
                 $path = explode('::', $epClusterPath[1]);
                 if ($path[0] != 'status' && $path[0] != 'control') {
                     log::add('surepetcare', 'debug', 'logicalId à mettre à jour');
-                    if ($path[0] == 'curfew' {
+                    if ($path[0] == 'curfew') {
                         $newpath = 'control';
                     } else {
                         $newpath = 'status';
@@ -56,8 +56,8 @@ function surepetcare_update() {
                     $newlogicalId = $epClusterPath[0] . '.' . $newpath .  '::' . $epClusterPath[1];
                 }
                 log::add('surepetcare', 'debug', 'Mise à jour logicalId ' . $logicalId . ' nouvelle valeur ' . $newlogicalId);
-                $cmd->setLogicalId($newlogicalId);
-                $cmd->save();
+                // $cmd->setLogicalId($newlogicalId);
+                // $cmd->save();
             }
         }
 		$eqLogic->save();
