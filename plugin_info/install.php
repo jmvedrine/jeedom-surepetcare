@@ -31,7 +31,7 @@ function surepetcare_update() {
     foreach (surepetcare::byType('surepetcare') as $eqLogic) {
         if ($eqLogic->getConfiguration('type') == 'device') {
             if ($eqLogic->getConfiguration('device_id') == 3) {
-                // Suppress pofile commands for the Microchip pet door connect.
+                // Suppress profile commands for the Microchip pet door connect.
                 $cmd = $eqLogic->getCmd(null, 'dev.profile::2');
                 if (is_object($cmd)) {
                     $cmd->remove();
