@@ -117,7 +117,7 @@
                 "generic_type": "DONT",
                 "isVisible": 0,
                 "isHistorized": 0,
-                "logicalId": "curfew::lock_time"
+                "logicalId": "control::curfew::lock_time"
             },
             {
                 "name": "Fixer heure de déverrouillage",
