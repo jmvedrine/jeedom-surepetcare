@@ -56,8 +56,8 @@ function surepetcare_update() {
                     $newlogicalId = $epClusterPath[0] . '.' . $newpath .  '::' . $epClusterPath[1];
                 }
                 log::add('surepetcare', 'debug', 'Mise à jour logicalId ' . $logicalId . ' nouvelle valeur ' . $newlogicalId);
-                // $cmd->setLogicalId($newlogicalId);
-                // $cmd->save();
+                $cmd->setLogicalId($newlogicalId);
+                $cmd->save();
             }
         }
 		$eqLogic->save();
