@@ -973,17 +973,21 @@ class surepetcareCmd extends cmd {
                     $locktime = $eqLogic->getConfiguration('lock_time', '');
                     $unlocktime = $eqLogic->getConfiguration('unlock_time', '');
                     if ($locktime != '' && $unlocktime != '') {
-                        $parameters[$keyValue[0]] = array(array(
+                        $parameters[$keyValue[0]] = array(
                             'enabled' => true,
                             'lock_time' => $eqLogic::formatTime($locktime),
                             'unlock_time' => $eqLogic::formatTime($unlocktime)
-                        ));
+                        );
                     } else {
                         log::add('surepetcare','error','Il faut remplir les heures de début et de fin de couvre-feu dans la configutation');
                         throw new Exception(__('Heures de couvre-feu incorrectes', __FILE__));
                     }
                 } else {
-                    $parameters[$keyValue[0]] = array(array('enabled' => false));
+                    $parameters[$keyValue[0]] = array('enabled' => false);
+                }
+                if ($eqLogic->getConfiguration('product_id') == 6) {
+                    // For the Microchip cat door connect curfew is now an array of curfews.
+                    $parameters[$keyValue[0]] = array(0 => $parameters[$keyValue[0]]);
                 }
             } else if($keyValue[0] =='setposition'){
                 $method = 'POST';
