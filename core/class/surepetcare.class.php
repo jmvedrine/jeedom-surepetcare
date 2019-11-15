@@ -555,6 +555,12 @@ class surepetcare extends eqLogic {
                     }
                 } else {
                     // Deactivate curfew .
+                    log::add('surepetcare','debug','updateDevicesStatus curfew not set deactivating');
+                    $device['control']['curfew'] = array('enabled' => false);
+                }
+                if (count($device['control']['curfew']) == 0) {
+                    // In case it's just an empty array.
+                    log::add('surepetcare','debug','updateDevicesStatus curfew empty deactivating');
                     $device['control']['curfew'] = array('enabled' => false);
                 }
                 $eqLogic->applyData($device);
