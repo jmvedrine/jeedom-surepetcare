@@ -547,21 +547,25 @@ class surepetcare extends eqLogic {
                     }
                     $eqLogic->batteryStatus($battery);
                 }
-                if (isset($device['control']['curfew'])) {
-                    log::add('surepetcare','debug','updateDevicesStatus curfew : '. print_r($device['control']['curfew'], true));
-                    if (isset($device['control']['curfew'][0])) {
-                        // It's an array of several curfew.
-                        $device['control']['curfew'] = $device['control']['curfew'][0];
+                if ($eqLogic->getConfiguration('product_id') == 3 || $eqLogic->getConfiguration('product_id') == 6) {
+                    // It's a flap.
+                    if (isset($device['control']['curfew'])) {
+                        log::add('surepetcare','debug','updateDevicesStatus curfew : '. print_r($device['control']['curfew'], true));
+                        if (isset($device['control']['curfew'][0])) {
+                            // It's an array of several curfew.
+                            $device['control']['curfew'] = $device['control']['curfew'][0];
+                        }
+                        if (count($device['control']['curfew']) == 0) {
+                            // In case it's just an empty array.
+                            log::add('surepetcare','debug','updateDevicesStatus curfew empty deactivating');
+                            $device['control']['curfew'] = array('enabled' => false);
+                        }
+                    } else {
+                        // Deactivate curfew .
+                        log::add('surepetcare','debug','updateDevicesStatus curfew not set deactivating');
+                        $device['control']['curfew'] = array('enabled' => false);
                     }
-                } else {
-                    // Deactivate curfew .
-                    log::add('surepetcare','debug','updateDevicesStatus curfew not set deactivating');
-                    $device['control']['curfew'] = array('enabled' => false);
-                }
-                if (count($device['control']['curfew']) == 0) {
-                    // In case it's just an empty array.
-                    log::add('surepetcare','debug','updateDevicesStatus curfew empty deactivating');
-                    $device['control']['curfew'] = array('enabled' => false);
+                    log::add('surepetcare','debug','updateDevicesStatus curfew after recoding : '. print_r($device['control']['curfew'], true));
                 }
                 $eqLogic->applyData($device);
             }
