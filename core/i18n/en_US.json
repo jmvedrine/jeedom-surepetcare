@@ -67,6 +67,8 @@
     },
     "plugins\/surepetcare\/core\/class\/surepetcare.class.php": {
         "Expression cron non valide : ": "Invalid cron expression:",
+        "Erreur lors de l'exécution du cron ": "Erreur lors de l'exécution du cron ",
+        "Impossible de rafraîchir le token": "Impossible de rafraîchir le token",
         "Changer la position": "Flip location",
         "Nouveau produit detecté": "New device detected",
         "Erreur lors de la requete : ": "Request error :",
