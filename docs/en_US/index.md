@@ -84,7 +84,7 @@ En cliquant sur l'onglet commande vous accédez aux commandes disponibles.
 Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 .
 
-## Commande pour un hub
+## Commandes pour un hub
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
@@ -92,13 +92,20 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 | **Mode led**                         | action  | liste      | Fixe le mode d'allumage des leds ("oreilles") du hub (Eteint, Brillant, Atténué).                                                                                  |
 | **Etat led**                         | info    | numerique  | Indique le mode d'allumage des leds ("oreilles") du hub (0=Eteint, 1=Brillant, 4=Atténué).                                                                         |
 
-## Commande pour un distributeur de nourriture
+## Commandes pour un distributeur de nourriture
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
 | **En ligne**                         | info    | binaire    | Indique si le distributeur est en ligne.                                                                                                                           |
 | **Réception équipement**             | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du distributeur en dBm                                               |
 | **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                        |
+| **Type de bol**                      | info    | numérique  | Indique le type de bol(s) (1= Bol simple, 4= demi-bols)                                                                                                            |
+| **Type nourriture bol 1**            | info    | numérique  | Indique le type de nourriture dans le bol 1 (1=humide 2=seche 3=humide et seche)                                                                                   |
+| **Type nourriture bol 2**            | info    | numérique  | Indique le type de nourriture dans le bol 2 (1=humide 2=seche 3=humide et seche)                                                                                   |
+| **Portion bol 1**                    | info    | numérique  | Indique le poids d'une portion pour le bol 1 en g                                                                                                                  |
+| **Portion bol 2**                    | info    | numérique  | Indique le poids d'une portion pour le bol 2 en g                                                                                                                  |
+| **Délai de fermeture**               | info    | numérique  | Indique le délai de fermeture (0=Rapide, 4=Normal, 20=Lentement)                                                                                                   |
+| **Mode apprentissage**               | info    | numérique  | Indique le mode apprentissage (0=Pas activé et ensuite les étapes de 1 à 4)                                                                                        |
 
 ## Commandes pour une chatière
 
