@@ -5,7 +5,9 @@
 			"product_id": "6",
             "parent_device_id": "",
 			"product_name": "Chatière à puce électronique Connect",
-            "battery_type": "4x1.5V AA"
+            "battery_type": "4x1.5V AA",
+            "battery_max" : 6000,
+            "battery_min" : 4400
 		},
 		"commands": [
             {
@@ -177,7 +179,7 @@
 				"logicalId": "status::locking::mode",
 				"generic_type": "GENERIC_INFO"
 			},
-                        {
+            {
                 "name": "Autoriser animal",
                 "type": "action",
                 "subtype": "select",

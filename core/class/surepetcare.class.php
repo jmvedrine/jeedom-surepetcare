@@ -58,7 +58,7 @@ class surepetcare extends eqLogic {
                     }
                 }
             } catch (Exception $exc) {
-                log::add('surepetcare', 'error', __('Expression cron non valide : ', __FILE__) . $autorefresh);
+                log::add('surepetcare', 'error', __("Erreur lors de l'exécution du cron ", __FILE__) . $exc->getMessage());
             }
         }
     }
@@ -73,14 +73,14 @@ class surepetcare extends eqLogic {
     /*
      * Fonction exécutée automatiquement tous les jours par Jeedom
      */
-    /*
-    TODO voir s'il est nécessaire ou pas de rafraîchir le token.
-      public static function cronDaily() {
-          // Voir s'il faut d'abord faire un logout.
-          // On demande un nouveau token et on le stocke.
-          surepetcare::login();
-      }
-    */
+    public static function cronDaily() {
+        // Voir s'il faut d'abord faire un logout.
+        // On demande un nouveau token et on le stocke.
+        log::add('surepetcare','debug', 'Cron Daily');
+        if (!surepetcare::login()) {
+            log::add('surepetcare', 'error', __('Impossible de rafraîchir le token', __FILE__));
+        }
+    }
 
     public static function request($url, $payload = null, $method = 'POST', $headers = array()) {
         $ch = curl_init($url);
@@ -171,6 +171,13 @@ class surepetcare extends eqLogic {
     cache::set('surepetcare::token','', 0);
     return false;
   }
+
+    public function logout() {
+        $token = cache::byKey('surepetcare::token')->getValue();
+        if ($token !== '') {
+            $result = surepetcare::request('https://app.api.surehub.io/api/auth/logout', null, 'GET', array('Authorization: Bearer ' . $token));
+        }
+    }
 
   public static function sync(){
         $token = surepetcare::login();
@@ -634,7 +641,7 @@ class surepetcare extends eqLogic {
           if (!is_array($value)){
             if ($key == 'lock_time' || $key == 'unlock_time') {
                 // Format time to Jeedom numeric.
-                $value = str_replace(':', '', $value);
+                // $value = str_replace(':', '', $value);
             }
             log::add('surepetcare', 'debug', 'Mise à jour commande ' . $cmd->getName() . ' nouvelle valeur ' . $value);
             $this->checkAndUpdateCmd($cmd,$value);
@@ -980,8 +987,10 @@ class surepetcareCmd extends cmd {
             }
             if($keyValue[0] =='curfew'){
                 if ($parameters[$keyValue[0]]) {
-                    $locktime = $eqLogic->getConfiguration('lock_time', '');
-                    $unlocktime = $eqLogic->getConfiguration('unlock_time', '');
+                    $locktime = cache::byKey('surepetcare::lock_time::'.$eqLogic->getId())->getValue();
+                    // $locktime = $eqLogic->getConfiguration('lock_time', '');
+                    $unlocktime = cache::byKey('surepetcare::unlock_time::'.$eqLogic->getId())->getValue();
+                    // $unlocktime = $eqLogic->getConfiguration('unlock_time', '');
                     if ($locktime != '' && $unlocktime != '') {
                         $parameters[$keyValue[0]] = array(
                             'enabled' => true,
@@ -989,7 +998,7 @@ class surepetcareCmd extends cmd {
                             'unlock_time' => $eqLogic::formatTime($unlocktime)
                         );
                     } else {
-                        log::add('surepetcare','error','Il faut remplir les heures de début et de fin de couvre-feu dans la configutation');
+                        log::add('surepetcare','error','Il faut fixer les heures de début et de fin de couvre-feu par les commandes');
                         throw new Exception(__('Heures de couvre-feu incorrectes', __FILE__));
                     }
                 } else {
@@ -1029,12 +1038,14 @@ class surepetcareCmd extends cmd {
                 log::add('surepetcare','debug','keyvalue0' .$parameters[$keyValue[0]]);
             } else if($keyValue[0] =='setlocktime'){
                 log::add('surepetcare','debug','Heure de verrouillage : ' . $parameters[$keyValue[0]]);
-                $eqLogic->setConfiguration('lock_time', $parameters[$keyValue[0]]);
+                cache::set('surepetcare::lock_time::'.$eqLogic->getId(), $parameters[$keyValue[0]], '');
+                // $eqLogic->setConfiguration('lock_time', $parameters[$keyValue[0]]);
                 $eqLogic->save();
                 return;
             } else if($keyValue[0] =='setunlocktime'){
                 log::add('surepetcare','debug','Heure de déverrouillage : ' . $parameters[$keyValue[0]]);
-                $eqLogic->setConfiguration('unlock_time', $parameters[$keyValue[0]]);
+                cache::set('surepetcare::unlock_time::'.$eqLogic->getId(),$parameters[$keyValue[0]], '');
+                // $eqLogic->setConfiguration('unlock_time', $parameters[$keyValue[0]]);
                 $eqLogic->save();
                 return;
             }

@@ -5,7 +5,9 @@
 			"product_id": "4",
 			"parent_device_id": "",
 			"product_name": "Distributeur de nourriture Connect",
-            "battery_type": "4x1.5V C"
+            "battery_type": "4x1.5V C",
+            "battery_max" : 6000,
+            "battery_min" : 4200
 		},
 		"commands": [
             {

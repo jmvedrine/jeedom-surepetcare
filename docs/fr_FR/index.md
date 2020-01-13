@@ -153,6 +153,10 @@ Il faut après avoir utilisé ces commandes dans un scénario utiliser la comman
 | **Fixer la position**                | action  | liste      | Fixe la position de l'animal (Intérieur, Extérieur)                                                                                                                |
 | **Dernier passage**                  | info    | autre      | Indique la date et l'heure du dernier passage de l'animal sous forme d'une chaine                                                                                  |
 | **Passé par**                        | info    | autre      | Indique le nom de la chatière par laquelle l'animal a effectué son dernier passage sous forme d'une chaine                                                         |
+| **Dernier repas**                    | info    | autre      | Indique la date et l'heure du dernier repas de l'animal sous forme d'une chaîne                                                                                    |
+| **Mangé dans**                       | info    | autre      | Indique le nom du distributeur de nourriture dans lequel l'animal a fait son dernier repas                                                                         |
+| **Poids bol 1**                      | info    | numérique  | Indique le poids de nourriture mangée lors du dernier repas dans le bol de gauche si demi-bols ou dans le grand bol si bol normal en grammes                       |
+| **Poids bol 2**                      | info    | numérique  | Indique le poids de nourriture mangée lors du dernier repas dans le bol de droite si demi-bols en grammes. Vaut zéro si grand bol                                  |
 
 Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
 
