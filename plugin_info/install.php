@@ -44,6 +44,7 @@ function surepetcare_update() {
                 $cmd = $eqLogic->getCmd(null, 'dev.satus::online');
                 if (is_object($cmd)) {
                      $cmd->setLogicalId('dev.status::online');
+                     $cmd->save();
                 }
             }
             foreach ($eqLogic->getCmd('info') as $cmd) {
