@@ -67,6 +67,8 @@
     },
     "plugins\/surepetcare\/core\/class\/surepetcare.class.php": {
         "Expression cron non valide : ": "Expression cron non valide : ",
+        "Erreur lors de l'exécution du cron ": "Erreur lors de l'exécution du cron ",
+        "Impossible de rafraîchir le token": "Impossible de rafraîchir le token",
         "Changer la position": "Changer la position",
         "Nouveau produit detecté": "Nouveau produit detecté",
         "Erreur lors de la requete : ": "Erreur lors de la requete : ",
