@@ -40,6 +40,11 @@ function surepetcare_update() {
                 if (is_object($cmd)) {
                     $cmd->remove();
                 }
+                // Correction typo
+                $cmd = $eqLogic->getCmd(null, 'dev.satus::online');
+                if (is_object($cmd)) {
+                     $cmd->setLogicalId('dev.status::online');
+                }
             }
             foreach ($eqLogic->getCmd('info') as $cmd) {
                 $logicalId = $cmd->getLogicalId();
@@ -60,8 +65,8 @@ function surepetcare_update() {
                 }
             }
         }
-		$eqLogic->save();
-	}
+        $eqLogic->save();
+    }
 }
 
 
