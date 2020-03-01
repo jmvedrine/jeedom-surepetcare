@@ -59,4 +59,8 @@ pour utiliser ces commandes.
 elle ne permet pas de contrôler les sorties. Ces deux commandes restent pour la petite chatière qui a 2 capteurs.
 - Le bouton "+" a été supprimé de la page des objets car il n'est pas possible d'ajouter un objet manuellement il faut utiliser la synchronisation
 - meilleur arrondi de certaines valeurs numériques
- 
+
+### 01/03/2020
+
+- Correction d'un bug dans la commande "En ligne" de la grande chatière qui empêchait la remontée d'informations pour cette commande (la petite chatière n'était pas touchée).
+- Lors d'une synchronisation l'état visible/affiché d'un objet est conservé
