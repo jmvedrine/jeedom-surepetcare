@@ -268,7 +268,7 @@ class surepetcare extends eqLogic {
     $households = config::byKey('households','surepetcare',array());
     $eqLogic = self::byLogicalId('dev.' . $_device['id'], 'surepetcare');
     if(!is_object($eqLogic)){
-       log::add('surepetcare','info','Nouvel équipement : '.$_device['name']);
+      log::add('surepetcare','info','Nouvel équipement : '.$_device['name']);
       event::add('jeedom::alert', array(
         'level' => 'warning',
         'page' => 'surepetcare',
@@ -277,19 +277,19 @@ class surepetcare extends eqLogic {
       $create = true;
       $eqLogic = new surepetcare();
       if ($_device['name'] != '') {
-      $eqLogic->setName($_device['name']);
+        $eqLogic->setName($_device['name']);
       } else {
-          $eqLogic->setName( __('Produit', __FILE__). $_device['id']);
+        $eqLogic->setName( __('Produit', __FILE__). $_device['id']);
       }
+      $eqLogic->setEqType_name('surepetcare');
+      $eqLogic->setIsEnable(1);
+      $eqLogic->setIsVisible(1);
+      $eqLogic->setLogicalId('dev.' . $_device['id']);
+      $eqLogic->setConfiguration('device_id', $_device['id']);
+      $eqLogic->setConfiguration('type', 'device');
     }
-    $eqLogic->setEqType_name('surepetcare');
-    $eqLogic->setIsEnable(1);
-    $eqLogic->setIsVisible(1);
-    $eqLogic->setLogicalId('dev.' . $_device['id']);
-    $eqLogic->setConfiguration('device_id', $_device['id']);
     $eqLogic->setConfiguration('household_id', $_device['household_id']);
     $eqLogic->setConfiguration('household_name', $households[$_device['household_id']]);
-    $eqLogic->setConfiguration('type', 'device');
     if(isset($_device['category'])){
       $eqLogic->setConfiguration('category', $_device['category']);
     }
@@ -383,17 +383,19 @@ class surepetcare extends eqLogic {
       $create = true;
       $eqLogic = new surepetcare();
       $eqLogic->setName($_pet['name']);
+      $eqLogic->setEqType_name('surepetcare');
+      $eqLogic->setIsEnable(1);
+      $eqLogic->setIsVisible(1);
+      $eqLogic->setLogicalId('pet.' . $_pet['id']);
+      $eqLogic->setConfiguration('pet_id', $_pet['id']);
+      $eqLogic->setConfiguration('type', 'pet');
     }
-    $eqLogic->setEqType_name('surepetcare');
-    $eqLogic->setIsEnable(1);
-    $eqLogic->setIsVisible(1);
-    $eqLogic->setLogicalId('pet.' . $_pet['id']);
+
     $eqLogic->setConfiguration('household_id', $_pet['household_id']);
     $eqLogic->setConfiguration('household_name', $households[$_pet['household_id']]);
-    $eqLogic->setConfiguration('pet_id', $_pet['id']);
-    $eqLogic->setConfiguration('type', 'pet');
+
     if(isset($_pet['category'])){
-      $eqLogic->setConfiguration('category', __('Dernier passage', __FILE__));
+      $eqLogic->setConfiguration('category', $_pet['category']);
     }
     if(isset($_pet['gender'])){
         if ($_pet['gender'] == 1) {
