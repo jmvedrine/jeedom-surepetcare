@@ -560,6 +560,7 @@ class surepetcare extends eqLogic {
                     if ($battery > 100) {
                         $battery = 100;
                     }
+                    log::add('surepetcare','debug','Niveau batterie : '. $battery . '%');
                     $eqLogic->batteryStatus($battery);
                 }
                 if ($eqLogic->getConfiguration('product_id') == 3 || $eqLogic->getConfiguration('product_id') == 6) {

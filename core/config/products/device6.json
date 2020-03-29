@@ -6,8 +6,8 @@
             "parent_device_id": "",
 			"product_name": "Chatière à puce électronique Connect",
             "battery_type": "4x1.5V AA",
-            "battery_max" : 6000,
-            "battery_min" : 4400
+            "battery_max" : 6.0,
+            "battery_min" : 4.4
 		},
 		"commands": [
             {
