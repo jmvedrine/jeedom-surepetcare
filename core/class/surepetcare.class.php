@@ -325,6 +325,12 @@ class surepetcare extends eqLogic {
       if (isset($products['configuration']['battery_type'])) {
         $eqLogic->setConfiguration('battery_type', $products['configuration']['battery_type']);
       }
+      if (isset($products['configuration']['battery_max'])) {
+        $eqLogic->setConfiguration('battery_max', $products['configuration']['battery_max']);
+      }
+      if (isset($products['configuration']['battery_min'])) {
+        $eqLogic->setConfiguration('battery_min', $products['configuration']['battery_min']);
+      }
       $eqLogic->save();
       $link_cmds = array();
       foreach ($products['commands'] as $product) {
@@ -538,8 +544,8 @@ class surepetcare extends eqLogic {
             if(is_object($eqLogic) && $eqLogic->getIsEnable() == 1){
                 if (isset($device['status']['battery'])) {
                     log::add('surepetcare','debug','updateDevicesStatus battery : '. $device['status']['battery']);
-                    $battery_max = 6.0;
-                    $battery_min = 4.2;
+                    $battery_max = $eqLogic->getConfiguration('battery_max', 6.0);
+                    $battery_min = $eqLogic->getConfiguration('battery_min', 4.2);
                     $battery = round(($device['status']['battery'] - $battery_min) / ($battery_max - $battery_min) * 100, 0);
                     if ($battery < 0) {
                         $battery = 0;
