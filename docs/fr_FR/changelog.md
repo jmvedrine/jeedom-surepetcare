@@ -64,3 +64,14 @@ elle ne permet pas de contrôler les sorties. Ces deux commandes restent pour la
 
 - Correction d'un bug dans la commande "En ligne" de la grande chatière qui empêchait la remontée d'informations pour cette commande (la petite chatière n'était pas touchée).
 - Lors d'une synchronisation l'état visible/affiché d'un objet est conservé
+
+### 29/03/2020
+
+- Les valeurs min et max du voltage des piles sont maintenant prises dans chaque fichier de config car j'ai constaté que pour la petite chatière qui utilise 4 piles AA
+le calcul précédent conduisait à surestimer le pourcentage dans Analyse -> Equipements. La valeur affichée dans la tuile qui est en Volt reste elle inchangée. Pour profiter
+de ce changement si vous avez une petite chatière il faudra faire une synchronisation après la mise à jour.
+
+### 28/11/2020
+
+Une erreur lors de l'exécution du cron conduisait systématiquement au message d'erreur suivant :"Expression cron non valide : " suivi de la valeur de cette expression qui était pourtant correcte.
+Maintenant un message d'erreur plus significatif est retourné.
