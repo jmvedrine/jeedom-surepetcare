@@ -35,26 +35,30 @@ class surepetcare extends eqLogic {
             try {
                 $c = new Cron\CronExpression(checkAndFixCron($autorefresh), new Cron\FieldFactory);
                 if ($c->isDue()) {
-                    log::add('surepetcare', 'debug', 'cron is due');
-                    $token = cache::byKey('surepetcare::token')->getValue();
-                    if ($token == '') {
-                        $token = surepetcare::login();
-                    }
-                    $url = 'https://app.api.surehub.io/api/pet?with[]=status&with[]=position&with[]=tag';
-                    $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-                    log::add('surepetcare','debug', "Pets Data : ". print_r($result, true));
-                    if (isset($result['data'])) {
-                        surepetcare::updatePetsStatus($result['data']);
-                    } else {
-                        log::add('surepetcare','debug', 'Aucune donnée pour les animaux lors de la mise à jour');
-                    }
-                    $url = 'https://app.api.surehub.io/api/device?with[]=children&with[]=status&with[]=curfew&with[]=control';
-                    $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-                    log::add('surepetcare','debug', "Devices Data : ". print_r($result, true));
-                    if (isset($result['data'])) {
-                        surepetCare::updateDevicesStatus($result['data']);
-                    } else {
-                        log::add('surepetcare','debug', 'Aucune donnée pour les équipements lors de la mise à jour');
+                    try {
+                        log::add('surepetcare', 'debug', 'cron is due');
+                        $token = cache::byKey('surepetcare::token')->getValue();
+                        if ($token == '') {
+                            $token = surepetcare::login();
+                        }
+                        $url = 'https://app.api.surehub.io/api/pet?with[]=status&with[]=position&with[]=tag';
+                        $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
+                        log::add('surepetcare','debug', "Pets Data : ". print_r($result, true));
+                        if (isset($result['data'])) {
+                            surepetcare::updatePetsStatus($result['data']);
+                        } else {
+                            log::add('surepetcare','debug', 'Aucune donnée pour les animaux lors de la mise à jour');
+                        }
+                        $url = 'https://app.api.surehub.io/api/device?with[]=children&with[]=status&with[]=curfew&with[]=control';
+                        $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
+                        log::add('surepetcare','debug', "Devices Data : ". print_r($result, true));
+                        if (isset($result['data'])) {
+                            surepetCare::updateDevicesStatus($result['data']);
+                        } else {
+                            log::add('surepetcare','debug', 'Aucune donnée pour les équipements lors de la mise à jour');
+                        }
+                    } catch (Exception $exc) {
+                        log::add('surepetcare', 'error', 'Erreur lors du cron : ' . $exc->getMessage());
                     }
                 }
             } catch (Exception $exc) {
