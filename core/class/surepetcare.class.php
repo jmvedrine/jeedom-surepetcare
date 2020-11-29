@@ -58,11 +58,11 @@ class surepetcare extends eqLogic {
                             log::add('surepetcare','debug', 'Aucune donnée pour les équipements lors de la mise à jour');
                         }
                     } catch (Exception $exc) {
-                        log::add('surepetcare', 'error', 'Erreur lors du cron : ' . $exc->getMessage());
+                        log::add('surepetcare', 'debug', "Erreur lors de l'exécution du cron " . $exc->getMessage());
                     }
                 }
             } catch (Exception $exc) {
-                log::add('surepetcare', 'error', __("Erreur lors de l'exécution du cron ", __FILE__) . $exc->getMessage());
+                log::add('surepetcare', 'error', __('Expression cron non valide : ', __FILE__) . $autorefresh);
             }
         }
     }
