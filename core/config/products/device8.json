@@ -1,0 +1,75 @@
+{
+		"name": "Felaqua Connect",
+		"configuration": {
+			"id": "",
+			"product_id": "4",
+			"parent_device_id": "",
+			"product_name": "Felaqua Connect",
+            "battery_type": "4x1.5V C",
+            "battery_max" : 6.0,
+            "battery_min" : 4.2
+		},
+		"commands": [
+            {
+                "name": "En ligne",
+                "type": "info",
+                "subtype": "binary",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "logicalId": "status::online",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
+                "name": "Réception équipement",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "configuration": {
+                    "historizeRound" : 1
+                },
+                "unite": "dBm",
+                "logicalId": "status::signal::device_rssi",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
+                "name": "Réception hub",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "configuration": {
+                    "historizeRound" : 1
+                },
+                "unite": "dBm",
+                "logicalId": "status::signal::hub_rssi",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
+                "name": "Batterie",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 1,
+                "unite": "V",
+                "logicalId": "status::battery",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            }
+		]
+}

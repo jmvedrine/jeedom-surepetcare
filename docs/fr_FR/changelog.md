@@ -75,3 +75,7 @@ de ce changement si vous avez une petite chatière il faudra faire une synchroni
 
 Une erreur lors de l'exécution du cron conduisait systématiquement au message d'erreur suivant :"Expression cron non valide : " suivi de la valeur de cette expression qui était pourtant correcte.
 Maintenant un message d'erreur plus significatif est retourné.
+
+### 21/04/2021
+
+Intégration basique du distributeur d'eau Felaqua Connect. J'espère qu'une intégration plus poussée pourra être faite lorsque j'aurai mis la main sur un log en debug.
