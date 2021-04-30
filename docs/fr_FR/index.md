@@ -107,6 +107,16 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 | **Délai de fermeture**               | info    | numérique  | Indique le délai de fermeture (0=Rapide, 4=Normal, 20=Lentement)                                                                                                   |
 | **Mode apprentissage**               | info    | numérique  | Indique le mode apprentissage (0=Pas activé et ensuite les étapes de 1 à 4)                                                                                        |
 
+## Commandes pour une fontaine Felaqua
+
+| Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
+| :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
+| **En ligne**                         | info    | binaire    | Indique si la fontaine est en ligne.                                                                                                                               |
+| **Réception équipement**             | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) de la fontaine en dBm                                                |
+| **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                        |
+| **Tare**                             | info    | numérique  | Indique la tare (unité g ? à confirmer)                                                                                                                            |
+| **Mode apprentissage**               | info    | numérique  | Indique le mode apprentissage (0=Pas activé et ensuite les étapes de 1 à 4)                                                                                        |
+
 ## Commandes pour une chatière
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
@@ -157,6 +167,9 @@ Il faut après avoir utilisé ces commandes dans un scénario utiliser la comman
 | **Mangé dans**                       | info    | autre      | Indique le nom du distributeur de nourriture dans lequel l'animal a fait son dernier repas                                                                         |
 | **Poids bol 1**                      | info    | numérique  | Indique le poids de nourriture mangée lors du dernier repas dans le bol de gauche si demi-bols ou dans le grand bol si bol normal en grammes                       |
 | **Poids bol 2**                      | info    | numérique  | Indique le poids de nourriture mangée lors du dernier repas dans le bol de droite si demi-bols en grammes. Vaut zéro si grand bol                                  |
+| **Dernière boisson**                 | info    | autre      | Indique la date et l'heure où l'animal a bu pour la dernière fois sous forme d'une chaîne                                                                          |
+| **Bu dans**                          | info    | autre      | Indique le nom de la fontaine dans laquelle l'animal a bu pour la dernière fois                                                                                    |
+| **Quantité bue**                     | info    | numérique  | Indique le volume d'eau bue en ml lors du ernier passage à la fontaine                                                                                             |
 
 Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
 
