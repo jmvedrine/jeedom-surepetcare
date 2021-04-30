@@ -537,6 +537,30 @@ class surepetcare extends eqLogic {
                 } else {
                     log::add('surepetcare','debug', 'Pas d\'info dernier repas ');
                 }
+                if (isset($pet['status']['drinking'])) {
+                    log::add('surepetcare','debug','updatePetsStatus pet drinking : '. print_r($pet['status']['drinking'], true));
+                    $drinkingtime = $pet['status']['drinking']['at'];
+                    $date = new DateTime($drinkingtime, new DateTimeZone('UTC'));
+                    date_timezone_set($date,  new DateTimeZone(config::byKey('timezone')));
+                    $device_id = $pet['status']['drinking']['device_id'];
+                    $eqLogic2 = self::byLogicalId('dev.' . $device_id, 'surepetcare');
+                    if(is_object($eqLogic2)){
+                        $eqLogic->checkAndUpdateCmd('pet.drinkingdevice', $eqLogic2->getName(), $date->format('Y-m-d H:i:s'));
+                        log::add('surepetcare','debug', 'Mise à jour fontaine derniere boisson ' . $pet['id'] . ' nouvelle valeur ' . $eqLogic2->getName());
+                    } else {
+                        log::add('surepetcare','debug', 'Fontaine inconnue id ' . $device_id . ' dans updatePetsStatus');
+                    }
+                    if (isset($pet['status']['drinking']['change'])) {
+							$weight = $pet['status']['drinking']['change'][0];
+                            log::add('surepetcare','debug', 'Poids derniere boisson pour ' . $pet['id'] . ' nouvelle valeur ' . $weight);
+                            $eqLogic->checkAndUpdateCmd('pet.drinkingweight', $weight, $date->format('Y-m-d H:i:s'));
+                    }
+                    
+                    log::add('surepetcare','debug', 'Mise à jour heure dernière boisson ' . $date->format('Y-m-d H:i:s'));
+                    $eqLogic->checkAndUpdateCmd('pet.drinkingtime', $date->format('Y-m-d H:i:s'));
+                } else {
+                    log::add('surepetcare','debug', 'Pas d\'info dernière boisson');
+                }
             }
         }
     }
@@ -791,6 +815,52 @@ class surepetcare extends eqLogic {
                 $feedingweight1->setSubType('numeric');
                 $feedingweight1->setLogicalId('pet.feedingweight1');
                 $feedingweight1->save();
+                // Heure dernière boisson (info).
+                $drinkingtime = $this->getCmd(null, 'pet.drinkingtime');
+                if (!is_object($drinkingtime)) {
+                    $drinkingtime = new surepetcareCmd();
+                    $drinkingtime->setIsVisible(0);
+                    $drinkingtime->setName(__('Dernière boisson', __FILE__));
+                    $drinkingtime->setConfiguration('historizeMode', 'none');
+                    $drinkingtime->setIsHistorized(0);
+                }
+                $drinkingtime->setDisplay('generic_type', 'DONT');
+                $drinkingtime->setEqLogic_id($this->getId());
+                $drinkingtime->setType('info');
+                $drinkingtime->setSubType('string');
+                $drinkingtime->setLogicalId('pet.drinkingtime');
+                $drinkingtime->save();
+                // Dernière fontaine (info).
+                $drinkingdevice = $this->getCmd(null, 'pet.drinkingdevice');
+                if (!is_object($drinkingdevice)) {
+                    $drinkingdevice = new surepetcareCmd();
+                    $drinkingdevice->setIsVisible(0);
+                    $drinkingdevice->setName(__('Bu dans', __FILE__));
+                    $drinkingdevice->setConfiguration('historizeMode', 'none');
+                    $drinkingdevice->setIsHistorized(0);
+                }
+                $drinkingdevice->setDisplay('generic_type', 'DONT');
+                $drinkingdevice->setEqLogic_id($this->getId());
+                $drinkingdevice->setType('info');
+                $drinkingdevice->setSubType('string');
+                $drinkingdevice->setLogicalId('pet.drinkingdevice');
+                $drinkingdevice->save();
+                // Poids boisson
+                $drinkingweight = $this->getCmd(null, 'pet.drinkingweight');
+                if (!is_object($drinkingweight)) {
+                    $drinkingweight = new surepetcareCmd();
+                    $drinkingweight->setIsVisible(0);
+                    $drinkingweight->setUnite('ml');
+                    $drinkingweight->setName(__('Quantité bue', __FILE__));
+                    $drinkingweight->setConfiguration('historizeMode', 'none');
+                    $drinkingweight->setIsHistorized(1);
+                }
+                $drinkingweight->setDisplay('generic_type', 'DONT');
+                $drinkingweight->setEqLogic_id($this->getId());
+                $drinkingweight->setType('info');
+                $drinkingweight->setSubType('numeric');
+                $drinkingweight->setLogicalId('pet.drinkingweight');
+                $drinkingweight->save();
             }
         }
     }

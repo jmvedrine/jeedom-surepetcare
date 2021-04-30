@@ -70,6 +70,32 @@
                     "dashboard" : "line",
                     "mobile" : "line"
                 }
+            },
+            {
+                "name": "Mode apprentissage",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 0,
+                "logicalId": "control::learn_mode",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
+            },
+            {
+                "name": "Tare",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 1,
+                "isHistorized": 0,
+                "logicalId": "control::tare",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
             }
 		]
 }
