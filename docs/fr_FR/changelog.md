@@ -79,3 +79,7 @@ Maintenant un message d'erreur plus significatif est retourné.
 ### 21/04/2021
 
 Intégration basique du distributeur d'eau Felaqua Connect. J'espère qu'une intégration plus poussée pourra être faite lorsque j'aurai mis la main sur un log en debug.
+
+### 13/05/2021
+
+Correction d'un bug dans les deux commandes "Autoriser animal" et "Interdire animal" de la petite chatière : la liste des animaux n'était pas récupérée correctement dans ces commandes.
