@@ -251,8 +251,8 @@ class surepetcare extends eqLogic {
     }
     $listTags = implode(';', $petstags);
     foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
-        // Profile commands are only available for Microchip cat door connect.
-        if ($eqLogic->getConfiguration('type') == 'device' && $eqLogic->getConfiguration('device_id') == 6) {
+        // Profile commands are only available for Microchip cat door connect.;
+        if ($eqLogic->getConfiguration('type') == 'device' && $eqLogic->getConfiguration('product_id') == 6) {
             $profile2 = $eqLogic->getCmd(null, 'dev.profile::2');
             if (is_object($profile2)) {
                 $profile2->setConfiguration('listValue', $listTags);

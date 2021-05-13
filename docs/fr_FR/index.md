@@ -7,8 +7,9 @@ Pour le moment les seuls objets connectés supportés par le plugin sont :
 - La grande chatière connect (Pet Porte Connect ou Microchip Pet Door Connect en anglais)
 - La chatière à puce électronique connect (Microchip Cat Flap Connect en anglais)
 - Le distributeur de nourriture connect (Feeder Connect en anglais)
+- La fontaine Felaqua (Felaqua Connect)
 
-Note : le plugin ne communique pas directement avec la chatière, le distributeur ou le hub,
+Note : le plugin ne communique pas directement avec la chatière, le distributeur, la fontaine ou le hub,
 il interroge le serveur surepetcare.io qui lui communique avec le hub et à travers lui avec les objets connectés.
 A ma connaissance personne n'a pu décoder le protocole utilisé lors des communications chatière <-> hub 
 ou hub <-> serveur surepetcare.io ce qui s'explique car ces communications sont sécurisées.
@@ -37,7 +38,7 @@ Création des équipements
 ![introduction01](../images/Objets.png)
 
 Cliquez sur "Synchronisation"
-et le plugin retrouvera sur le site surepetcare.io vos hubs, vos objets connecté (hubs, chatières, distributeurs, ...) et vos animaux.
+et le plugin retrouvera sur le site surepetcare.io vos hubs, vos objets connecté (hubs, chatières, distributeurs, fontaines, ...) et vos animaux.
 
 Le plugin est prévu pour un ou plusieurs foyers, mais les foyers n'apparaissent pas comme des objets dans le plugin.
 Par contre pour chaque objet (équipement ou animal) le foyer dont il dépend est indiqué dans les détails.
@@ -45,7 +46,7 @@ Par contre pour chaque objet (équipement ou animal) le foyer dont il dépend es
 Lorsqu'on clique sur le bouton "Synchronisation" le plugin récupère tous les équipements et tous les animaux pour tous les foyers du compte.
 
 Si on le désire il est ensuite possible de supprimer certains objets, mais cette opération sera à renouveler à chaque synchronisation
-car l'objet réapparaitra s'il est dans votre compte sur le serveur de surepetcare.io.
+car l'objet réapparaîtra s'il est dans votre compte sur le serveur de surepetcare.io.
 Pour cette raison, il est préférable de ne pas supprimer l'objet mais plutôt de décocher "Visible" pour les objets qu'on ne souhaite pas visualiser.
 
 Les Objets
@@ -58,7 +59,7 @@ Idem pour un animal mais les informations sont différentes
 
 ![introduction01](../images/Animal.png)
 
-On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où apparaitra le widget de cet équipement
+On peut choisir l'objet parent parmi les objets Jeedom pour contrôler où apparaîtra le widget de cet équipement
 ou de cet animal sur le dashboard si bien sûr on coche "Visible".
 
 On peut changer le nom de l'objet, ce changement sera conservé même en cas de nouvelle synchronisation.
@@ -195,9 +196,7 @@ J'ignore la durée de validité de ce jeton (je ne sais même pas s'il expire au
 Si plus aucune de vos commandes ne marche, c'est peut-être le signe que votre jeton a expiré. Faites une synchronisation et signalez moi le problème je rajouterai un cron (par exemple tous les jours)
 qui rafraîchira le jeton en en demandant un autre et le problème sera résolu pour tous les utilisateurs.
 
-### Je n'ai pas de chatière, uniquement le distributeur de nourriture. Le plugin ne marche pas
-
-Pour le moment le distributeur n'est pas encore pris en compte par le plugin. 
+### Je n'ai pas de chatière, uniquement un distributeur de nourriture ou une fontaine. Le plugin ne marche pas 
 
 Si vous n'avez pas de chatière, vous pouvez masquer la position des animaux sur le desktop en décochant la case "Afficher" en face de la commande "Fixer la position" dans l'onglet
 Commandes pour chacun de vos animaux.
@@ -220,7 +219,7 @@ Suivez Plugins -> Objets connectés -> Sure Petcare et cliquez sur l'objet MaCha
 
 Clic sur l'onglet Planning. Clic sur le mot ici et clic sur le signe +
 
-Donnez un nom à l'équipement par exemple Couvre feu
+Donnez un nom à l'objet planning par exemple Couvre feu
 
 Clic sur l'onglet Agenda clic sur Ajouter événement
 
@@ -238,7 +237,7 @@ N'oubliez pas d'enregistrer. C'est terminé. Entre 22h et 6h Grominet pourra tou
 
 ### L'heure du dernier passage est décalée de 1 (ou 2) heure(s) pareil quand je met à jour la position d'un animal via le plugin elle est décalée dans l'app smartphone
 
-Le serveur Sure Petcare utilse des date/heures GMT donc l'app smartphone et le plugin doivent les convertir dans votre fuseau horaire. 
+Le serveur Sure Petcare utilise des date/heures GMT donc l'app smartphone et le plugin doivent les convertir dans votre fuseau horaire. 
 Pour le plugin pour que cette conversion soit correcte il faut que le fuseau horaire soit correct dans la configuration de Jeedom. Vérifiez que c'est bien le cas 
 (En V4 Réglages Système Configuration Général Date et Heure).
 
