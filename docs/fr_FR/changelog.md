@@ -83,3 +83,7 @@ Intégration basique du distributeur d'eau Felaqua Connect. J'espère qu'une int
 ### 13/05/2021
 
 Correction d'un bug dans les deux commandes "Autoriser animal" et "Interdire animal" de la petite chatière : la liste des animaux n'était pas récupérée correctement dans ces commandes.
+
+### 04/03/2022
+
+Nouvelle commandes pour les distributeurs de nourriture : Assigner animal et retirer animal

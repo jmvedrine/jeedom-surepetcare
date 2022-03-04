@@ -107,6 +107,8 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 | **Portion bol 2**                    | info    | numérique  | Indique le poids d'une portion pour le bol 2 en g                                                                                                                  |
 | **Délai de fermeture**               | info    | numérique  | Indique le délai de fermeture (0=Rapide, 4=Normal, 20=Lentement)                                                                                                   |
 | **Mode apprentissage**               | info    | numérique  | Indique le mode apprentissage (0=Pas activé et ensuite les étapes de 1 à 4)                                                                                        |
+| **Assigner animal**                  | action  | liste      | Ajoute un animal dans la liste des animaux assignés au distributeur. Il faut choisir l'animal dans la liste.               |
+| **Retirer animal**                   | action  | liste      | Retire un animal de la liste des animaux assignés au distributeur. Il faut choisir l'animal dans la liste. 
 
 ## Commandes pour une fontaine Felaqua
 

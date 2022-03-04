@@ -39,7 +39,11 @@ class surepetcare extends eqLogic {
                         log::add('surepetcare', 'debug', 'cron is due');
                         $token = cache::byKey('surepetcare::token')->getValue();
                         if ($token == '') {
-                            $token = surepetcare::login();
+                            if (!surepetcare::login()) {
+                                log::add('surepetcare', 'error', __('Impossible de récupérer le token', __FILE__));
+                                return;
+                            }
+                            $token = cache::byKey('surepetcare::token')->getValue();
                         }
                         $url = 'https://app.api.surehub.io/api/pet?with[]=status&with[]=position&with[]=tag';
                         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
@@ -126,11 +130,14 @@ class surepetcare extends eqLogic {
             // l'animal n'a jamais franchi aucune chatière ou n'est
             // enregistré dans aucune chatière (cas où seul le distributeur
             // de nourriture est présent).
+            // Il est aussi retourné lors d'une requete DELETE pour retirer un animal
+            // d'un distributeur.
             // Le code 201 est retourné lors d'une requête pour setposition.
             return '';
         } else {
             log::add('surepetcare','debug','Request failed result='.$result);
-            throw new \Exception(__('Erreur lors de la requete : ',__FILE__).$url.' ('.$method.'), data : '.json_encode($payload).' erreur : ' . $code);
+            //throw new \Exception(__('Erreur lors de la requete : ',__FILE__).$url.' ('.$method.'), data : '.json_encode($payload).' erreur : ' . $code);
+            return json_decode($result, true);
         }
     }
 
@@ -150,29 +157,19 @@ class surepetcare extends eqLogic {
     );
     $json = json_encode($data);
     log::add('surepetcare','debug', 'login data='.str_replace($password,'****',$json));
-    // log::add('surepetcare','debug', 'login data='.$json);
-    $request_http = new com_http($url);
-    $request_http->setNoSslCheck(true);
-    $request_http->setUserAgent('Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36');
-    $headers = array(
-            'Connection: keep-alive',
-            'Origin: https://surepetcare.io',
-            'Referer: https://surepetcare.io/',
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($json)
-    );
-    $request_http->setHeader($headers);
-    $request_http->setPost(json_encode($data));
-
-    $result = $request_http->exec();
-    log::add('surepetcare','debug','login result='.$result);
-    $result = is_json($result, $result);
+    $result = surepetcare::request($url, $json, 'POST', array());
     if(isset($result['data']['token'])) {
             $token = $result['data']['token'];
             cache::set('surepetcare::token',$token, 0);
             return $token;
     }
     cache::set('surepetcare::token','', 0);
+    $message = __('Erreur lors de l\'authentification.', __FILE__);
+    if(isset($result['error']['login'])) {
+        $message = $message . ' ' . implode(' ', $result['error']['login']);
+    }
+    log::add('surepetcare', 'error', $message);
+    throw new \Exception($message);
     return false;
   }
 
@@ -184,7 +181,14 @@ class surepetcare extends eqLogic {
     }
 
   public static function sync(){
-        $token = surepetcare::login();
+    $token = cache::byKey('surepetcare::token')->getValue();
+    if ($token == '') {
+        if (!surepetcare::login()) {
+            log::add('surepetcare', 'error', __('Impossible de récupérer le token', __FILE__));
+            return;
+        }
+        $token = cache::byKey('surepetcare::token')->getValue();
+    }
     $result = surepetcare::request('https://app.api.surehub.io/api/me/start', null, 'GET', array('Authorization: Bearer ' . $token));
     log::add('surepetcare','debug','me/start result : '.json_encode($result));
     config::remove('households', 'surepetcare');
@@ -251,8 +255,8 @@ class surepetcare extends eqLogic {
     }
     $listTags = implode(';', $petstags);
     foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
-        // Profile commands are only available for Microchip cat door connect.;
-        if ($eqLogic->getConfiguration('type') == 'device' && $eqLogic->getConfiguration('product_id') == 6) {
+        // Profile commands are only available for Microchip cat door connect and feeder connect.
+        if ($eqLogic->getConfiguration('type') == 'device' && ($eqLogic->getConfiguration('product_id') == 6 || $eqLogic->getConfiguration('product_id') == 4)) {
             $profile2 = $eqLogic->getCmd(null, 'dev.profile::2');
             if (is_object($profile2)) {
                 $profile2->setConfiguration('listValue', $listTags);
@@ -262,6 +266,11 @@ class surepetcare extends eqLogic {
             if (is_object($profile3)) {
                 $profile3->setConfiguration('listValue', $listTags);
                 $profile3->save();
+            }
+            $profile4 = $eqLogic->getCmd(null, 'dev.deleteprofile');
+            if (is_object($profile4)) {
+                $profile4->setConfiguration('listValue', $listTags);
+                $profile4->save();
             }
         }
     }
@@ -619,7 +628,11 @@ class surepetcare extends eqLogic {
     public function getDeviceStatus() {
         $token = cache::byKey('surepetcare::token')->getValue();
         if ($token == '') {
-            $token = surepetcare::login();
+            if (!surepetcare::login()) {
+                log::add('surepetcare', 'error', __('Impossible de récupérer le token', __FILE__));
+                return;
+            }
+            $token = cache::byKey('surepetcare::token')->getValue();
         }
         // On récupère les infos sur l'équipement.
         $logicalId = explode('.',$this->getLogicalId());
@@ -635,7 +648,11 @@ class surepetcare extends eqLogic {
     public function getPetStatus() {
         $token = cache::byKey('surepetcare::token')->getValue();
         if ($token == '') {
-            $token = surepetcare::login();
+            if (!surepetcare::login()) {
+                log::add('surepetcare', 'error', __('Impossible de récupérer le token', __FILE__));
+                return;
+            }
+            $token = cache::byKey('surepetcare::token')->getValue();
         }
         // On récupère les infos sur l'animal.
         $logicalId = explode('.',$this->getLogicalId());
@@ -1020,7 +1037,11 @@ class surepetcareCmd extends cmd {
         }
         $token = cache::byKey('surepetcare::token')->getValue();
         if ($token == '') {
-            $token = surepetcare::login();
+            if (!surepetcare::login()) {
+                log::add('surepetcare', 'error', __('Impossible de récupérer le token', __FILE__));
+                return;
+            }
+            $token = cache::byKey('surepetcare::token')->getValue();
         }
         $method = 'PUT';
         $eqLogic = $this->getEqLogic();
@@ -1131,6 +1152,10 @@ class surepetcareCmd extends cmd {
                 // $eqLogic->setConfiguration('unlock_time', $parameters[$keyValue[0]]);
                 $eqLogic->save();
                 return;
+            } else if($keyValue[0] =='deleteprofile'){
+                $method = 'DELETE';
+                log::add('surepetcare','debug','Suppression de profile : ' . $parameters[$keyValue[0]]);
+                $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
             }
         }
         log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));
