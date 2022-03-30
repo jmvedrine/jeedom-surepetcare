@@ -121,6 +121,7 @@ class surepetcare extends eqLogic {
         $result = curl_exec($ch);
         log::add('surepetcare','debug','Request result '.$result);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        log::add('surepetcare','debug','Request code result '.$code);
         curl_close($ch);
         if ($code =='200') {
             return json_decode($result, true);
@@ -567,7 +568,7 @@ class surepetcare extends eqLogic {
                         log::add('surepetcare','debug', 'Fontaine inconnue id ' . $device_id . ' dans updatePetsStatus');
                     }
                     if (isset($pet['status']['drinking']['change'])) {
-							$weight = $pet['status']['drinking']['change'][0];
+                            $weight = $pet['status']['drinking']['change'][0];
                             log::add('surepetcare','debug', 'Poids derniere boisson pour ' . $pet['id'] . ' nouvelle valeur ' . $weight);
                             $eqLogic->checkAndUpdateCmd('pet.drinkingweight', $weight, $date->format('Y-m-d H:i:s'));
                     }
@@ -1138,8 +1139,8 @@ class surepetcareCmd extends cmd {
                 unset($parameters['setposition']);
             } else if($keyValue[0] =='profile'){
                 $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
-                log::add('surepetcare','debug','url='. $url);
-                log::add('surepetcare','debug','keyvalue0' .$parameters[$keyValue[0]]);
+                log::add('surepetcare','debug','commande profile url='. $url);
+                log::add('surepetcare','debug','commande profile keyvalue0' .$parameters[$keyValue[0]]);
             } else if($keyValue[0] =='setlocktime'){
                 log::add('surepetcare','debug','Heure de verrouillage : ' . $parameters[$keyValue[0]]);
                 cache::set('surepetcare::lock_time::'.$eqLogic->getId(), $parameters[$keyValue[0]], '');
@@ -1154,8 +1155,10 @@ class surepetcareCmd extends cmd {
                 return;
             } else if($keyValue[0] =='deleteprofile'){
                 $method = 'DELETE';
-                log::add('surepetcare','debug','Suppression de profile : ' . $parameters[$keyValue[0]]);
+                $parameters = array();
+                log::add('surepetcare','debug','commande deleteprofile : ' . $parameters[$keyValue[0]]);
                 $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
+                log::add('surepetcare','debug','commande deleteprofile url='. $url);
             }
         }
         log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));
