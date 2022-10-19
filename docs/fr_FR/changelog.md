@@ -87,3 +87,7 @@ Correction d'un bug dans les deux commandes "Autoriser animal" et "Interdire ani
 ### 04/03/2022
 
 Nouvelle commandes pour les distributeurs de nourriture : Assigner animal et retirer animal
+
+# 19/10/2022
+
+Compatibilité avec Jeedom 4.3 de l'onglet Commandes (affichage de l'état des commandes info).

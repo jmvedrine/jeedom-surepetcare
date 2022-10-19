@@ -8,15 +8,17 @@ $eqLogics = eqLogic::byType($plugin->getId());
 ?>
 
 <div class="row row-overflow">
+	<!-- Page d'accueil du plugin -->
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
 		<legend><i class="fas fa-cog"></i>  {{Gestion}}</legend>
+		<!-- Boutons de gestion du plugin -->
 		<div class="eqLogicThumbnailContainer">
 			<div class="cursor eqLogicAction logoSecondary" id="bt_syncEqLogic" >
 				<i class="fas fa-sync-alt"></i>
 				<br>
-				<span><center>{{Synchronisation}}</center></span>
+				<span>{{Synchronisation}}</span>
 			</div>
-			<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf" >
+			<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf">
 				<i class="fas fa-wrench"></i>
 				<br>
 				<span>{{Configuration}}</span>
@@ -36,7 +38,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					echo '<img src="' . $plugin->getPathImgIcon() . '"/>';
 				}
 				echo '<br>';
-				echo '<span>' . $eqLogic->getHumanName(true, true) . '</span>';
+				echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+				echo '<span class="hiddenAsCard displayTableRight hidden">';
+				echo ($eqLogic->getIsVisible() == 1) ? '<i class="fas fa-eye" title="{{Equipement visible}}"></i>' : '<i class="fas fa-eye-slash" title="{{Equipement non visible}}"></i>';
+				echo '</span>';
 				echo '</div>';
 			}
 			?>
@@ -51,7 +56,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				echo '<img src="' . $eqLogic->getImage() . '"/>';
 				
 				echo '<br>';
-				echo '<span>' . $eqLogic->getHumanName(true, true) . '</span>';
+				echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+				echo '<span class="hiddenAsCard displayTableRight hidden">';
+				echo ($eqLogic->getIsVisible() == 1) ? '<i class="fas fa-eye" title="{{Equipement visible}}"></i>' : '<i class="fas fa-eye-slash" title="{{Equipement non visible}}"></i>';
+				echo '</span>';
 				echo '</div>';
 			}
 			?>
@@ -109,17 +117,17 @@ $eqLogics = eqLogic::byType($plugin->getId());
 										<?php
 										foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 											echo '<label class="checkbox-inline">';
-											echo '<input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="' . $key . '" />' . $value['name'];
+										echo '<input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="' . $key . '" >' . $value['name'];
 											echo '</label>';
 										}
 										?>
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-sm-4 control-label"></label>
+								<label class="col-sm-4 control-label">{{Options}}</label>
 									<div class="col-sm-6">
-										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked/>{{Activer}}</label>
-										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
+									<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked>{{Activer}}</label>
+									<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked>{{Visible}}</label>
 									</div>
 								</div>
                                 <div class="form-group" id="curfew_lock_time" >
@@ -164,12 +172,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<table id="table_cmd" class="table table-bordered table-condensed">
 					<thead>
 						<tr>
-							<th style="width: 300px;">{{Nom}}</th>
-							<th style="width: 130px;">{{Type}}</th>
+							<th class="hidden-xs" style="min-width:50px;width:70px;">ID</th>
+								<th style="min-width:200px;width:350px;">{{Nom}}</th>
+							<th>{{Type}}</th>
 							<th>{{Logical ID}}</th>
 							<th>{{Paramètres}}</th>
-							<th style="width: 300px;">{{Options}}</th>
-							<th></th>
+							<th>{{Options}}</th>
+							<th>{{Etat}}</th>
+							<th style="min-width:80px;width:200px;">{{Actions}}</th>
 						</tr>
 					</thead>
 					<tbody>
