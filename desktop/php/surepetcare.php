@@ -176,7 +176,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<th style="min-width:200px;width:350px;">{{Nom}}</th>
 							<th>{{Type}}</th>
 							<th>{{Logical ID}}</th>
-							<th>{{Paramètres}}</th>
 							<th>{{Options}}</th>
 							<th>{{Etat}}</th>
 							<th style="min-width:80px;width:200px;">{{Actions}}</th>
