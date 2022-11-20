@@ -696,7 +696,7 @@ class surepetcare extends eqLogic {
           if (!is_array($value)){
             if ($key == 'lock_time' || $key == 'unlock_time') {
                 // Format time to Jeedom numeric.
-                // $value = str_replace(':', '', $value);
+                $value = intval(str_replace(':', '', $value));
             }
             log::add('surepetcare', 'debug', 'Mise à jour commande ' . $cmd->getName() . ' nouvelle valeur ' . $value);
             $this->checkAndUpdateCmd($cmd,$value);
@@ -976,6 +976,7 @@ public function toHtml($_version = 'dashboard') {
         $replace['#' . $cmd->getLogicalId() . '_uid#'] = 'cmd' . $cmd->getId() . eqLogic::UIDDELIMITER . mt_rand() . eqLogic::UIDDELIMITER;
         $replace['#' . $cmd->getLogicalId() . '_collectDate#'] = $cmd->getCollectDate();
         $replace['#' . $cmd->getLogicalId() . '_valueDate#'] = $cmd->getValueDate();
+		$replace['#' . $cmd->getLogicalId() . '_unite#'] = $cmd->getUnite();
         $replace['#' . $cmd->getLogicalId() . '_alertLevel#'] = $cmd->getCache('alertLevel', 'none');
         if ($cmd->getIsHistorized() == 1) {
             $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';

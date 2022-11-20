@@ -119,7 +119,11 @@
                 "generic_type": "DONT",
                 "isVisible": 0,
                 "isHistorized": 0,
-                "logicalId": "control::curfew::lock_time"
+                "logicalId": "control::curfew::lock_time",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
             },
             {
                 "name": "Fixer heure de déverrouillage",
@@ -142,7 +146,11 @@
                 "generic_type": "DONT",
                 "isVisible": 0,
                 "isHistorized": 0,
-                "logicalId": "control::curfew::unlock_time"
+                "logicalId": "control::curfew::unlock_time",
+                "template":{
+                    "dashboard" : "line",
+                    "mobile" : "line"
+                }
             },
 			{
 				"name": "Couvre-feu",
