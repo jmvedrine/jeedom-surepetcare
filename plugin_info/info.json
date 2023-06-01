@@ -4,7 +4,7 @@
 	"description" : "Plugin pour les objets connectées pour animaux Sure Petcare (Sureflap)",
 	"licence" : "AGPL",
 	"author" : "JMVedrine",
-	"require" : "3.3",
+	"require" : "4.2.0",
 	"category" : "devicecommunication",
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
