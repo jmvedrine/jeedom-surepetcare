@@ -53,7 +53,7 @@ class surepetcare extends eqLogic {
                         } else {
                             log::add('surepetcare','debug', 'Aucune donnée pour les animaux lors de la mise à jour');
                         }
-                        $url = 'https://app.api.surehub.io/api/device?with[]=children&with[]=status&with[]=curfew&with[]=control';
+                        $url = 'https://app.api.surehub.io/api/device?with[]=children&with[]=status&with[]=curfew&with[]=control&with[]=tags';
                         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
                         log::add('surepetcare','debug', "Devices Data : ". print_r($result, true));
                         if (isset($result['data'])) {
@@ -638,7 +638,7 @@ class surepetcare extends eqLogic {
         // On récupère les infos sur l'équipement.
         $logicalId = explode('.',$this->getLogicalId());
         $deviceId = $logicalId[1];
-        $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '?with[]=status&with[]=control&with[]=curfew&with[]=feeding';
+        $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '?with[]=status&with[]=control&with[]=curfew&with[]=feeding&with[]=tags';
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
         log::add('surepetcare','debug',"Résultat getDeviceStatus $deviceid : " . print_r($result['data'], true));
         if (isset($result['data'])) {
