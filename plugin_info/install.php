@@ -28,46 +28,6 @@ function surepetcare_update() {
     if($autorefresh =='') {
         config::save('autorefresh', '* * * * *', 'surepetcare');
     }
-    foreach (surepetcare::byType('surepetcare') as $eqLogic) {
-        if ($eqLogic->getConfiguration('type') == 'device') {
-            if ($eqLogic->getConfiguration('device_id') == 3) {
-                // Suppress profile commands for the Microchip pet door connect.
-                $cmd = $eqLogic->getCmd(null, 'dev.profile::2');
-                if (is_object($cmd)) {
-                    $cmd->remove();
-                }
-                $cmd = $eqLogic->getCmd(null, 'dev.profile::3');
-                if (is_object($cmd)) {
-                    $cmd->remove();
-                }
-                // Correction typo
-                $cmd = $eqLogic->getCmd(null, 'dev.satus::online');
-                if (is_object($cmd)) {
-                     $cmd->setLogicalId('dev.status::online');
-                     $cmd->save();
-                }
-            }
-            foreach ($eqLogic->getCmd('info') as $cmd) {
-                $logicalId = $cmd->getLogicalId();
-                log::add('surepetcare', 'debug', 'On traite la commande  logicalId ' . $logicalId);
-                $epClusterPath = explode('.', $logicalId);
-                $path = explode('::', $epClusterPath[1]);
-                if ($path[0] != 'status' && $path[0] != 'control') {
-                    log::add('surepetcare', 'debug', 'logicalId à mettre à jour');
-                    if ($path[0] == 'curfew') {
-                        $newpath = 'control';
-                    } else {
-                        $newpath = 'status';
-                    }
-                    $newlogicalId = $epClusterPath[0] . '.' . $newpath .  '::' . $epClusterPath[1];
-                    log::add('surepetcare', 'debug', 'Mise à jour logicalId ' . $logicalId . ' nouvelle valeur ' . $newlogicalId);
-                    $cmd->setLogicalId($newlogicalId);
-                    $cmd->save();
-                }
-            }
-        }
-        $eqLogic->save();
-    }
 }
 
 
