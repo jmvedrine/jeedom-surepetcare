@@ -44,6 +44,14 @@ class surepetcare extends eqLogic {
                                 return;
                             }
                             $token = cache::byKey('surepetcare::token')->getValue();
+                        }                     
+                        $url = 'https://app.api.surehub.io/api/device?with[]=children&with[]=status&with[]=curfew&with[]=control&with[]=tags';
+                        $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
+                        log::add('surepetcare','debug', "Devices Data : ". print_r($result, true));
+                        if (isset($result['data'])) {
+                            surepetCare::updateDevicesStatus($result['data']);
+                        } else {
+                            log::add('surepetcare','debug', 'Aucune donnée pour les équipements lors de la mise à jour');
                         }
                         $url = 'https://app.api.surehub.io/api/pet?with[]=status&with[]=position&with[]=tag';
                         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
@@ -52,14 +60,6 @@ class surepetcare extends eqLogic {
                             surepetcare::updatePetsStatus($result['data']);
                         } else {
                             log::add('surepetcare','debug', 'Aucune donnée pour les animaux lors de la mise à jour');
-                        }
-                        $url = 'https://app.api.surehub.io/api/device?with[]=children&with[]=status&with[]=curfew&with[]=control&with[]=tags';
-                        $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
-                        log::add('surepetcare','debug', "Devices Data : ". print_r($result, true));
-                        if (isset($result['data'])) {
-                            surepetCare::updateDevicesStatus($result['data']);
-                        } else {
-                            log::add('surepetcare','debug', 'Aucune donnée pour les équipements lors de la mise à jour');
                         }
                     } catch (Exception $exc) {
                         log::add('surepetcare', 'debug', "Erreur lors de l'exécution du cron " . $exc->getMessage());
@@ -620,6 +620,21 @@ class surepetcare extends eqLogic {
                         $device['control']['curfew'] = array('enabled' => false);
                     }
                     log::add('surepetcare','debug','updateDevicesStatus curfew after recoding : '. print_r($device['control']['curfew'], true));
+                    if (isset($device['tags'])) {
+                        $unauthorizedPets = array();
+                        foreach ($device['tags'] as $key => $tag) {
+                            if ($tag['profile'] == 3) {
+                                $petEqLogic = self::byTypeAndSearchConfiguration('surepetcare','%"tag_id":'.$tag['id'].'%');
+                                if(!empty($petEqLogic)) {
+                                    $unauthorizedPets[] = $petEqLogic[0]->getName();
+                                } else {
+                                    log::add('surepetcare','debug','Animal interdit inconnu tag : '. $tag['id']);
+                                }
+                            }
+                        }
+                        $listUnauthorizedPets = implode(';',$unauthorizedPets); 
+                        $device['forbidden'] = $listUnauthorizedPets;
+                    }
                 }
                 $eqLogic->applyData($device);
             }
@@ -976,7 +991,7 @@ public function toHtml($_version = 'dashboard') {
         $replace['#' . $cmd->getLogicalId() . '_uid#'] = 'cmd' . $cmd->getId() . eqLogic::UIDDELIMITER . mt_rand() . eqLogic::UIDDELIMITER;
         $replace['#' . $cmd->getLogicalId() . '_collectDate#'] = $cmd->getCollectDate();
         $replace['#' . $cmd->getLogicalId() . '_valueDate#'] = $cmd->getValueDate();
-		$replace['#' . $cmd->getLogicalId() . '_unite#'] = $cmd->getUnite();
+        $replace['#' . $cmd->getLogicalId() . '_unite#'] = $cmd->getUnite();
         $replace['#' . $cmd->getLogicalId() . '_alertLevel#'] = $cmd->getCache('alertLevel', 'none');
         if ($cmd->getIsHistorized() == 1) {
             $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';

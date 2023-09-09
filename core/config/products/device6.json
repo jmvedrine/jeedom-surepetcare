@@ -1,15 +1,15 @@
 {
-		"name": "Chatière",
-		"configuration": {
-			"id": "",
-			"product_id": "6",
+        "name": "Chatière",
+        "configuration": {
+            "id": "",
+            "product_id": "6",
             "parent_device_id": "",
-			"product_name": "Chatière à puce électronique Connect",
+            "product_name": "Chatière à puce électronique Connect",
             "battery_type": "4x1.5V AA",
             "battery_max" : 6.0,
             "battery_min" : 4.4
-		},
-		"commands": [
+        },
+        "commands": [
             {
                 "name": "En ligne",
                 "type": "info",
@@ -80,10 +80,10 @@
                 "isHistorized": 0,
                 "value" : "Couvre-feu",
                 "logicalId": "curfew::1",
-				"template":{
-					"dashboard" : "lock",
-					"mobile" : "lock"
-				}
+                "template":{
+                    "dashboard" : "lock",
+                    "mobile" : "lock"
+                }
             },
             {
                 "name": "Désactiver couvre-feu",
@@ -94,10 +94,10 @@
                 "isHistorized": 0,
                 "value" : "Couvre-feu",
                 "logicalId": "curfew::0",
-				"template":{
-					"dashboard" : "lock",
-					"mobile" : "lock"
-				}
+                "template":{
+                    "dashboard" : "lock",
+                    "mobile" : "lock"
+                }
             },
             {
                 "name": "Fixer heure de verrouillage",
@@ -152,19 +152,19 @@
                     "mobile" : "line"
                 }
             },
-			{
-				"name": "Couvre-feu",
-				"type": "info",
-				"subtype": "binary",
-				"isVisible": 0,
-				"isHistorized": 0,
-				"logicalId": "control::curfew::enabled",
-				"generic_type": "GENERIC_INFO",
-				"template":{
-					"dashboard" : "lock",
-					"mobile" : "lock"
-				}
-			},
+            {
+                "name": "Couvre-feu",
+                "type": "info",
+                "subtype": "binary",
+                "isVisible": 0,
+                "isHistorized": 0,
+                "logicalId": "control::curfew::enabled",
+                "generic_type": "GENERIC_INFO",
+                "template":{
+                    "dashboard" : "lock",
+                    "mobile" : "lock"
+                }
+            },
             {
                 "name": "Autoriser",
                 "type": "action",
@@ -179,14 +179,14 @@
                 "logicalId": "locking::#select#"
             },
             {
-				"name": "Verrouillage",
-				"type": "info",
-				"subtype": "numeric",
-				"isVisible": 0,
-				"isHistorized": 0,
-				"logicalId": "status::locking::mode",
-				"generic_type": "GENERIC_INFO"
-			},
+                "name": "Verrouillage",
+                "type": "info",
+                "subtype": "numeric",
+                "isVisible": 0,
+                "isHistorized": 0,
+                "logicalId": "status::locking::mode",
+                "generic_type": "GENERIC_INFO"
+            },
             {
                 "name": "Autoriser animal",
                 "type": "action",
@@ -204,6 +204,15 @@
                 "isVisible": 0,
                 "isHistorized": 0,
                 "logicalId": "profile::3"
-			}
-		]
+            },
+            {
+                "name": "Animaux interdits de sortir",
+                "type": "info",
+                "subtype": "string",
+                "generic_type": "DONT",
+                "isVisible": 0,
+                "isHistorized": 0,
+                "logicalId": "forbidden"
+            }
+        ]
 }
