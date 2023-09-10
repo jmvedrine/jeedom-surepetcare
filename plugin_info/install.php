@@ -23,13 +23,11 @@ function surepetcare_install() {
 }
 
 function surepetcare_update() {
-    log::add('surepetcare', 'debug', 'Surepetcare update function');
     $autorefresh = config::byKey('autorefresh','surepetcare');
     if($autorefresh =='') {
         config::save('autorefresh', '* * * * *', 'surepetcare');
     }
 }
-
 
 function surepetcare_remove() {
     

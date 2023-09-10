@@ -632,8 +632,7 @@ class surepetcare extends eqLogic {
                                 }
                             }
                         }
-                        $listUnauthorizedPets = implode(';',$unauthorizedPets); 
-                        $device['forbidden'] = $listUnauthorizedPets;
+                        $device['forbidden'] = implode(';',$unauthorizedPets);
                     }
                 }
                 $eqLogic->applyData($device);
@@ -728,6 +727,20 @@ class surepetcare extends eqLogic {
             if ($this->getConfiguration('applyProductId') != $this->getConfiguration('product_id')) {
               $this->applyModuleConfiguration();
               $this->refreshWidget();
+            }
+			$forbidden = $this->getCmd(null, 'dev.forbidden');
+			if (!is_object($forbidden)) {
+				$forbidden = new surepetcareCmd();
+				$forbidden->setIsVisible(0);
+				$forbidden->setName(__('Animaux interdits de sortir', __FILE__));
+				$forbidden->setConfiguration('historizeMode', 'none');
+				$forbidden->setIsHistorized(0);
+				$forbidden->setDisplay('generic_type', 'DONT');
+                $forbidden->setEqLogic_id($this->getId());
+                $forbidden->setType('info');
+                $forbidden->setSubType('string');
+                $forbidden->setLogicalId('dev.forbidden');
+                $forbidden->save();
             }
         }
         If ($this->getConfiguration('type') == 'pet') {
