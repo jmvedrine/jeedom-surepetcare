@@ -139,10 +139,11 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 | **Batterie**                         | info    | numérique  | Indique le voltage total des 4 piles (unité : V)                                                                                                                   |
 | **Autoriser animal**                 | action  | liste      | Autorise un animal à sortir par cette chatière. Il faut choisir l'animal dans la liste. Cette commande n'est pas disponible pour la grande chatière.               |
 | **Interdire animal**                 | action  | liste      | Interdit à un animal de sortir par cette chatière. Il faut choisir l'animal dans la liste. Cette commande n'est pas disponible pour la grande chatière.            |
+| **Animaux interdits de sortir**      | info    | chaîne     | Liste des noms des animaux interdits de sortir séparés par des points-virgules. Cette commande n'est pas disponible pour la grande chatière.                       |
 
 Attention pour les deux commandes **Autoriser animal** et **Interdire animal**, la liste des animaux est construite lors de la Synchronisation avec le serveur.
 Si cette liste ne contient que la valeur **Aucun** ou si un animal n'apparaît pas, il faut effectuer une synchronisation.
-Il faut aussi noter que les deux commandes **Autoriser animal** et **Interdire animal** ne sont disponibles que pour la petite chatière qui est équipée de la
+Il faut aussi noter que les deux commandes action **Autoriser animal** et **Interdire animal** et la commande info **Animaux interdits de sortir** ne sont disponibles que pour la petite chatière qui est équipée de la
 technologie Dualscan car il manque un capteur à la grande chatière pour contrôler les sorties.
 
 ### Note importantes à propos des commandes relatives au couvre-feu

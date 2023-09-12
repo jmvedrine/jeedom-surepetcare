@@ -88,6 +88,10 @@ Correction d'un bug dans les deux commandes "Autoriser animal" et "Interdire ani
 
 Nouvelle commandes pour les distributeurs de nourriture : Assigner animal et retirer animal
 
-# 19/10/2022
+### 19/10/2022
 
 Compatibilité avec Jeedom 4.3 de l'onglet Commandes (affichage de l'état des commandes info).
+
+### 11/09/2023
+
+Nouvelle info commande pour la petite chatière : liste des animaux interdits de sortir

@@ -728,19 +728,21 @@ class surepetcare extends eqLogic {
               $this->applyModuleConfiguration();
               $this->refreshWidget();
             }
-			$forbidden = $this->getCmd(null, 'dev.forbidden');
-			if (!is_object($forbidden)) {
-				$forbidden = new surepetcareCmd();
-				$forbidden->setIsVisible(0);
-				$forbidden->setName(__('Animaux interdits de sortir', __FILE__));
-				$forbidden->setConfiguration('historizeMode', 'none');
-				$forbidden->setIsHistorized(0);
-				$forbidden->setDisplay('generic_type', 'DONT');
-                $forbidden->setEqLogic_id($this->getId());
-                $forbidden->setType('info');
-                $forbidden->setSubType('string');
-                $forbidden->setLogicalId('dev.forbidden');
-                $forbidden->save();
+            if ($this->getConfiguration('product_id') == 6) {
+                $forbidden = $this->getCmd(null, 'dev.forbidden');
+                if (!is_object($forbidden)) {
+                    $forbidden = new surepetcareCmd();
+                    $forbidden->setIsVisible(0);
+                    $forbidden->setName(__('Animaux interdits de sortir', __FILE__));
+                    $forbidden->setConfiguration('historizeMode', 'none');
+                    $forbidden->setIsHistorized(0);
+                    $forbidden->setDisplay('generic_type', 'DONT');
+                    $forbidden->setEqLogic_id($this->getId());
+                    $forbidden->setType('info');
+                    $forbidden->setSubType('string');
+                    $forbidden->setLogicalId('dev.forbidden');
+                    $forbidden->save();
+                }
             }
         }
         If ($this->getConfiguration('type') == 'pet') {
