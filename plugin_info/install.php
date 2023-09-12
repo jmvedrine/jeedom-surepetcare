@@ -28,7 +28,7 @@ function surepetcare_update() {
         config::save('autorefresh', '* * * * *', 'surepetcare');
     }
     foreach (surepetcare::byType('surepetcare') as $eqLogic) {
-        if ($eqLogic->getConfiguration('type') == 'device' && $eqLogic->getConfiguration('device_id') != 6) {
+        if ($eqLogic->getConfiguration('type') == 'device' && $eqLogic->getConfiguration('product_id') != 6) {
                 $cmd = $eqLogic->getCmd(null, 'dev.forbidden');
                 if (is_object($cmd)) {
                     $cmd->remove();
