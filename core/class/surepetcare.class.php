@@ -136,9 +136,8 @@ class surepetcare extends eqLogic {
             // Le code 201 est retourné lors d'une requête pour setposition.
             return '';
         } else {
-            log::add('surepetcare','debug','Request failed result='.$result);
-            //throw new \Exception(__('Erreur lors de la requete : ',__FILE__).$url.' ('.$method.'), data : '.json_encode($payload).' erreur : ' . $code);
-            return json_decode($result, true);
+            log::add('surepetcare','debug','Request failed url = ' . $url. ' methode = ' . $method . ' payload = ' . $payload . ' code = ' . $code. ' result = '.$result);
+            throw new \Exception(__('Le serveur a retourné une erreur code : ',__FILE__). $code);
         }
     }
 
@@ -1056,7 +1055,7 @@ class surepetcareCmd extends cmd {
       }
      */
     public function datatype($_data){
-        $type_array = array('led_mode' => 'num');
+        $type_array = array('led_mode' => 'num', 'profile' => 'num');
         if (isset($type_array[$_data])) {
             return $type_array[$_data];
         }
