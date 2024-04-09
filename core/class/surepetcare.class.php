@@ -23,6 +23,17 @@ class surepetcare extends eqLogic {
     /*     * *************************Attributs****************************** */
     public static $_widgetPossibility = array('custom' => true);
 
+    public static function templateWidget(){
+        $return = array('action' => array('other' => array()));
+		$return['action']['other']['position'] = array(
+            'template' => 'tmplimg',
+            'replace' => array('#_img_light_on_#' => '<img src="plugins/surepetcare/core/template/images/inside-location.png" width="50px" title="Dedans" >',
+			                   '#_img_dark_on_#' => '<img src="plugins/surepetcare/core/template/images/inside-location.png" width="50px" title="Dedans" >',
+							   '#_img_light_off_#' => '<img src="plugins/surepetcare/core/template/images/outside-location.png" width="50px" title="Dehors" >',
+			                   '#_img_dark_off_#' => '<img src="plugins/surepetcare/core/template/images/outside-location.png" width="50px" title="Dehors" >',)
+        );
+        return $return;
+    }
 
     /*     * ***********************Methode static*************************** */
 
@@ -133,7 +144,7 @@ class surepetcare extends eqLogic {
             // de nourriture est présent).
             // Il est aussi retourné lors d'une requete DELETE pour retirer un animal
             // d'un distributeur.
-            // Le code 201 est retourné lors d'une requête pour setposition.
+            // Le code 201 est retourné lors d'une requête POST réussie.
             return '';
         } else {
             log::add('surepetcare','debug','Request failed url = ' . $url. ' methode = ' . $method . ' payload = ' . $payload . ' code = ' . $code. ' result = '.$result);
@@ -506,6 +517,9 @@ class surepetcare extends eqLogic {
             log::add('surepetcare','debug','updatePetsStatus pet : '. print_r($pet, true));
             $eqLogic = self::byLogicalId('pet.' . $pet['id'], 'surepetcare');
             if(is_object($eqLogic) && $eqLogic->getIsEnable() == 1){
+				$photo = '<img style="display:block;height: 100px;width: 100px;border-radius: 50%;" src = "'. $eqLogic->getConfiguration('photo_location') . '" />';
+				$eqLogic->checkAndUpdateCmd('pet.photolocation',  $photo);
+                log::add('surepetcare','debug','updatePetsStatus photolocation : '. $photo);
                 if (isset($pet['status']['activity']['where'])) {
                     log::add('surepetcare','debug','updatePetsStatus pet activity : '. print_r($pet['status']['activity'], true));
                     $position = ($pet['status']['activity']['where'] == 1);
@@ -518,7 +532,7 @@ class surepetcare extends eqLogic {
                         $eqLogic->checkAndUpdateCmd('pet.through', $eqLogic2->getName(), $date->format('Y-m-d H:i:s'));
                         log::add('surepetcare','debug', 'Mise à jour passé par ' . $pet['id'] . ' nouvelle valeur ' . $eqLogic2->getName());
                     } else {
-                        // Ceci peut se produire si on a mis à jour la position par commande.
+                        // Ceci peut se produire si on a mis à jour la position par une commande.
                         log::add('surepetcare','debug', 'Chatière inconnue id ' . $device_id . ' dans updatePetsStatus');
                     }
                     log::add('surepetcare','debug', 'Mise à jour position animal ' . $pet['id'] . ' nouvelle valeur ' . $position);
@@ -746,6 +760,22 @@ class surepetcare extends eqLogic {
         }
         If ($this->getConfiguration('type') == 'pet') {
             if ($this->getIsEnable() == 1) {
+				// Pet photo
+				$photolocation = $this->getCmd(null, 'pet.photolocation');
+                if (!is_object($photolocation)) {
+                    $photolocation = new surepetcareCmd();
+                    $photolocation->setIsVisible(1);
+                    $photolocation->setName(__('Animal', __FILE__));
+                    $photolocation->setConfiguration('historizeMode', 'none');
+                    $photolocation->setIsHistorized(0);
+                }
+                $photolocation->setDisplay('generic_type', 'DONT');
+                $photolocation->setEqLogic_id($this->getId());
+                $photolocation->setType('info');
+                $photolocation->setSubType('string');
+                $photolocation->setLogicalId('pet.photolocation');
+                $photolocation->save();
+
                 // Position (info).
                 $position = $this->getCmd(null, 'pet.position');
                 if (!is_object($position)) {
@@ -777,6 +807,55 @@ class surepetcare extends eqLogic {
                 $setposition->setLogicalId('pet.setposition::#select#');
                 $setposition->setValue($position->getId());
                 $setposition->save();
+                
+				// Fixer la position à l'extérieur (action)
+                $setindoor_Off = $this->getCmd(null, 'pet.setindoor_Off');
+                if (!is_object($setindoor_Off)) {
+                    $setindoor_Off = new surepetcareCmd();
+                    $setindoor_Off->setName(__('Interieur Off', __FILE__));
+                    $setindoor_Off->setIsVisible(1);
+                }
+                $setindoor_Off->setDisplay('generic_type', 'DONT');
+                $setindoor_Off->setEqLogic_id($this->getId());
+                $setindoor_Off->setType('action');
+                $setindoor_Off->setSubType('other');
+                $setindoor_Off->setLogicalId('pet.setindoor_Off');
+                $setindoor_Off->setValue($position->getId());
+				$setindoor_Off->setTemplate('dashboard', 'surepetcare::position');
+                $setindoor_Off->setTemplate('mobile', 'surepetcare::position');
+                $setindoor_Off->save();
+				
+				// Fixer la position à l'intérieur (action)
+                $setindoor_On = $this->getCmd(null, 'pet.setindoor_On');
+                if (!is_object($setindoor_On)) {
+                    $setindoor_On = new surepetcareCmd();
+                    $setindoor_On->setName(__('Interieur On', __FILE__));
+                    $setindoor_On->setIsVisible(1);
+                }
+                $setindoor_On->setDisplay('generic_type', 'DONT');
+                $setindoor_On->setEqLogic_id($this->getId());
+                $setindoor_On->setType('action');
+                $setindoor_On->setSubType('other');
+                $setindoor_On->setLogicalId('pet.setindoor_On');
+                $setindoor_On->setValue($position->getId());
+				$setindoor_On->setTemplate('dashboard', 'surepetcare::position');
+                $setindoor_On->setTemplate('mobile', 'surepetcare::position');
+                $setindoor_On->save();
+				
+			    // Inverser la position (action)
+                $toggleposition = $this->getCmd(null, 'pet.toggleposition');
+                if (!is_object($toggleposition)) {
+                    $toggleposition = new surepetcareCmd();
+                    $toggleposition->setName(__('Inverser la position', __FILE__));
+                    $toggleposition->setIsVisible(0);
+                }
+                $toggleposition->setDisplay('generic_type', 'DONT');
+                $toggleposition->setEqLogic_id($this->getId());
+                $toggleposition->setType('action');
+                $toggleposition->setSubType('other');
+                $toggleposition->setLogicalId('pet.toggleposition');
+                $toggleposition->setValue($position->getId());
+                $toggleposition->save();
                 
                 // Date/Heure dernier passage.
                 $since = $this->getCmd(null, 'pet.since');
@@ -977,54 +1056,6 @@ class surepetcare extends eqLogic {
     }
 
     /*
-     * Non obligatoire mais permet de modifier l'affichage du widget si vous en avez besoin
-     */
-public function toHtml($_version = 'dashboard') {
-    if ($this->getConfiguration('type') == 'device') {
-        return parent::toHtml($_version);
-    }
-
-    $replace = $this->preToHtml($_version);
-    if (!is_array($replace)) {
-        return $replace;
-    }
-    $version = jeedom::versionAlias($_version);
-    if ($this->getDisplay('hideOn' . $version) == 1) {
-        return '';
-    }
-
-    foreach ($this->getCmd('info') as $cmd) {
-        $replace['#' . $cmd->getLogicalId() . '_display#'] = (is_object($cmd) && $cmd->getIsVisible()) ? '#' . $cmd->getLogicalId() . '_display#' : "none";
-        $replace['#' . $cmd->getLogicalId() . '_name_display#'] = ($cmd->getDisplay('icon') != '') ? $cmd->getDisplay('icon') : $cmd->getName();
-        $replace['#' . $cmd->getLogicalId() . '_name#'] = $cmd->getName();
-        $replace['#' . $cmd->getLogicalId() . '_unite#'] = $cmd->getUnite();
-        $replace['#' . $cmd->getLogicalId() . '_hide_name#'] = '';
-        $replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
-        $replace['#' . $cmd->getLogicalId() . '_version#'] = $_version;
-        $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
-        $replace['#' . $cmd->getLogicalId() . '_uid#'] = 'cmd' . $cmd->getId() . eqLogic::UIDDELIMITER . mt_rand() . eqLogic::UIDDELIMITER;
-        $replace['#' . $cmd->getLogicalId() . '_collectDate#'] = $cmd->getCollectDate();
-        $replace['#' . $cmd->getLogicalId() . '_valueDate#'] = $cmd->getValueDate();
-        $replace['#' . $cmd->getLogicalId() . '_unite#'] = $cmd->getUnite();
-        $replace['#' . $cmd->getLogicalId() . '_alertLevel#'] = $cmd->getCache('alertLevel', 'none');
-        if ($cmd->getIsHistorized() == 1) {
-            $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
-        }
-        if ($cmd->getDisplay('showNameOn' . $_version, 1) == 0) {
-            $replace['#' . $cmd->getLogicalId() . '_hide_name#'] = 'hidden';
-        }
-    }
-    $setpositionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
-    $replace['#pet.position_display#'] = (is_object($setpositionCmd) && $setpositionCmd->getIsVisible()) ? "#pet.position_display#" : "none";
-    $cmdlogic = surepetcareCmd::byEqLogicIdAndLogicalId($this->getId(),'pet.setposition::#select#');
-    $replace['#pet.fixposition_id#'] = $cmdlogic->getId();
-    $replace['#pet.fixposition_str#'] = __('Changer la position', __FILE__);
-    $replace['#photolocation#'] = $this->getConfiguration('photo_location');
-    $html = template_replace($replace, getTemplate('core', $version, 'pet', 'surepetcare'));
-    return $this->postToHtml($_version, $html);
-}
-
-    /*
      * Non obligatoire mais ca permet de déclencher une action après modification de variable de configuration
     public static function postConfig_<Variable>() {
     }
@@ -1109,7 +1140,7 @@ class surepetcareCmd extends cmd {
             }
             break;
         }
-        log::add('surepetcare','debug','Replace ' . print_r($replace, true));
+        // log::add('surepetcare','debug','Replace ' . print_r($replace, true));
         foreach ($datasList as $datas){
             $keyValue = explode('::',$datas);
             $type = self::datatype($keyValue[0]);
@@ -1189,6 +1220,33 @@ class surepetcareCmd extends cmd {
                 log::add('surepetcare','debug','commande deleteprofile : ' . $parameters[$keyValue[0]]);
                 $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
                 log::add('surepetcare','debug','commande deleteprofile url='. $url);
+            } else if($keyValue[0] =='setindoor_On'){
+				/* Location:
+				 * 	1 = indoor
+				 *  2 = outdoor
+				 */
+				$method = 'POST';
+				log::add('surepetcare','debug','Set Indoor On');
+				$parameters['where'] = 1;
+				$parameters['since'] = gmdate("Y-m-d H:i");
+			} else if($keyValue[0] =='setindoor_Off'){
+				$method = 'POST';
+				log::add('surepetcare','debug','Set Indoor Off');
+				$parameters['where'] = 2;
+				$parameters['since'] = gmdate("Y-m-d H:i");
+			} else if($keyValue[0] =='toggleposition'){
+				$positionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'pet.position');
+				$position = $positionCmd->execCmd();
+				log::add('surepetcare','debug','Current position in toggleposition '. $position);
+				if ($position != 0 && $position != 1) {
+					log::add('surepetcare','debug','No current position, return');
+					// No current position, impossible to invert it.
+					return;
+				}
+				// Invert position.
+				$parameters['where'] = ($position == 1 ? 2 : 1);
+				log::add('surepetcare','debug','Where parameter in toggleposition ' . $parameters['where']);
+				$parameters['since'] = gmdate("Y-m-d H:i");
             }
         }
         log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));

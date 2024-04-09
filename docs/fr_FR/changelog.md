@@ -95,3 +95,12 @@ Compatibilité avec Jeedom 4.3 de l'onglet Commandes (affichage de l'état des c
 ### 11/09/2023
 
 Nouvelle info commande pour la petite chatière : liste des animaux interdits de sortir
+
+### 12/04/2024
+
+3 nouvelles commandes action pour les chatières : "Interieur Off", "Interieur On" et "Inverser la position". Ces 3 commandes sont destinées à remplacer la commande action liste
+"Fixer la position". 
+Cette commande liste est mainteant obsolète, elle fonctionne toujours mais sera supprimée dans le futur. Pensez à adapter vos scénarios et autres.
+Le but de ce changement est de pouvoir utiliser les widgets du core dans la tuile au lieu d'un widget custom. 
+Le plugin supportera ainsi bien mieux les évolutions de Jeedom.
+Attention si vous changez le nom des 2 commandes "Interieur Off" et "Interieur On" il faut absolument que les noms contiennent Off et On sinon le widget ne marchera plus.

@@ -34,6 +34,57 @@ function surepetcare_update() {
                     $cmd->remove();
                     $eqLogic->save();
                 }
+        } else if ($eqLogic->getConfiguration('type') == 'pet') {
+			$position = $eqLogic->getCmd(null, 'pet.position');
+			// Fixer la position à l'extérieur (action)
+			$setindoor_Off = $eqLogic->getCmd(null, 'pet.setindoor_Off');
+			if (!is_object($setindoor_Off)) {
+				$setindoor_Off = new surepetcareCmd();
+				$setindoor_Off->setName(__('Interieur Off', __FILE__));
+				$setindoor_Off->setIsVisible(1);
+			}
+			$setindoor_Off->setDisplay('generic_type', 'DONT');
+			$setindoor_Off->setEqLogic_id($eqLogic->getId());
+			$setindoor_Off->setType('action');
+			$setindoor_Off->setSubType('other');
+			$setindoor_Off->setLogicalId('pet.setindoor_Off');
+			$setindoor_Off->setValue($position->getId());
+			$setindoor_Off->setTemplate('dashboard', 'surepetcare::position');
+			$setindoor_Off->setTemplate('mobile', 'surepetcare::position');
+			$setindoor_Off->save();
+			
+			// Fixer la position à l'intérieur (action)
+			$setindoor_On = $eqLogic->getCmd(null, 'pet.setindoor_On');
+			if (!is_object($setindoor_On)) {
+				$setindoor_On = new surepetcareCmd();
+				$setindoor_On->setName(__('Interieur On', __FILE__));
+				$setindoor_On->setIsVisible(1);
+			}
+			$setindoor_On->setDisplay('generic_type', 'DONT');
+			$setindoor_On->setEqLogic_id($eqLogic->getId());
+			$setindoor_On->setType('action');
+			$setindoor_On->setSubType('other');
+			$setindoor_On->setLogicalId('pet.setindoor_On');
+			$setindoor_On->setValue($position->getId());
+			$setindoor_On->setTemplate('dashboard', 'surepetcare::position');
+			$setindoor_On->setTemplate('mobile', 'surepetcare::position');
+			$setindoor_On->save();
+			
+			// Inverser la position (action)
+			$toggleposition = $eqLogic->getCmd(null, 'pet.toggleposition');
+			if (!is_object($toggleposition)) {
+				$toggleposition = new surepetcareCmd();
+				$toggleposition->setName(__('Inverser la position', __FILE__));
+				$toggleposition->setIsVisible(0);
+			}
+			$toggleposition->setDisplay('generic_type', 'DONT');
+			$toggleposition->setEqLogic_id($eqLogic->getId());
+			$toggleposition->setType('action');
+			$toggleposition->setSubType('other');
+			$toggleposition->setLogicalId('pet.toggleposition');
+			$toggleposition->setValue($position->getId());
+			$toggleposition->save();
+			$eqLogic->save();
         }
     }
 }

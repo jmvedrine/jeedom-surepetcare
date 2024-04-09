@@ -164,7 +164,10 @@ Il faut après avoir utilisé ces commandes dans un scénario utiliser la comman
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
 | **Position**                         | info    | binaire    | Indique si l'animal est à l'extérieur ou à l'intérieur (0 = extérieur, 1 = intérieur)                                                                              |
-| **Fixer la position**                | action  | liste      | Fixe la position de l'animal (Intérieur, Extérieur)                                                                                                                |
+| **Interieur On**                     | action  | autre      | Fixe la position de l'animal à l'intérieur                                                                                                                         |
+| **interieur Off**                    | action  | autre      | Fixe la position de l'animal à l'extérieur                                                                                                                         |
+| **Inverser la position**             | action  | autre      | Inverse la position de l'animal Intérieur / Extérieur                                                                                                              |
+| **Fixer la position**                | action  | liste      | Fixe la position de l'animal (Intérieur, Extérieur)  ATTENTION COMMANDE OBSOLETE SERA SUPPRIMEE DANS UNE FUTURE VERSION                                            |
 | **Dernier passage**                  | info    | autre      | Indique la date et l'heure du dernier passage de l'animal sous forme d'une chaine                                                                                  |
 | **Passé par**                        | info    | autre      | Indique le nom de la chatière par laquelle l'animal a effectué son dernier passage sous forme d'une chaine                                                         |
 | **Dernier repas**                    | info    | autre      | Indique la date et l'heure du dernier repas de l'animal sous forme d'une chaîne                                                                                    |
@@ -177,7 +180,7 @@ Il faut après avoir utilisé ces commandes dans un scénario utiliser la comman
 
 Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
 
-Vous pouvez changer le nom de la commande si vous le désirez, ce changement sera conservé même en cas de nouvelle synchronisation. Cela vous permet de modifier l'apparence du titre sur le widget.
+Vous pouvez changer le nom de la commande (excepté ou les 2 commandes Interieur On et Interieur Off sinon le widget ne marchera plus) si vous le désirez, ce changement sera conservé même en cas de nouvelle synchronisation. Cela vous permet de modifier l'apparence du titre sur le widget.
 
 Vous pouvez aussi modifier les réglages "Afficher", "Historiser" et cliquer sur l'engrenage pour personnaliser davantage.
 
