@@ -10,9 +10,10 @@ This is a plugin for the Jeedom (https://www.jeedom.com) open source (https://gi
 
 It will permit to control the Sure Petcare connected products for pets from your Jeedom.
 
-Initially it has only be tested with cat flaps (Pet Porte Connect and recently released Microchip Cat Flap Connect) as there are the only Sure Petcare connected products that I have.
+It has be tested with cat flaps (Pet Porte Connect and the smaller Microchip Cat Flap Connect) and also the Feeder Connect as there are the only Sure Petcare connected products that I own.
+Some tests were done with the Felaqua Fountain and it is also supported to some extend.
 
-But when new connected products are added I will try to upgrade the plugin to support them. A connected feeder was recently released, but as I don't own it it is currently not supported by the plugin. I hope to be able to support it in a near future.
+When new connected products are added I will try to upgrade the plugin to support them.
 
 This is currently a beta release. The most up-to-date version is in the beta branch.
 
