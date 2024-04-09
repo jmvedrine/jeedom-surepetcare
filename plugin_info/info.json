@@ -11,11 +11,11 @@
 	"maxDependancyInstallTime" : 0,
 	"changelog" : "https:\/\/jmvedrine.github.io\/jeedom-surepetcare/#language#/changelog",
 	"documentation" : "https://jmvedrine.github.io/jeedom-surepetcare/#language#/",
-	"changelog_beta" : "https://jmvedrine.github.io/jeedom-surepetcare/#language#/changelog",
+	"changelog_beta" : "https://raw.githubusercontent.com/jmvedrine/jeedom-surepetcare/beta/docs/fr_FR/changelog.md",
 	"documentation_beta" : "https://jmvedrine.github.io/jeedom-surepetcare/#language#/",
 	"link" : {
 		"forum":"https://www.jeedom.com/forum/viewtopic.php?f=141&t=45464"
 	},
 	"language" : ["fr_FR","en_US","de_DE","sp_SP","ru_RU","id_ID","it_IT"],
-	"compatibility" : ["miniplus","smart","atlas","rpi","docker","diy","mobile","v4"]
+	"compatibility" : ["smart","luna","atlas","rpi","docker","diy"]
 }
