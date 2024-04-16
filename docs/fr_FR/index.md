@@ -163,6 +163,7 @@ Il faut après avoir utilisé ces commandes dans un scénario utiliser la comman
 
 | Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
 | :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
+| **Animal**                           | info    | autre      | Tag HTML img vers la photo de l'animal (utilisé dans le widget pour afficher cette image, peu utile à part çà)                                                     |
 | **Position**                         | info    | binaire    | Indique si l'animal est à l'extérieur ou à l'intérieur (0 = extérieur, 1 = intérieur)                                                                              |
 | **Interieur On**                     | action  | autre      | Fixe la position de l'animal à l'intérieur                                                                                                                         |
 | **interieur Off**                    | action  | autre      | Fixe la position de l'animal à l'extérieur                                                                                                                         |

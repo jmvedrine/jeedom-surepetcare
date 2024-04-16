@@ -134,6 +134,7 @@ class surepetcare extends eqLogic {
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         log::add('surepetcare','debug','Request code result '.$code);
         curl_close($ch);
+		unset($ch);
         if ($code =='200') {
             return json_decode($result, true);
         } else if ($code =='201' || $code =='204') {
@@ -797,7 +798,7 @@ class surepetcare extends eqLogic {
                 if (!is_object($setposition)) {
                     $setposition = new surepetcareCmd();
                     $setposition->setName(__('Fixer la position', __FILE__));
-                    $setposition->setIsVisible(1);
+                    $setposition->setIsVisible(0);
                 }
                 $setposition->setDisplay('generic_type', 'DONT');
                 $setposition->setEqLogic_id($this->getId());
