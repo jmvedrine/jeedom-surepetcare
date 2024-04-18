@@ -27,10 +27,10 @@ class surepetcare extends eqLogic {
         $return = array('action' => array('other' => array()));
 		$return['action']['other']['position'] = array(
             'template' => 'tmplimg',
-            'replace' => array('#_img_light_on_#' => '<img src="plugins/surepetcare/core/template/images/inside-location.png" width="50px" title="Dedans" >',
-			                   '#_img_dark_on_#' => '<img src="plugins/surepetcare/core/template/images/inside-location.png" width="50px" title="Dedans" >',
-							   '#_img_light_off_#' => '<img src="plugins/surepetcare/core/template/images/outside-location.png" width="50px" title="Dehors" >',
-			                   '#_img_dark_off_#' => '<img src="plugins/surepetcare/core/template/images/outside-location.png" width="50px" title="Dehors" >',)
+            'replace' => array('#_img_light_on_#' => '<img src="plugins/surepetcare/core/template/images/inside-location.png" width="50px" height="28px">',
+			                   '#_img_dark_on_#' => '<img src="plugins/surepetcare/core/template/images/inside-location.png" width="50px" height="28px">',
+			                   '#_img_light_off_#' => '<img src="plugins/surepetcare/core/template/images/outside-location.png" width="50px" height="28px">',
+			                   '#_img_dark_off_#' => '<img src="plugins/surepetcare/core/template/images/outside-location.png" width="50px" height="28px">',)
         );
         return $return;
     }
@@ -518,8 +518,8 @@ class surepetcare extends eqLogic {
             log::add('surepetcare','debug','updatePetsStatus pet : '. print_r($pet, true));
             $eqLogic = self::byLogicalId('pet.' . $pet['id'], 'surepetcare');
             if(is_object($eqLogic) && $eqLogic->getIsEnable() == 1){
-				$photo = '<img style="display:block;height: 100px;width: 100px;border-radius: 50%;" src = "'. $eqLogic->getConfiguration('photo_location') . '" />';
-				$eqLogic->checkAndUpdateCmd('pet.photolocation',  $photo);
+                $photo = $eqLogic->getConfiguration('photo_location');
+                $eqLogic->checkAndUpdateCmd('pet.photolocation',  $photo);
                 log::add('surepetcare','debug','updatePetsStatus photolocation : '. $photo);
                 if (isset($pet['status']['activity']['where'])) {
                     log::add('surepetcare','debug','updatePetsStatus pet activity : '. print_r($pet['status']['activity'], true));
@@ -771,6 +771,8 @@ class surepetcare extends eqLogic {
                     $photolocation->setIsHistorized(0);
                 }
                 $photolocation->setDisplay('generic_type', 'DONT');
+                $photolocation->setTemplate('dashboard', 'surepetcare::petimage');
+                $photolocation->setTemplate('mobile', 'surepetcare::petimage');
                 $photolocation->setEqLogic_id($this->getId());
                 $photolocation->setType('info');
                 $photolocation->setSubType('string');

@@ -29,11 +29,11 @@ function surepetcare_update() {
     }
     foreach (surepetcare::byType('surepetcare') as $eqLogic) {
         if ($eqLogic->getConfiguration('type') == 'device' && $eqLogic->getConfiguration('product_id') != 6) {
-                $cmd = $eqLogic->getCmd(null, 'dev.forbidden');
-                if (is_object($cmd)) {
-                    $cmd->remove();
-                    $eqLogic->save();
-                }
+            $cmd = $eqLogic->getCmd(null, 'dev.forbidden');
+            if (is_object($cmd)) {
+                $cmd->remove();
+                $eqLogic->save();
+            }
         } else if ($eqLogic->getConfiguration('type') == 'pet') {
 			$position = $eqLogic->getCmd(null, 'pet.position');
 			// Fixer la position à l'extérieur (action)
@@ -84,6 +84,22 @@ function surepetcare_update() {
 			$toggleposition->setLogicalId('pet.toggleposition');
 			$toggleposition->setValue($position->getId());
 			$toggleposition->save();
+
+			$photolocation = $eqLogic->getCmd(null, 'pet.photolocation');
+			if (!is_object($photolocation)) {
+				$photolocation = new surepetcareCmd();
+				$photolocation->setName(__('Animal', __FILE__));
+				$photolocation->setIsVisible(1);
+				$photolocation->setConfiguration('historizeMode', 'none');
+				$photolocation->setIsHistorized(0);
+				$photolocation->setEqLogic_id($eqLogic->getId());
+				$photolocation->setType('info');
+				$photolocation->setSubType('string');
+				$photolocation->setLogicalId('pet.photolocation');
+			}
+			$photolocation->setTemplate('dashboard', 'surepetcare::petimage');
+			$photolocation->setTemplate('mobile', 'surepetcare::petimage');
+			$photolocation->save();
 			$eqLogic->save();
         }
     }
