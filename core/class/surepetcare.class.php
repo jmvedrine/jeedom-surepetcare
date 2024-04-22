@@ -1238,6 +1238,7 @@ class surepetcareCmd extends cmd {
 				$parameters['where'] = 2;
 				$parameters['since'] = gmdate("Y-m-d H:i");
 			} else if($keyValue[0] =='toggleposition'){
+				$method = 'POST';
 				$positionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'pet.position');
 				$position = $positionCmd->execCmd();
 				log::add('surepetcare','debug','Current position in toggleposition '. $position);
@@ -1250,6 +1251,7 @@ class surepetcareCmd extends cmd {
 				$parameters['where'] = ($position == 1 ? 2 : 1);
 				log::add('surepetcare','debug','Where parameter in toggleposition ' . $parameters['where']);
 				$parameters['since'] = gmdate("Y-m-d H:i");
+				unset($parameters['toggleposition']);
             }
         }
         log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));
