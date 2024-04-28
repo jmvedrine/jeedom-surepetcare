@@ -104,3 +104,8 @@ Cette commande liste est mainteant obsolète, elle fonctionne toujours mais sera
 Le but de ce changement est de pouvoir utiliser les widgets du core dans la tuile au lieu d'un widget custom. 
 Le plugin supportera ainsi bien mieux les évolutions de Jeedom.
 Attention si vous changez le nom des 2 commandes "Interieur Off" et "Interieur On" il faut absolument que les noms contiennent Off et On sinon le widget ne marchera plus.
+
+### 29/04/2024
+
+Bouton Assistance pour créer un post sur le forum Communautaire.
+Refonte du code pour exécuter une commande action.
