@@ -655,7 +655,7 @@ class surepetcare extends eqLogic {
                         $unauthorizedPets = array();
                         foreach ($device['tags'] as $key => $tag) {
                             if ($tag['profile'] == 3) {
-                                $petEqLogic = self::byTypeAndSearchConfiguration('surepetcare','%"tag_id":'.$tag['id'].'%');
+                                $petEqLogic = self::byTypeAndSearchConfiguration('surepetcare','%"tag_id":"'.$tag['id'].'"%');
                                 if(!empty($petEqLogic)) {
                                     $unauthorizedPets[] = $petEqLogic[0]->getName();
                                 } else {
