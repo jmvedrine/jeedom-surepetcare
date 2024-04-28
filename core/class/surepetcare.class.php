@@ -35,6 +35,23 @@ class surepetcare extends eqLogic {
         return $return;
     }
 
+	public static function getConfigForCommunity() {
+		$CommunityInfo = '```'."\n";
+		$CommunityInfo .= 'Hardware : '.jeedom::getHardwareName()."\n";
+		$CommunityInfo .= 'OS : '.trim(shell_exec("lsb_release -d -s")).'/'.trim(shell_exec('dpkg --print-architecture')).'/'.trim(shell_exec('arch')).'/'.trim(shell_exec('getconf LONG_BIT')).'bits'."\n";
+		$CommunityInfo .= 'Version php : '.phpversion()."\n";
+		$CommunityInfo .= 'Version précédente : '.config::byKey('previousVersion',__CLASS__,'inconnu',true)."\n";
+		$CommunityInfo .= 'Niveau de log : '.log::convertLogLevel(log::getLogLevel(__CLASS__))."\n";
+		$eqLogics = eqLogic::byType('surepetcare');
+		foreach ($eqLogics as $eqLogic) {
+			if ($eqLogic->getConfiguration('type') == 'device') {
+				$CommunityInfo .= 'Equipement : '.$eqLogic->getConfiguration('product_name','')."\n";
+			}
+		}
+		$CommunityInfo .= '```'."\n";
+		return $CommunityInfo;
+    }
+
     /*     * ***********************Methode static*************************** */
 
     /*
@@ -1146,22 +1163,22 @@ class surepetcareCmd extends cmd {
         // log::add('surepetcare','debug','Replace ' . print_r($replace, true));
         foreach ($datasList as $datas){
             $keyValue = explode('::',$datas);
-            $type = self::datatype($keyValue[0]);
-            $value = str_replace(array_keys($replace),$replace,explode('::',$datas)[1]);
-            $parameters[$keyValue[0]] = $value;
+            $actionKey = $keyValue[0];
+            $type = self::datatype($actionKey);
+            $actionValue = str_replace(array_keys($replace),$replace,explode('::',$datas)[1]);
             if ($type == 'bool'){
-              $parameters[$keyValue[0]] = ($parameters[$keyValue[0]] == '0') ? false : true;
+              $parameters[$actionKey] = ($actionValue == '0') ? false : true;
             }else if ($type == 'num'){
-              $parameters[$keyValue[0]] = intval($parameters[$keyValue[0]]);
+              $parameters[$actionKey] = intval($actionValue);
             }
-            if($keyValue[0] =='curfew'){
-                if ($parameters[$keyValue[0]]) {
+            if($actionKey =='curfew'){
+                if ($actionValue) {
                     $locktime = cache::byKey('surepetcare::lock_time::'.$eqLogic->getId())->getValue();
                     // $locktime = $eqLogic->getConfiguration('lock_time', '');
                     $unlocktime = cache::byKey('surepetcare::unlock_time::'.$eqLogic->getId())->getValue();
                     // $unlocktime = $eqLogic->getConfiguration('unlock_time', '');
                     if ($locktime != '' && $unlocktime != '') {
-                        $parameters[$keyValue[0]] = array(
+                        $parameters[$actionKey] = array(
                             'enabled' => true,
                             'lock_time' => $eqLogic::formatTime($locktime),
                             'unlock_time' => $eqLogic::formatTime($unlocktime)
@@ -1171,15 +1188,15 @@ class surepetcareCmd extends cmd {
                         throw new Exception(__('Heures de couvre-feu incorrectes', __FILE__));
                     }
                 } else {
-                    $parameters[$keyValue[0]] = array('enabled' => false);
+                    $parameters[$actionKey] = array('enabled' => false);
                 }
                 if ($eqLogic->getConfiguration('product_id') == 6) {
                     // For the Microchip cat door connect curfew is now an array of curfews.
-                    $parameters[$keyValue[0]] = array(0 => $parameters[$keyValue[0]]);
+                    $parameters[$actionKey] = array(0 => $parameters[$actionKey]);
                 }
-            } else if($keyValue[0] =='setposition'){
+            } else if($actionKey =='setposition'){
                 $method = 'POST';
-                if ($parameters[$keyValue[0]] != 0 && $parameters[$keyValue[0]] != 1) {
+                if ($actionValue != 0 && $actionValue != 1) {
                     log::add('surepetcare','debug','Invert position');
                     // No value passed to command, Invert position.
                     $positionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'pet.position');
@@ -1195,35 +1212,33 @@ class surepetcareCmd extends cmd {
                     log::add('surepetcare','debug','Where parameter in invert position ' . $parameters['where']);
                 } else {
                     // Just set position to corresponding value.
-                    $parameters['where'] = ($parameters[$keyValue[0]] == 1 ? 1 : 2);
+                    $parameters['where'] = ($actionValue == 1 ? 1 : 2);
                     log::add('surepetcare','debug','Where parameter in set position ' . $parameters['where']);
                 }
                 // $parameters['since'] = date("Y-m-d H:i");
                 $parameters['since'] = gmdate("Y-m-d H:i");
-                unset($parameters['setposition']);
-            } else if($keyValue[0] =='profile'){
+            } else if($actionKey =='profile'){
                 $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
                 log::add('surepetcare','debug','commande profile url='. $url);
-                log::add('surepetcare','debug','commande profile keyvalue0' .$parameters[$keyValue[0]]);
-            } else if($keyValue[0] =='setlocktime'){
-                log::add('surepetcare','debug','Heure de verrouillage : ' . $parameters[$keyValue[0]]);
-                cache::set('surepetcare::lock_time::'.$eqLogic->getId(), $parameters[$keyValue[0]], '');
-                // $eqLogic->setConfiguration('lock_time', $parameters[$keyValue[0]]);
-                $eqLogic->save();
+            } else if($actionKey =='setlocktime'){
+                log::add('surepetcare','debug','Heure de verrouillage : ' . $actionValue);
+                cache::set('surepetcare::lock_time::'.$eqLogic->getId(), $actionValue, '');
+                // $eqLogic->setConfiguration('lock_time', $actionValue);
+                // $eqLogic->save();
                 return;
-            } else if($keyValue[0] =='setunlocktime'){
-                log::add('surepetcare','debug','Heure de déverrouillage : ' . $parameters[$keyValue[0]]);
-                cache::set('surepetcare::unlock_time::'.$eqLogic->getId(),$parameters[$keyValue[0]], '');
-                // $eqLogic->setConfiguration('unlock_time', $parameters[$keyValue[0]]);
-                $eqLogic->save();
+            } else if($actionKey =='setunlocktime'){
+                log::add('surepetcare','debug','Heure de déverrouillage : ' . $actionValue);
+                cache::set('surepetcare::unlock_time::'.$eqLogic->getId(),$actionValue, '');
+                // $eqLogic->setConfiguration('unlock_time', $actionValue);
+                // $eqLogic->save();
                 return;
-            } else if($keyValue[0] =='deleteprofile'){
+            } else if($actionKey =='deleteprofile'){
                 $method = 'DELETE';
                 $parameters = array();
-                log::add('surepetcare','debug','commande deleteprofile : ' . $parameters[$keyValue[0]]);
+                log::add('surepetcare','debug','commande deleteprofile : ' . $actionValue);
                 $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
                 log::add('surepetcare','debug','commande deleteprofile url='. $url);
-            } else if($keyValue[0] =='setindoor_On'){
+            } else if($actionKey =='setindoor_On'){
 				/* Location:
 				 * 	1 = indoor
 				 *  2 = outdoor
@@ -1232,12 +1247,12 @@ class surepetcareCmd extends cmd {
 				log::add('surepetcare','debug','Set Indoor On');
 				$parameters['where'] = 1;
 				$parameters['since'] = gmdate("Y-m-d H:i");
-			} else if($keyValue[0] =='setindoor_Off'){
+			} else if($actionKey =='setindoor_Off'){
 				$method = 'POST';
 				log::add('surepetcare','debug','Set Indoor Off');
 				$parameters['where'] = 2;
 				$parameters['since'] = gmdate("Y-m-d H:i");
-			} else if($keyValue[0] =='toggleposition'){
+			} else if($actionKey =='toggleposition'){
 				$method = 'POST';
 				$positionCmd = surepetcareCmd::byEqLogicIdAndLogicalId($eqLogic->getId(),'pet.position');
 				$position = $positionCmd->execCmd();
@@ -1251,7 +1266,6 @@ class surepetcareCmd extends cmd {
 				$parameters['where'] = ($position == 1 ? 2 : 1);
 				log::add('surepetcare','debug','Where parameter in toggleposition ' . $parameters['where']);
 				$parameters['since'] = gmdate("Y-m-d H:i");
-				unset($parameters['toggleposition']);
             }
         }
         log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));

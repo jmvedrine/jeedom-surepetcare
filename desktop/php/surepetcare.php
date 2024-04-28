@@ -23,6 +23,16 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<br>
 				<span>{{Configuration}}</span>
 			</div>
+<?php
+	$jeedomVersion=jeedom::version() ?? '0';
+	$displayInfo=version_compare($jeedomVersion, '4.4.0', '>=');
+	if($displayInfo){
+	echo '<div class="cursor eqLogicAction warning" data-action="createCommunityPost" title="{{Ouvrir une demande d\'aide sur le forum communautaire}}">';
+	echo '<i class="fas fa-ambulance"></i>';
+	echo '<br><span>{{Community}}</span>';
+	echo '</div>';
+	}
+?>
 		</div>
 
 		<legend><i class="fas fa-table"></i> {{Mes équipements Sure PetCare}}</legend>
