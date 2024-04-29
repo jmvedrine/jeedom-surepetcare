@@ -35,6 +35,9 @@ if (!isConnect()) {
         <div class="col-lg-4">
             <input id="surepetcarepassword" type="password" class="configKey form-control" data-l1key="password" style="margin-top:-5px" placeholder="{{Mot de passe du compte}}"/>
         </div>
+        <div class="col-lg-1">
+            <i class="fas fa-eye-slash" id="bt_showPassword"></i>
+        </div>
     </div>
     <div class="form-group">
 		<label class="col-lg-3 control-label">{{Auto-actualisation (cron)}}</label>
@@ -51,4 +54,17 @@ if (!isConnect()) {
 	</div>
     </fieldset>
 </form>
-
+<script>
+$('#bt_showPassword').on('click', function() {
+        event.preventDefault();
+        if($('input.configKey[data-l1key="password"]').attr('type') == 'text'){
+            $('input.configKey[data-l1key="password"]').attr('type', 'password');
+            $('#bt_showPassword').addClass('fa-eye-slash');
+            $('#bt_showPassword').removeClass('fa-eye');
+        }else if($('input.configKey[data-l1key="password"]').attr('type') == 'password'){
+            $('input.configKey[data-l1key="password"]').attr('type', 'text');
+            $('#bt_showPassword').removeClass('fa-eye-slash');
+            $('#bt_showPassword').addClass('fa-eye');
+        }
+});
+</script>
