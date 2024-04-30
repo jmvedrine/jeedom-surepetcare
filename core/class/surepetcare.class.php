@@ -1166,10 +1166,11 @@ class surepetcareCmd extends cmd {
             $actionKey = $keyValue[0];
             $type = self::datatype($actionKey);
             $actionValue = str_replace(array_keys($replace),$replace,explode('::',$datas)[1]);
+            log::add('surepetcare','debug','actionValue : ' . $actionValue);
             if ($type == 'bool'){
-              $parameters[$actionKey] = ($actionValue == '0') ? false : true;
+              $actionValue = ($actionValue == '0') ? false : true;
             }else if ($type == 'num'){
-              $parameters[$actionKey] = intval($actionValue);
+              $actionValue = intval($actionValue);
             }
             if($actionKey =='curfew'){
                 if ($actionValue) {
@@ -1262,6 +1263,8 @@ class surepetcareCmd extends cmd {
                 $parameters['where'] = ($position == 1 ? 2 : 1);
                 log::add('surepetcare','debug','Where parameter in toggleposition ' . $parameters['where']);
                 $parameters['since'] = gmdate("Y-m-d H:i");
+            } else {
+                $parameters[$actionKey] = $actionValue;
             }
         }
         log::add('surepetcare','debug','Execute command whith parameters : '.json_encode($parameters));

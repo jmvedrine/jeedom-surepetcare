@@ -25,46 +25,47 @@ if (!isConnect()) {
 <form class="form-horizontal">
     <fieldset>
     <div class="form-group">
-        <label class="col-lg-3 control-label">{{Adresse mail}}</label>
-        <div class="col-lg-4">
-            <input id="surepetcareemail" class="configKey form-control" data-l1key="emailAdress" style="margin-top:-5px" placeholder="{{Mail du compte}}"/>
+      <label class="col-md-4 control-label">{{Adresse mail}}
+        <sup><i class="fas fa-question-circle tooltips" title="{{Renseignez le mail du compte Sure PetCare}}"></i></sup>
+      </label>
+        <div class="col-md-3">
+            <input class="configKey form-control" data-l1key="emailAdress"/>
         </div>
     </div>
     <div class="form-group">
-        <label class="col-lg-3 control-label">{{Mot de passe}}</label>
-        <div class="col-lg-4">
-            <input id="surepetcarepassword" type="password" class="configKey form-control" data-l1key="password" style="margin-top:-5px" placeholder="{{Mot de passe du compte}}"/>
-        </div>
-        <div class="col-lg-1">
-            <i class="fas fa-eye-slash" id="bt_showPassword"></i>
-        </div>
+      <label class="col-md-4 control-label">{{Mot de Passe}}
+        <sup><i class="fas fa-question-circle tooltips" title="{{Renseignez le mot de passe du compte Sure Petcare}}"></i></sup>
+      </label>
+      <div class="col-md-3" style="display:flex;">
+        <input type="password" class="configKey form-control" data-l1key="password"/>
+        <a class="btn btn-danger  " id="bt_show_pass"><i class="fas fa-eye"></i></a>
+      </div>
     </div>
     <div class="form-group">
-		<label class="col-lg-3 control-label">{{Auto-actualisation (cron)}}</label>
-		<div class="col-lg-4">
-			<select class="configKey form-control" data-l1key="autorefresh" >
+      <label class="col-md-4 control-label">{{Fréquence de mise à jour}}
+        <sup><i class="fas fa-question-circle tooltips" title="{{Fréquence d'interrogation de Sure PetCare}}"></i></sup>
+      </label>
+      <div class="col-md-3">
+            <select  id="freq_selector" class="configKey form-control" data-l1key="autorefresh" >
                 <option value="* * * * *">{{Toutes les minutes}}</option>
                 <option value="*/5 * * * *">{{Toutes les 5 minutes}}</option>
                 <option value="*/10 * * * *">{{Toutes les 10 minutes}}</option>
                 <option value="*/15 * * * *">{{Toutes les 15 minutes}}</option>
                 <option value="*/30 * * * *">{{Toutes les 30 minutes}}</option>
                 <option value="*/45 * * * *">{{Toutes les 45 minutes}}</option>
-			</select>
-		</div>
-	</div>
+            </select>
+        </div>
+    </div>
     </fieldset>
 </form>
 <script>
-$('#bt_showPassword').on('click', function() {
-        event.preventDefault();
-        if($('input.configKey[data-l1key="password"]').attr('type') == 'text'){
-            $('input.configKey[data-l1key="password"]').attr('type', 'password');
-            $('#bt_showPassword').addClass('fa-eye-slash');
-            $('#bt_showPassword').removeClass('fa-eye');
-        }else if($('input.configKey[data-l1key="password"]').attr('type') == 'password'){
-            $('input.configKey[data-l1key="password"]').attr('type', 'text');
-            $('#bt_showPassword').removeClass('fa-eye-slash');
-            $('#bt_showPassword').addClass('fa-eye');
-        }
-});
+$("#bt_show_pass").on('mousedown', function(){
+    $("input[data-l1key='password']").attr('type', 'text');
+    $(this).find("i").removeClass('fa-eye').addClass('fa-eye-slash')
+
+})
+$("#bt_show_pass").on('mouseup mouseleave', function(){
+    $("input[data-l1key='password']").attr('type', 'password');
+    $(this).find("i").removeClass('fa-eye-slash').addClass('fa-eye')
+})
 </script>
