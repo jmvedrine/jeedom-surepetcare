@@ -1218,7 +1218,9 @@ class surepetcareCmd extends cmd {
                 }
                 $parameters['since'] = gmdate("Y-m-d H:i");
             } else if($actionKey =='profile'){
-                // In that case $parameters is already set above.
+                if (intval($_options['select']) == 0) {
+                    throw new Exception(__('Valeur illégale pour la liste de choix', __FILE__));
+                }
                 $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
                 log::add('surepetcare','debug','commande profile url='. $url);
                 $parameters[$actionKey] = $actionValue;
@@ -1231,6 +1233,9 @@ class surepetcareCmd extends cmd {
                 cache::set('surepetcare::unlock_time::'.$eqLogic->getId(),$actionValue, '');
                 return;
             } else if($actionKey =='deleteprofile'){
+                if (intval($_options['select']) == 0) {
+                    throw new Exception(__('Valeur illégale pour la liste de choix', __FILE__));
+                }
                 $method = 'DELETE';
                 $parameters = array();
                 log::add('surepetcare','debug','commande deleteprofile : ' . $actionValue);
