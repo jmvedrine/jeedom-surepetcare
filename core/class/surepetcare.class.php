@@ -1221,6 +1221,7 @@ class surepetcareCmd extends cmd {
                 // In that case $parameters is already set above.
                 $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
                 log::add('surepetcare','debug','commande profile url='. $url);
+                $parameters[$actionKey] = $actionValue;
             } else if($actionKey =='setlocktime'){
                 log::add('surepetcare','debug','Heure de verrouillage : ' . $actionValue);
                 cache::set('surepetcare::lock_time::'.$eqLogic->getId(), $actionValue, '');
