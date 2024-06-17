@@ -122,24 +122,24 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 
 ## Commandes pour une chatière
 
-| Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                               |
-| :--:                                 | :---:   | :---:      | :---:                                                                                                                                                              |
-| **En ligne**                         | info    | binaire    | Indique si la chatière est en ligne.                                                                                                                               |
-| **Autoriser**                        | action  | liste      | Fixe le mode de verrouillage de la chatière (Entrée et sortie, Entrée, Sortie, Rien)                                                                               |
-| **Verrouillage**                     | info    | numerique  | Indique les mouvements autorisés pour les animaux (0 = Entrée et sortie, 1 = Entrée, 2 = Sortie, 3 = Rien, 4 = Couvre-feu)                                         |
-| **Heure de verrouillage**            | info    | numérique  | Indique l'heure de verrouillage (début du couvre-feu) au format HHMM si le couvre-feu est activé dans la chatière                                                  |
-| **Heure de déverrouillage**          | info    | numérique  | Indique l'heure de déverrouillage (fin du couvre-feu) au format HHMM si le couvre-feu est activé dans la chatière                                                  |
-| **Fixer heure de verrouillage**      | action  | message    | Fixe l'heure (au format HHMM) de début du couvre-feu dans la configuration de l'objet Chatière Jeedom. Attention le couvre-feu n'est pas activé.                   |
-| **Fixer heure de déverrouillage**    | action  | message    | Fixe l'heure (au format HHMM) de fin du couvre-feu dans la configuration de l'objet Chatière Jeedom. Attention le couvre-feu n'est pas activé.                     |
-| **Activer couvre-feu**               | action  | Défaut     | Active le couvre-feu avec les heures de début et de fin définies dans la configuration de  l'objet                                                                 |
-| **Désactiver couvre-feu**            | action  | Défaut     | Désactive le couvre-feu                                                                                                                                            |
-| **Couvre-feu**                       | info    | binaire    | Indique si le couvre-feu est activé (true) ou pas (false)                                                                                                          |
-| **Réception équipement**             | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) de la chatière en dBm                                                |
-| **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                        |
-| **Batterie**                         | info    | numérique  | Indique le voltage total des 4 piles (unité : V)                                                                                                                   |
-| **Autoriser animal**                 | action  | liste      | Autorise un animal à sortir par cette chatière. Il faut choisir l'animal dans la liste. Cette commande n'est pas disponible pour la grande chatière.               |
-| **Interdire animal**                 | action  | liste      | Interdit à un animal de sortir par cette chatière. Il faut choisir l'animal dans la liste. Cette commande n'est pas disponible pour la grande chatière.            |
-| **Animaux interdits de sortir**      | info    | chaîne     | Liste des noms des animaux interdits de sortir séparés par des points-virgules. Cette commande n'est pas disponible pour la grande chatière.                       |
+| Nom                                  | Type    | Sous type  | Rôle                                                                                                                                                                                    |
+| :--:                                 | :---:   | :---:      | :---:                                                                                                                                                                                   |
+| **En ligne**                         | info    | binaire    | Indique si la chatière est en ligne.                                                                                                                                                    |
+| **Autoriser**                        | action  | liste      | Fixe le mode de verrouillage de la chatière (Entrée et sortie, Entrée, Sortie, Rien)                                                                                                    |
+| **Verrouillage**                     | info    | numerique  | Indique les mouvements autorisés pour les animaux (0 = Entrée et sortie, 1 = Entrée, 2 = Sortie, 3 = Rien, 4 = Couvre-feu)                                                              |
+| **Heure de verrouillage**            | info    | numérique  | Indique l'heure de verrouillage (début du couvre-feu) au format HHMM si le couvre-feu est activé **dans la chatière**                                                                       |
+| **Heure de déverrouillage**          | info    | numérique  | Indique l'heure de déverrouillage (fin du couvre-feu) au format HHMM si le couvre-feu est activé **dans la chatière**                                                                      |
+| **Fixer heure de verrouillage**      | action  | message    | Fixe l'heure (au format HHMM) de début du couvre-feu **dans la configuration de l'objet Chatière Jeedom**. Attention le couvre-feu n'est pas activé et rien n'est envoyé à la chatière. |
+| **Fixer heure de déverrouillage**    | action  | message    | Fixe l'heure (au format HHMM) de fin du couvre-feu **dans la configuration de l'objet Chatière Jeedom**. Attention le couvre-feu n'est pas activé et rien n'est envoyé à la chatière.   |
+| **Activer couvre-feu**               | action  | Défaut     | Active le couvre-feu avec les heures de début et de fin définies dans la configuration de  l'objet                                                                                      |
+| **Désactiver couvre-feu**            | action  | Défaut     | Désactive le couvre-feu                                                                                                                                                                 |
+| **Couvre-feu**                       | info    | binaire    | Indique si le couvre-feu est activé (true) ou pas (false)                                                                                                                               |
+| **Réception équipement**             | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) de la chatière en dBm                                                                     |
+| **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                                             |
+| **Batterie**                         | info    | numérique  | Indique le voltage total des 4 piles (unité : V)                                                                                                                                        |
+| **Autoriser animal**                 | action  | liste      | Autorise un animal à sortir par cette chatière. Il faut choisir l'animal dans la liste. Cette commande n'est pas disponible pour la grande chatière.                                    |
+| **Interdire animal**                 | action  | liste      | Interdit à un animal de sortir par cette chatière. Il faut choisir l'animal dans la liste. Cette commande n'est pas disponible pour la grande chatière.                                 |
+| **Animaux interdits de sortir**      | info    | chaîne     | Liste des noms des animaux interdits de sortir séparés par des points-virgules. Cette commande n'est pas disponible pour la grande chatière.                                            |
 
 Attention pour les deux commandes **Autoriser animal** et **Interdire animal**, la liste des animaux est construite lors de la Synchronisation avec le serveur.
 Si cette liste ne contient que la valeur **Aucun** ou si un animal n'apparaît pas, il faut effectuer une synchronisation.
@@ -151,11 +151,11 @@ technologie Dualscan car il manque un capteur à la grande chatière pour contr�
 Le fonctionnement des commandes relatives au couvre-feu est relativement complexe. Il a été choisi ainsi pour permettre des scénarios où les heures du couvre-feu sont fixées par exemple suivant
 le lever et le couché du soleil ou les jours de la semaine.
 
-Les deux commandes info **Heure de verrouillage** et **Heure de déverrouillage** retournent au format HHMM les heures de début et de fin du couvre-feu définies dans la chatière si le couvre-feu est activé dans celle-ci. 
-Elles sont mises à jour lors du cron et ne modifient pas les heures de début et de fin du couvre-feu définies dans la configuration de l'objet Chatière dans Jeedom.
+Les deux commandes info **Heure de verrouillage** et **Heure de déverrouillage** retournent au format HHMM les heures de début et de fin du couvre-feu **définies dans la chatière si le couvre-feu est activé dans celle-ci**. 
+Elles sont mises à jour lors du cron et ne modifient pas les heures de début et de fin du couvre-feu définies **dans la configuration de l'objet Chatière dans Jeedom**.
 
 Les deux commandes action **Fixer heure de verrouillage** et **Fixer heure de déverrouillage** modifient les heures de début et de fin du couvre-feu définies dans l'objet chatière dans Jeedom. 
-Elles n'envoient aucun ordre à la chatière et le couvre feu n'est pas activé. 
+**Elles n'envoient aucun ordre à la chatière et le couvre feu n'est pas activé**. 
 
 Il faut après avoir utilisé ces commandes dans un scénario utiliser la commande **Activer couvre-feu** qui enverra ces heures à la chatière et activera le couvre-feu.
 
@@ -247,4 +247,24 @@ N'oubliez pas d'enregistrer. C'est terminé. Entre 22h et 6h Grominet pourra tou
 Le serveur Sure Petcare utilise des date/heures GMT donc l'app smartphone et le plugin doivent les convertir dans votre fuseau horaire. 
 Pour le plugin pour que cette conversion soit correcte il faut que le fuseau horaire soit correct dans la configuration de Jeedom. Vérifiez que c'est bien le cas 
 (En V4 Réglages Système Configuration Général Date et Heure).
+
+### Pourquoi avoir choisi ce fonctionnement bizarre pour les commandes relatives au couvre-feu ?
+
+Il a bien fallu trouver une solution. Il n'existe pas dans Jeedom de commande action qui permette à la fois d'indiquer les 2 valeurs de début et de fin.
+
+Et si on envoie ces valeurs séparément le serveur Sure-Petcare n'accepte pas ces ordres il veut les deux.
+
+Une solution aurait pu être d'utiliser une commande message avec une syntaxe du style heure_de_debut/heure_de_fin mais j'ai pensé que si des utilisateurs voulaient dans les scénarios calculer ces heures en fonction par
+exemple des heures de lever ou de coucher du soleil cela allait tout compliquer.
+
+D'où la solution choisie qui se prête bien aux scénarios :
+
+On utilise les 2 commandes **Fixer heure de verrouillage** et **Fixer heure de déverrouillage** pour indiquer au format HHMM les heures de début et de fin du couvre feu.
+
+A ce moment ces 2 valeurs sont mises en cache dans Jeedom. Rien n'est envoyé à la chatière et si par hasard il y a déjà un couvre feu d'activé dans la chatière,
+les 2 commandes **Heure de verrouillage** et **Heure de déverrouillage** peuvent renvoyer des valeurs différentes ce qui peut préter à confusion.
+ 
+Ensuite on utilise la commande **Activer couvre-feu** qui transfère les nouvelles valeurs dans la chatière et active le couvre-feu.
+
+Mon conseil : n'affichez pas ces commandes sur le dashboard, cela risque de vous induire en erreur.
 
