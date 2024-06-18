@@ -140,20 +140,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked>{{Visible}}</label>
 									</div>
 								</div>
-                                <div class="form-group" id="curfew_lock_time" >
-								    <label class="col-sm-2 control-label">{{Heure de début du couvre-feu (HHMM)}}
-								    </label>
-								    <div class="col-sm-5">
-									    <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lock_time" placeholder="{{Heure de début (HHMM)}}"/>
-								    </div>
-							    </div>
-                                <div class="form-group" id="curfew_unlock_time" >
-								    <label class="col-sm-2 control-label">{{Heure de fin du couvre-feu (HHMM)}}
-								    </label>
-								    <div class="col-sm-5">
-									    <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="unlock_time" placeholder="{{Heure de fin (HHMM)}}"/>
-								    </div>
-							    </div>
 							</fieldset>
 						</form>
 					</div>

@@ -77,13 +77,6 @@ function printEqLogic(_eqLogic) {
         printEqLogicHelper("{{Créé le}}","created_at",_eqLogic);
         printEqLogicHelper("{{Mis à jour le}}","updated_at",_eqLogic);
         $('#img_device').attr("src", 'plugins/surepetcare/core/config/images/device'+_eqLogic.configuration.product_id+'.png');
-        if (_eqLogic.configuration.product_id == 3 || _eqLogic.configuration.product_id == 6) {
-            $('#curfew_lock_time').show();
-            $('#curfew_unlock_time').show();
-        } else {
-            $('#curfew_lock_time').hide();
-            $('#curfew_unlock_time').hide();
-        }
     }
     if (_eqLogic.configuration.type=="pet") {
         printEqLogicHelper("{{Poids (kg)}}","weight",_eqLogic);
