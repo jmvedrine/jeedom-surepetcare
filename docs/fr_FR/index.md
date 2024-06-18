@@ -152,7 +152,7 @@ le lever et le couché du soleil ou les jours de la semaine.
 Les deux commandes info **Heure de verrouillage** et **Heure de déverrouillage** retournent au format HHMM les heures de début et de fin du couvre-feu **définies dans la chatière si le couvre-feu est activé dans celle-ci**. 
 Elles sont mises à jour lors du cron et ne modifient pas les heures de début et de fin du couvre-feu définies **dans le cache de Jeedom** par les commandes **Fixer heure de verrouillage** et **Fixer heure de déverrouillage**.
 
-Les deux commandes action **Fixer heure de verrouillage** et **Fixer heure de déverrouillage** modifient les heures de début et de fin du couvre-feu définies dans l'objet chatière dans Jeedom. 
+Les deux commandes action **Fixer heure de verrouillage** et **Fixer heure de déverrouillage** modifient les heures de début et de fin du couvre-feu définies dans le cache de Jeedom. 
 **Elles n'envoient aucun ordre à la chatière et le couvre feu n'est pas activé**. 
 
 Il faut après avoir utilisé ces commandes dans un scénario utiliser la commande **Activer couvre-feu** qui enverra ces heures à la chatière et activera le couvre-feu.
