@@ -69,9 +69,7 @@ Il ne faut pas changer le "Logical ID" de la commande sinon elle ne marche plus.
 Il ne faut surtout pas changer le champ "Identifiant" sinon aucune commande pour cet objet ne marche plus et lors de la prochaine synchronisation
 l'objet sera considéré comme nouveau et réimporté aboutissant à un  doublon (si jamais vous faites cette erreur, supprimez l'objet et faites une nouvelle synchronisation).
 
-Pour une chatière on peut définir les heures de début et de fin du couvre-feu au format HHMM, par exemple 0630 pour 6 heure 30 minutes.
-
-Attention, une commande "Activer couvre-feu" provoque une erreur si on n'a pas définit les heures de début et de fin dans la configuration de l'équipement.
+Attention, une commande "Activer couvre-feu" provoque une erreur si on n'a pas définit les heures de début et de fin par les commandes "Fixer heure de verrouillage" et "Fixer heure de déverrouillage".
 
 L'onglet "Planning" permet de définir des évènements dans le plugin Agenda, s'il est installé, pour effectuer des actions à des jours et des heures déterminées.
 Seules les commandes action sont programmables.
@@ -127,11 +125,11 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 | **En ligne**                         | info    | binaire    | Indique si la chatière est en ligne.                                                                                                                                                    |
 | **Autoriser**                        | action  | liste      | Fixe le mode de verrouillage de la chatière (Entrée et sortie, Entrée, Sortie, Rien)                                                                                                    |
 | **Verrouillage**                     | info    | numerique  | Indique les mouvements autorisés pour les animaux (0 = Entrée et sortie, 1 = Entrée, 2 = Sortie, 3 = Rien, 4 = Couvre-feu)                                                              |
-| **Heure de verrouillage**            | info    | numérique  | Indique l'heure de verrouillage (début du couvre-feu) au format HHMM si le couvre-feu est activé **dans la chatière**                                                                       |
-| **Heure de déverrouillage**          | info    | numérique  | Indique l'heure de déverrouillage (fin du couvre-feu) au format HHMM si le couvre-feu est activé **dans la chatière**                                                                      |
-| **Fixer heure de verrouillage**      | action  | message    | Fixe l'heure (au format HHMM) de début du couvre-feu **dans la configuration de l'objet Chatière Jeedom**. Attention le couvre-feu n'est pas activé et rien n'est envoyé à la chatière. |
-| **Fixer heure de déverrouillage**    | action  | message    | Fixe l'heure (au format HHMM) de fin du couvre-feu **dans la configuration de l'objet Chatière Jeedom**. Attention le couvre-feu n'est pas activé et rien n'est envoyé à la chatière.   |
-| **Activer couvre-feu**               | action  | Défaut     | Active le couvre-feu avec les heures de début et de fin définies dans la configuration de  l'objet                                                                                      |
+| **Heure de verrouillage**            | info    | numérique  | Indique l'heure de verrouillage (début du couvre-feu) au format HHMM si le couvre-feu est activé **dans la chatière**                                                                   |
+| **Heure de déverrouillage**          | info    | numérique  | Indique l'heure de déverrouillage (fin du couvre-feu) au format HHMM si le couvre-feu est activé **dans la chatière**                                                                   |
+| **Fixer heure de verrouillage**      | action  | message    | Fixe l'heure (au format HHMM) de début du couvre-feu **dans le cache de Jeedom**. Attention le couvre-feu n'est pas activé et rien n'est envoyé à la chatière.                          |
+| **Fixer heure de déverrouillage**    | action  | message    | Fixe l'heure (au format HHMM) de fin du couvre-feu **dans le cache de Jeedom**. Attention le couvre-feu n'est pas activé et rien n'est envoyé à la chatière.                            |
+| **Activer couvre-feu**               | action  | Défaut     | Active le couvre-feu avec les heures de début et de fin définies dans le cache de Jeedom                                                                                                |
 | **Désactiver couvre-feu**            | action  | Défaut     | Désactive le couvre-feu                                                                                                                                                                 |
 | **Couvre-feu**                       | info    | binaire    | Indique si le couvre-feu est activé (true) ou pas (false)                                                                                                                               |
 | **Réception équipement**             | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) de la chatière en dBm                                                                     |
@@ -152,7 +150,7 @@ Le fonctionnement des commandes relatives au couvre-feu est relativement complex
 le lever et le couché du soleil ou les jours de la semaine.
 
 Les deux commandes info **Heure de verrouillage** et **Heure de déverrouillage** retournent au format HHMM les heures de début et de fin du couvre-feu **définies dans la chatière si le couvre-feu est activé dans celle-ci**. 
-Elles sont mises à jour lors du cron et ne modifient pas les heures de début et de fin du couvre-feu définies **dans la configuration de l'objet Chatière dans Jeedom**.
+Elles sont mises à jour lors du cron et ne modifient pas les heures de début et de fin du couvre-feu définies **dans le cache de Jeedom** par les commandes **Fixer heure de verrouillage** et **Fixer heure de déverrouillage**.
 
 Les deux commandes action **Fixer heure de verrouillage** et **Fixer heure de déverrouillage** modifient les heures de début et de fin du couvre-feu définies dans l'objet chatière dans Jeedom. 
 **Elles n'envoient aucun ordre à la chatière et le couvre feu n'est pas activé**. 
