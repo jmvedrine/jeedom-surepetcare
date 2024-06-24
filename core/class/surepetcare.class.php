@@ -118,6 +118,16 @@ class surepetcare extends eqLogic {
         }
     }
 
+    public static function postConfig_password($value) {
+		// If password has changed we need to invalidate token.
+        cache::set('surepetcare::token','', 0);
+    }
+
+	public static function postConfig_emailAdress($value) {
+		// If emailAdress has changed we need to invalidate token.
+        cache::set('surepetcare::token','', 0);
+    }
+
     public static function request($url, $payload = null, $method = 'POST', $headers = array()) {
         $ch = curl_init($url);
 

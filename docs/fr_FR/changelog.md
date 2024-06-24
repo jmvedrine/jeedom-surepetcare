@@ -114,3 +114,6 @@ Refonte du code pour exécuter une commande action.
 
 Suppression des 2 champs obsolètes "Heure de début du couvre-feu (HHMM)" et "Heure de fin du couvre-feu (HHMM)" dans la configuration des chatières.
 Amélioration de la documentation pour les commandes concernant le couvre-feu.
+
+### 24/06/2024
+Correction de bug : si l'adresse mail ou le mot de passe étaient changés, le token n'était pas invalidé, conduisant à l'impossibilité de se connecter.
