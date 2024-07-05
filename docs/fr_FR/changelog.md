@@ -1,7 +1,7 @@
 ### 22/05/2019
- 
+
 -   Première version  béta
- 
+
 ### 24/05/2019
 
 -   Correction d'un bug dans la commande Fixer la position pour les animaux
@@ -43,7 +43,7 @@ widget est actualisé.
 
 ### 13/11/2019
 
-- Le logicalId de toutes les commandes info des équipements a changé pour inclure si c'est une info de type status ou control. 
+- Le logicalId de toutes les commandes info des équipements a changé pour inclure si c'est une info de type status ou control.
 C'était une erreur de ma part de ne pas l'avoir inclus au départ, mieux vaut le corriger maintenant.
 - Nouvelles commandes relatives au distributeur de nourriture pour les animaux **Dernier repas**, **Mangé dans**, **Poids bol 1**,
 **Poids bol 2**
@@ -52,8 +52,8 @@ cela est important si vous choisissez un intervalle de mise à jour long pour qu
 - La documentation a été mise à jour et les images refaites pour tenir compte de l'évolution du plugin
 - Plus d'infos ont été ajoutées aux objets : version, date de création, date de mise à jour, sexe pour les animaux et addresse MAC pour les équipements.
 - Diminution du nombre de requêtes au serveur lors de la synchronisation et lors du cron
-- L'intervalle auquel le cron appelle le serveur est maintenant configurable 
-- nouvelles commandes permettent de consulter et de modifier les heurs de début et de fin du couvre-feu. Attention de bien lire la documentation 
+- L'intervalle auquel le cron appelle le serveur est maintenant configurable
+- nouvelles commandes permettent de consulter et de modifier les heurs de début et de fin du couvre-feu. Attention de bien lire la documentation
 pour utiliser ces commandes.
 - les deux commandes **Autoriser animal** et **Interdire animal** ont été supprimées pour la grande chatière car comme elle n'a qu'un capteur
 elle ne permet pas de contrôler les sorties. Ces deux commandes restent pour la petite chatière qui a 2 capteurs.
@@ -99,9 +99,9 @@ Nouvelle info commande pour la petite chatière : liste des animaux interdits de
 ### 12/04/2024
 
 3 nouvelles commandes action pour les chatières : "Interieur Off", "Interieur On" et "Inverser la position". Ces 3 commandes sont destinées à remplacer la commande action liste
-"Fixer la position". 
+"Fixer la position".
 Cette commande liste est mainteant obsolète, elle fonctionne toujours mais sera supprimée dans le futur. Pensez à adapter vos scénarios et autres.
-Le but de ce changement est de pouvoir utiliser les widgets du core dans la tuile au lieu d'un widget custom. 
+Le but de ce changement est de pouvoir utiliser les widgets du core dans la tuile au lieu d'un widget custom.
 Le plugin supportera ainsi bien mieux les évolutions de Jeedom.
 Attention si vous changez le nom des 2 commandes "Interieur Off" et "Interieur On" il faut absolument que les noms contiennent Off et On sinon le widget ne marchera plus.
 
@@ -110,10 +110,11 @@ Attention si vous changez le nom des 2 commandes "Interieur Off" et "Interieur O
 Bouton Assistance pour créer un post sur le forum Communautaire.
 Refonte du code pour exécuter une commande action.
 
-### 19/06/2024
+### 19/06/2024
 
 Suppression des 2 champs obsolètes "Heure de début du couvre-feu (HHMM)" et "Heure de fin du couvre-feu (HHMM)" dans la configuration des chatières.
 Amélioration de la documentation pour les commandes concernant le couvre-feu.
 
-### 24/06/2024
+### 24/06/2024
+
 Correction de bug : si l'adresse mail ou le mot de passe étaient changés, le token n'était pas invalidé, conduisant à l'impossibilité de se connecter.
