@@ -1,7 +1,14 @@
 {
 	"id": "surepetcare",
 	"name": "Sure PetCare",
-	"description": "Plugin pour les objets connectées pour animaux Sure Petcare (Sureflap)",
+	"description": {
+		"fr_FR": "Plugin pour les objets connectées pour animaux Sure Petcare (Sureflap)",
+		"en_US": "Plugin for Sure Petcare (Sureflap) connected objects for pets",
+		"es_ES": "Plugin para objetos conectados para mascotas Sure Petcare (Sureflap)",
+		"de_DE": "Plugin für Sure Petcare (Sureflap) Connected Objects für Haustiere",
+		"it_IT": "Plugin per gli oggetti connessi di Sure Petcare (Sureflap) per gli animali domestici",
+		"pt_PT": "Plugin para objectos ligados Sure Petcare (Sureflap) para animais de estimação"
+	},
 	"licence": "AGPL",
 	"author": "JMVedrine",
 	"require": "4.2.0",
@@ -20,7 +27,9 @@
 		"de_DE",
 		"en_US",
 		"es_ES",
-		"fr_FR"
+		"fr_FR",
+		"it_IT",
+		"pt_PT"
 	],
 	"compatibility": [
 		"smart",
