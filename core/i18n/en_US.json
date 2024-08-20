@@ -5,9 +5,9 @@
         "Sure PetCare non trouvé : ": "Sure PetCare not found :"
     },
     "plugins\/surepetcare\/core\/class\/surepetcare.class.php": {
-        "Animal": "Animal",
-        "Animaux interdits de sortir": "No pets allowed",
-        "Bu dans": "Bu in",
+        "Animal": "Pet",
+        "Animaux interdits de sortir": "Pets not allowed to go outside",
+        "Bu dans": "Drank from",
         "Dernier passage": "Last visit",
         "Dernier repas": "Last meal",
         "Dernière boisson": "Last drink",
@@ -18,18 +18,18 @@
         "Heures de couvre-feu incorrectes": "Incorrect curfew times",
         "Impossible de rafraîchir le token": "Unable to refresh token",
         "Impossible de récupérer le token": "Unable to retrieve token",
-        "Interieur Off": "Interieur Off",
-        "Interieur On": "Interieur On",
+        "Interieur Off": "Outside Off",
+        "Interieur On": "Outside On",
         "Inverser la position": "Reverse position",
         "Le message et le sujet ne peuvent pas être vide": "Subject and message cannot be empty",
         "Le serveur a retourné une erreur code : ": "The server returned an error code :",
-        "Mangé dans": "Eaten in",
+        "Mangé dans": "Eaten from",
         "Mâle": "Male",
         "Nouveau produit detecté": "New device detected",
         "Nouvel animal detecté": "New pet detected",
         "Passé par": "Passed by",
         "Poids bol 1": "Weight bowl 1",
-        "Poids bol 2": "Bowl weight 2",
+        "Poids bol 2": "Weight bowl 2",
         "Position": "Location",
         "Produit": "Product",
         "Quantité bue": "Quantity drunk",
@@ -82,7 +82,7 @@
         "Configuration avancée": "Advanced configuration",
         "Dupliquer": "Duplicate",
         "Equipement": "Device",
-        "Equipement non visible": "Equipment not visible",
+        "Equipement non visible": "Invisible Equipment",
         "Equipement visible": "Visible equipment",
         "Etat": "State",
         "Gestion": "Management",
@@ -117,9 +117,9 @@
         "Toutes les minutes": "Every minute"
     },
     "plugins\/surepetcare\/plugin_info\/install.php": {
-        "Animal": "Animal",
-        "Interieur Off": "Interieur Off",
-        "Interieur On": "Interieur On",
+        "Animal": "Pet",
+        "Interieur Off": "Inside Off",
+        "Interieur On": "Inside On",
         "Inverser la position": "Reverse position"
     }
 }
