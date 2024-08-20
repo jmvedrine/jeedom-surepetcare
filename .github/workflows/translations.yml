@@ -1,0 +1,13 @@
+name: translate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+
+jobs:
+  auto-translate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Mips2648/plugins-translations@main
