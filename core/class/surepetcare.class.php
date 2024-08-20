@@ -20,6 +20,7 @@
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class surepetcare extends eqLogic {
+	protected $baseUrl = 'https://app-api.production.surehub.io';
     /*     * *************************Attributs****************************** */
     public static $_widgetPossibility = array('custom' => true);
 
@@ -73,7 +74,7 @@ class surepetcare extends eqLogic {
                             }
                             $token = cache::byKey('surepetcare::token')->getValue();
                         }                     
-                        $url = 'https://app.api.surehub.io/api/device?with[]=children&with[]=status&with[]=curfew&with[]=control&with[]=tags';
+                        $url = $baseUrl . '/api/device?with[]=children&with[]=status&with[]=curfew&with[]=control&with[]=tags';
                         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
                         log::add('surepetcare','debug', "Devices Data : ". print_r($result, true));
                         if (isset($result['data'])) {
@@ -81,7 +82,7 @@ class surepetcare extends eqLogic {
                         } else {
                             log::add('surepetcare','debug', 'Aucune donnée pour les équipements lors de la mise à jour');
                         }
-                        $url = 'https://app.api.surehub.io/api/pet?with[]=status&with[]=position&with[]=tag';
+                        $url = $baseUrl . '/api/pet?with[]=status&with[]=position&with[]=tag';
                         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
                         log::add('surepetcare','debug', "Pets Data : ". print_r($result, true));
                         if (isset($result['data'])) {
@@ -138,8 +139,8 @@ class surepetcare extends eqLogic {
 
         $requestHeaders = array(
             'Connection: keep-alive',
-            'Origin: https://surepetcare.io',
-            'Referer: https://surepetcare.io/',
+            'Origin: ' . $baseUrl,
+            'Referer: ' . $baseUrl,
         );
 
         if($method == 'POST' || $method == 'PUT') {
@@ -181,7 +182,7 @@ class surepetcare extends eqLogic {
     }
 
   public static function login() {
-    $url = 'https://app.api.surehub.io/api/auth/login';
+    $url = $baseUrl . '/api/auth/login';
     $mailadress = config::byKey('emailAdress','surepetcare');
     $password = config::byKey('password','surepetcare');
     $device_id = rand(1,9);
@@ -215,7 +216,7 @@ class surepetcare extends eqLogic {
     public function logout() {
         $token = cache::byKey('surepetcare::token')->getValue();
         if ($token !== '') {
-            $result = surepetcare::request('https://app.api.surehub.io/api/auth/logout', null, 'GET', array('Authorization: Bearer ' . $token));
+            $result = surepetcare::request($baseUrl . '/api/auth/logout', null, 'GET', array('Authorization: Bearer ' . $token));
         }
     }
 
@@ -228,7 +229,7 @@ class surepetcare extends eqLogic {
         }
         $token = cache::byKey('surepetcare::token')->getValue();
     }
-    $result = surepetcare::request('https://app.api.surehub.io/api/me/start', null, 'GET', array('Authorization: Bearer ' . $token));
+    $result = surepetcare::request($baseUrl . '/api/me/start', null, 'GET', array('Authorization: Bearer ' . $token));
     log::add('surepetcare','debug','me/start result : '.json_encode($result));
     config::remove('households', 'surepetcare');
     if(isset($result['data']['households'])) {
@@ -276,7 +277,7 @@ class surepetcare extends eqLogic {
                 log::add('surepetcare','debug','Missing pet id or name');
                 continue;
             }
-            $result = surepetcare::request('https://app.api.surehub.io/api/pet/' . $pet['id'].'?with[]=photo&with[]=breed&with[]=conditions&with[]=tag&with[]=food_type&with[]=species', null, 'GET', array('Authorization: Bearer ' . $token));
+            $result = surepetcare::request($baseUrl . '/api/pet/' . $pet['id'].'?with[]=photo&with[]=breed&with[]=conditions&with[]=tag&with[]=food_type&with[]=species', null, 'GET', array('Authorization: Bearer ' . $token));
             $petfull = $result['data'];
             log::add('surepetcare','debug','Petfull '.$key. '='.json_encode($petfull));
             $found_eqLogics[] = self::findPet($petfull);
@@ -693,7 +694,7 @@ class surepetcare extends eqLogic {
         // On récupère les infos sur l'équipement.
         $logicalId = explode('.',$this->getLogicalId());
         $deviceId = $logicalId[1];
-        $url = 'https://app.api.surehub.io/api/device/' . $deviceId . '?with[]=status&with[]=control&with[]=curfew&with[]=feeding&with[]=tags';
+        $url = $baseUrl . '/api/device/' . $deviceId . '?with[]=status&with[]=control&with[]=curfew&with[]=feeding&with[]=tags';
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
         log::add('surepetcare','debug',"Résultat getDeviceStatus $deviceid : " . print_r($result['data'], true));
         if (isset($result['data'])) {
@@ -713,7 +714,7 @@ class surepetcare extends eqLogic {
         // On récupère les infos sur l'animal.
         $logicalId = explode('.',$this->getLogicalId());
         $petId = $logicalId[1];
-        $url = 'https://app.api.surehub.io/api/pet/' . $petId . '?with[]=status';
+        $url = $baseUrl . '/api/pet/' . $petId . '?with[]=status';
         $result = surepetcare::request($url, null, 'GET', array('Authorization: Bearer ' . $token));
         log::add('surepetcare','debug', "Résultat getPetStatus $petId : ". print_r($result['data'], true));
         if (isset($result['data'])) {
@@ -1142,10 +1143,10 @@ class surepetcareCmd extends cmd {
         $actionerId = $actionerDatas[1];
         $logicalId = $this->getLogicalId();
         if ($eqType == 'device') {
-            $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/control';
+            $url = $baseUrl . '/api/device/' . $actionerId . '/control';
         }
         if ($eqType =='pet') {
-            $url = 'https://app.api.surehub.io/api/pet/' . $actionerId . '/position';
+            $url = $baseUrl . '/api/pet/' . $actionerId . '/position';
         }
         log::add('surepetcare', 'debug', 'execute url='.$url);
         $actionDatas = explode('.',$logicalId);
@@ -1231,7 +1232,7 @@ class surepetcareCmd extends cmd {
                 if (intval($_options['select']) == 0) {
                     throw new Exception(__('Valeur illégale pour la liste de choix', __FILE__));
                 }
-                $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
+                $url = $baseUrl . '/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
                 log::add('surepetcare','debug','commande profile url='. $url);
                 $parameters[$actionKey] = $actionValue;
             } else if($actionKey =='setlocktime'){
@@ -1249,7 +1250,7 @@ class surepetcareCmd extends cmd {
                 $method = 'DELETE';
                 $parameters = array();
                 log::add('surepetcare','debug','commande deleteprofile : ' . $actionValue);
-                $url = 'https://app.api.surehub.io/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
+                $url = $baseUrl . '/api/device/' . $actionerId . '/tag/' . intval($_options['select']);
                 log::add('surepetcare','debug','commande deleteprofile url='. $url);
             } else if($actionKey =='setindoor_On'){
                 /* Location:
