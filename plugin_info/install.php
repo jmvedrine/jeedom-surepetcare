@@ -36,7 +36,7 @@ function surepetcare_update() {
             }
         } else if ($eqLogic->getConfiguration('type') == 'pet') {
 			$position = $eqLogic->getCmd(null, 'pet.position');
-			// Fixer la position à l'extérieur (action)
+			// Fixer la position Ã  l'extÃ©rieur (action)
 			$setindoor_Off = $eqLogic->getCmd(null, 'pet.setindoor_Off');
 			if (!is_object($setindoor_Off)) {
 				$setindoor_Off = new surepetcareCmd();
@@ -53,7 +53,7 @@ function surepetcare_update() {
 			$setindoor_Off->setTemplate('mobile', 'surepetcare::position');
 			$setindoor_Off->save();
 			
-			// Fixer la position à l'intérieur (action)
+			// Fixer la position Ã  l'intÃ©rieur (action)
 			$setindoor_On = $eqLogic->getCmd(null, 'pet.setindoor_On');
 			if (!is_object($setindoor_On)) {
 				$setindoor_On = new surepetcareCmd();
