@@ -6,6 +6,7 @@
     },
     "plugins\/surepetcare\/core\/class\/surepetcare.class.php": {
         "Animal": "Animales",
+        "Animaux assignés": "Animales asignados",
         "Animaux interdits de sortir": "No se admiten animales",
         "Bu dans": "Bu en",
         "Dernier passage": "Última visita",
