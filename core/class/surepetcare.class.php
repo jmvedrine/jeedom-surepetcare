@@ -20,7 +20,7 @@
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class surepetcare extends eqLogic {
-	public static $baseUrl = 'https://app-api.production.surehub.io';
+    public static $baseUrl = 'https://app-api.production.surehub.io';
     /*     * *************************Attributs****************************** */
     public static $_widgetPossibility = array('custom' => true);
 
@@ -120,12 +120,12 @@ class surepetcare extends eqLogic {
     }
 
     public static function postConfig_password($value) {
-		// If password has changed we need to invalidate token.
+        // If password has changed we need to invalidate token.
         cache::set('surepetcare::token','', 0);
     }
 
-	public static function postConfig_emailAdress($value) {
-		// If emailAdress has changed we need to invalidate token.
+    public static function postConfig_emailAdress($value) {
+        // If emailAdress has changed we need to invalidate token.
         cache::set('surepetcare::token','', 0);
     }
 
@@ -284,19 +284,22 @@ class surepetcare extends eqLogic {
             log::add('surepetcare','debug',json_encode($found_eqLogics));
         }
     }
-    // Construction de la liste de choix des animaux pour les commandes profile.
+    // Construction de la liste de choix des animaux.
     $petstags = array();
+    $allPets = array();
     foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
         if ($eqLogic->getConfiguration('type') == 'pet') {
             $name = $eqLogic->getName();
             $tagId = $eqLogic->getConfiguration('tag_id');
             $petstags[] = $tagId . '|' . $name;
+            $allPets[$tagId] = $name;
         }
     }
     $listTags = implode(';', $petstags);
+    cache::set('surepetcare::allpets', $allPets);
     foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
         // Profile commands are only available for Microchip cat door connect and feeder connect.
-        if ($eqLogic->getConfiguration('type') == 'device' && ($eqLogic->getConfiguration('product_id') == 6 || $eqLogic->getConfiguration('product_id') == 4)) {
+        if ($eqLogic->getConfiguration('type') == 'device' && ($eqLogic->getConfiguration('product_id') == 6 || $eqLogic->getConfiguration('product_id') == 4 || $eqLogic->getConfiguration('product_id') == 8)) {
             $profile2 = $eqLogic->getCmd(null, 'dev.profile::2');
             if (is_object($profile2)) {
                 $profile2->setConfiguration('listValue', $listTags);
@@ -664,18 +667,37 @@ class surepetcare extends eqLogic {
                     log::add('surepetcare','debug','updateDevicesStatus curfew after recoding : '. print_r($device['control']['curfew'], true));
                     if (isset($device['tags'])) {
                         $unauthorizedPets = array();
+						$allPets = cache::byKey('surepetcare::allpets')->getValue();
                         foreach ($device['tags'] as $key => $tag) {
                             if ($tag['profile'] == 3) {
-                                $petEqLogic = self::byTypeAndSearchConfiguration('surepetcare','%"tag_id":"'.$tag['id'].'"%');
-                                if(!empty($petEqLogic)) {
-                                    $unauthorizedPets[] = $petEqLogic[0]->getName();
+                                $petName = $allPets[$tag['id']];
+                                if($petName != '') {
+                                    $unauthorizedPets[] = $petName;
                                 } else {
-                                    log::add('surepetcare','debug','Animal interdit inconnu tag : '. $tag['id']);
+                                    log::add('surepetcare','debug','Animal interdit inconnu tag : ' . $tag['id']);
                                 }
                             }
                         }
                         $device['forbidden'] = implode(';',$unauthorizedPets);
                     }
+                }
+                if ($eqLogic->getConfiguration('product_id') == 4 || $eqLogic->getConfiguration('product_id') == 8) {
+                    // Feeder or fontain.
+                    if (isset($device['tags'])) {
+                        $allowedPets = array();
+                        $allPets = cache::byKey('surepetcare::allpets')->getValue();
+                        foreach ($device['tags'] as $key => $tag) {
+                            if ($tag['profile'] == 2) {
+                                $petName = $allPets[$tag['id']];
+                                if($petName != '') {
+                                    $allowedPets[] = $petName;
+                                } else {
+                                    log::add('surepetcare','debug','Animal assigné inconnu tag : '. $tag['id']);
+                                }
+                            }
+                        }
+                        $device['allowed'] = implode(';',$allowedPets);
+                    }                   
                 }
                 $eqLogic->applyData($device);
             }
@@ -784,6 +806,22 @@ class surepetcare extends eqLogic {
                     $forbidden->setSubType('string');
                     $forbidden->setLogicalId('dev.forbidden');
                     $forbidden->save();
+                }
+            }
+            if ($this->getConfiguration('product_id') == 4 || $this->getConfiguration('product_id') == 8) {
+                $allowed = $this->getCmd(null, 'dev.allowed');
+                if (!is_object($allowed)) {
+                    $allowed = new surepetcareCmd();
+                    $allowed->setIsVisible(0);
+                    $allowed->setName(__('Animaux assignés', __FILE__));
+                    $allowed->setConfiguration('historizeMode', 'none');
+                    $allowed->setIsHistorized(0);
+                    $allowed->setDisplay('generic_type', 'DONT');
+                    $allowed->setEqLogic_id($this->getId());
+                    $allowed->setType('info');
+                    $allowed->setSubType('string');
+                    $allowed->setLogicalId('dev.allowed');
+                    $allowed->save();
                 }
             }
         }

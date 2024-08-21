@@ -118,3 +118,11 @@ Amélioration de la documentation pour les commandes concernant le couvre-feu.
 ### 24/06/2024
 
 Correction de bug : si l'adresse mail ou le mot de passe étaient changés, le token n'était pas invalidé, conduisant à l'impossibilité de se connecter.
+
+### 21/08/2024
+
+Traductions en 5 langues réalisées automatiquement par Mips2648/plugins-translations workflow.
+Nouvelle commande donnant la liste des animaux assignés à un distributeur ou une fontaine.
+Nouvelles commandes pour une fontaine pour assigner ou retirer un animal.
+Attention une synchronisation est nécessaire pour que cette commande fonctionne.
+Changement de l'url de basepour les appels à l'API : https://app-api.production.surehub.io .
