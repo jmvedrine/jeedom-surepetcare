@@ -118,8 +118,8 @@
     },
     "plugins\/surepetcare\/plugin_info\/install.php": {
         "Animal": "Pet",
-        "Interieur Off": "Inside Off",
-        "Interieur On": "Inside On",
+        "Interieur Off": "Outside Off",
+        "Interieur On": "Outside On",
         "Inverser la position": "Reverse position"
     }
 }
