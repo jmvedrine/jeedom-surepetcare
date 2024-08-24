@@ -36,6 +36,16 @@
         "Quantité bue": "Quantità bevuta",
         "Valeur illégale pour la liste de choix": "Valore illegale per l'elenco di scelta"
     },
+    "plugins\/surepetcare\/core\/template\/dashboard\/cmd.info.string.petimage.html": {
+        "Affiche durée ou date de la valeur": "Affiche durée ou date de la valeur",
+        "Date de collecte": "Date de collecte",
+        "Date de valeur": "Date de valeur"
+    },
+    "plugins\/surepetcare\/core\/template\/mobile\/cmd.info.string.petimage.html": {
+        "Affiche durée ou date de la valeur": "Affiche durée ou date de la valeur",
+        "Date de collecte": "Date de collecte",
+        "Date de valeur": "Date de valeur"
+    },
     "plugins\/surepetcare\/desktop\/js\/surepetcare.js": {
         "Adresse MAC": "Indirizzo MAC",
         "Afficher": "Afficher",
