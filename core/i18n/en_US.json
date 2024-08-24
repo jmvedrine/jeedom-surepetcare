@@ -6,7 +6,7 @@
     },
     "plugins\/surepetcare\/core\/class\/surepetcare.class.php": {
         "Animal": "Pet",
-        "Animaux assignés": "Assigned animals",
+        "Animaux assignés": "Assigned pets",
         "Animaux interdits de sortir": "Pets not allowed to go outside",
         "Bu dans": "Drank from",
         "Dernier passage": "Last visit",
@@ -19,8 +19,8 @@
         "Heures de couvre-feu incorrectes": "Incorrect curfew times",
         "Impossible de rafraîchir le token": "Unable to refresh token",
         "Impossible de récupérer le token": "Unable to retrieve token",
-        "Interieur Off": "Outside Off",
-        "Interieur On": "Outside On",
+        "Interieur Off": "Inside Off",
+        "Interieur On": "Inside On",
         "Inverser la position": "Reverse position",
         "Le message et le sujet ne peuvent pas être vide": "Subject and message cannot be empty",
         "Le serveur a retourné une erreur code : ": "The server returned an error code :",
@@ -119,8 +119,8 @@
     },
     "plugins\/surepetcare\/plugin_info\/install.php": {
         "Animal": "Pet",
-        "Interieur Off": "Outside Off",
-        "Interieur On": "Outside On",
+        "Interieur Off": "Inside Off",
+        "Interieur On": "Inside On",
         "Inverser la position": "Reverse position"
     }
 }

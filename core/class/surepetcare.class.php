@@ -299,7 +299,7 @@ class surepetcare extends eqLogic {
     cache::set('surepetcare::allpets', $allPets);
     foreach (eqLogic::byType('surepetcare', true) as $eqLogic) {
         // Profile commands are only available for Microchip cat door connect and feeder connect.
-        if ($eqLogic->getConfiguration('type') == 'device' && ($eqLogic->getConfiguration('product_id') == 6 || $eqLogic->getConfiguration('product_id') == 4 || $eqLogic->getConfiguration('product_id') == 8)) {
+        if ($eqLogic->getConfiguration('type') == 'device' && ($eqLogic->getConfiguration('product_id') == 6 || $eqLogic->getConfiguration('product_id') == 4)) {
             $profile2 = $eqLogic->getCmd(null, 'dev.profile::2');
             if (is_object($profile2)) {
                 $profile2->setConfiguration('listValue', $listTags);
@@ -681,8 +681,8 @@ class surepetcare extends eqLogic {
                         $device['forbidden'] = implode(';',$unauthorizedPets);
                     }
                 }
-                if ($eqLogic->getConfiguration('product_id') == 4 || $eqLogic->getConfiguration('product_id') == 8) {
-                    // Feeder or fontain.
+                if ($eqLogic->getConfiguration('product_id') == 4) {
+                    // Feeder.
                     if (isset($device['tags'])) {
                         $allowedPets = array();
                         $allPets = cache::byKey('surepetcare::allpets')->getValue();
@@ -808,7 +808,7 @@ class surepetcare extends eqLogic {
                     $forbidden->save();
                 }
             }
-            if ($this->getConfiguration('product_id') == 4 || $this->getConfiguration('product_id') == 8) {
+            if ($this->getConfiguration('product_id') == 4) {
                 $allowed = $this->getCmd(null, 'dev.allowed');
                 if (!is_object($allowed)) {
                     $allowed = new surepetcareCmd();

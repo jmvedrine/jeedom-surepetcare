@@ -123,6 +123,10 @@ Correction de bug : si l'adresse mail ou le mot de passe étaient changés, le t
 
 Traductions en 5 langues réalisées automatiquement par Mips2648/plugins-translations workflow.
 Nouvelle commande donnant la liste des animaux assignés à un distributeur ou une fontaine.
-Nouvelles commandes pour une fontaine pour assigner ou retirer un animal.
 Attention une synchronisation est nécessaire pour que cette commande fonctionne.
+Nouvelles commandes pour une fontaine pour assigner ou retirer un animal.
 Changement de l'url de basepour les appels à l'API : https://app-api.production.surehub.io .
+
+### 24/08/2024
+
+Suppression des commandes inexistantes pour une fontaine introduites par erreur lors de la précédente version.

@@ -118,9 +118,6 @@ Ces commandes sont différentes pour un hub, un objet connecté ou un animal.
 | **Réception hub**                    | info    | numérique  | Indique le niveau de réception de la liaison radio (RSSI Received Signal Strength Indication) du hub en dBm                                                        |
 | **Tare**                             | info    | numérique  | Indique la tare (unité g ? à confirmer)                                                                                                                            |
 | **Mode apprentissage**               | info    | numérique  | Indique le mode apprentissage (0=Pas activé et ensuite les étapes de 1 à 4)                                                                                        |
-| **Assigner animal**                  | action  | liste      | Ajoute un animal dans la liste des animaux assignés à la fontaine. Il faut choisir l'animal dans la liste.                                                         |
-| **Retirer animal**                   | action  | liste      | Retire un animal de la liste des animaux assignés à la fontaine. Il faut choisir l'animal dans la liste.                                                           |
-| **Animaux assignés**                 | info    | chaîne     | Liste des noms des animaux assignés à la fontaine séparés par des points-virgules.                                                                                 |
 
 ## Commandes pour une chatière
 

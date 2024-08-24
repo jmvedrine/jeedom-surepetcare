@@ -96,33 +96,6 @@
                     "dashboard" : "line",
                     "mobile" : "line"
                 }
-            },
-            {
-                "name": "Assigner animal",
-                "type": "action",
-                "subtype": "select",
-                "generic_type": "DONT",
-                "isVisible": 0,
-                "isHistorized": 0,
-                "logicalId": "profile::2"
-            },
-            {
-                "name": "Retirer animal",
-                "type": "action",
-                "subtype": "select",
-                "generic_type": "DONT",
-                "isVisible": 0,
-                "isHistorized": 0,
-                "logicalId": "deleteprofile"
-            },
-            {
-                "name": "Animaux assignés",
-                "type": "info",
-                "subtype": "string",
-                "generic_type": "DONT",
-                "isVisible": 0,
-                "isHistorized": 0,
-                "logicalId": "allowed"
             }
 		]
 }
