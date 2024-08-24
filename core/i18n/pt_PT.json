@@ -6,6 +6,7 @@
     },
     "plugins\/surepetcare\/core\/class\/surepetcare.class.php": {
         "Animal": "Animais",
+        "Animaux assignés": "Animais atribuídos",
         "Animaux interdits de sortir": "Não são permitidos animais de estimação",
         "Bu dans": "Comprar",
         "Dernier passage": "Última visita",

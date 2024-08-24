@@ -6,6 +6,7 @@
     },
     "plugins\/surepetcare\/core\/class\/surepetcare.class.php": {
         "Animal": "Tier",
+        "Animaux assignés": "Zugewiesene Tiere",
         "Animaux interdits de sortir": "Tiere dürfen nicht raus",
         "Bu dans": "Bu in",
         "Dernier passage": "Letzter Durchgang",
