@@ -117,6 +117,8 @@ class surepetcare extends eqLogic {
         if (!surepetcare::login()) {
             log::add('surepetcare', 'error', __('Impossible de rafraîchir le token', __FILE__));
         }
+		log::add('surepetcare','debug', 'Synchro journalière');
+		self::sync();
     }
 
     public static function postConfig_password($value) {
