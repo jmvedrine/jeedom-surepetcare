@@ -46,8 +46,8 @@ Par contre pour chaque objet (équipement ou animal) le foyer dont il dépend es
 Lorsqu'on clique sur le bouton "Synchronisation" le plugin récupère tous les équipements et tous les animaux pour tous les foyers du compte.
 
 Si on le désire il est ensuite possible de supprimer certains objets, mais cette opération sera à renouveler à chaque synchronisation
-car l'objet réapparaîtra s'il est dans votre compte sur le serveur de surepetcare.io.
-Pour cette raison, il est préférable de ne pas supprimer l'objet mais plutôt de décocher "Visible" pour les objets qu'on ne souhaite pas visualiser.
+car l'objet réapparaitra s'il est dans votre compte sur le serveur de surepetcare.io. Comme une synchronisation est effectuée automatiquement tous les jours,
+il est préférable de ne pas supprimer l'objet mais plutôt de décocher "Visible" pour les objets qu'on ne souhaite pas visualiser.
 
 Les Objets
 ===

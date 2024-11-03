@@ -130,3 +130,7 @@ Changement de l'url de basepour les appels à l'API : https://app-api.production
 ### 24/08/2024
 
 Suppression des commandes inexistantes pour une fontaine introduites par erreur lors de la précédente version.
+
+### 02/11/2024
+
+Une synchronisation est effectuée tous les jours lors du cron journalier en même temps qu'un rafraîchissement du jeton.
