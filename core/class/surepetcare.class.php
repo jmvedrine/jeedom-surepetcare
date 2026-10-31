@@ -560,8 +560,8 @@ class surepetcare extends eqLogic {
                     $since = $pet['status']['activity']['since'];
                     $date = new DateTime($since, new DateTimeZone('UTC'));
                     date_timezone_set($date,  new DateTimeZone(config::byKey('timezone')));
-                    $device_id = $pet['status']['activity']['device_id'];
-                    $eqLogic2 = self::byLogicalId('dev.' . $device_id, 'surepetcare');
+                    $device_id = $pet['status']['activity']['device_id'] ?? null;
+                    $eqLogic2 = !empty($device_id) ? self::byLogicalId('dev.' . $device_id, 'surepetcare') : null;
                     if(is_object($eqLogic2)){
                         $eqLogic->checkAndUpdateCmd('pet.through', $eqLogic2->getName(), $date->format('Y-m-d H:i:s'));
                         log::add('surepetcare','debug', 'Mise à jour passé par ' . $pet['id'] . ' nouvelle valeur ' . $eqLogic2->getName());
